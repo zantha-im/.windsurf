@@ -79,3 +79,9 @@ Only after all items are checked should you proceed with implementation.
 ## Troubleshooting
 
 If you skipped a step or are uncertain about context, start over with `/hello-ai`
+
+---
+
+## ⚠️ Windows Command Syntax Reminder
+
+**All commands must use Windows syntax**: `cmd /c` prefix, backslashes (`\`) for paths, quote paths with spaces.

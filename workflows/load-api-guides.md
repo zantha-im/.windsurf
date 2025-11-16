@@ -8,6 +8,17 @@ auto_execution_mode: 3
 Use when the task involves API routes, external services, networking, or auth.
 
 ## Steps
-- Read `/.windsurf/guides/next-js-stack.md` (establishes App Router as mandatory for all projects)
 - Read `/.windsurf/guides/api-error-handling.md`
-- Read `/.windsurf/guides/auth-and-access.md`
+
+## Note: Authentication
+
+For authentication implementation guidance, use the dedicated workflow:
+
+```
+/run setup-auth
+```
+
+This workflow will:
+- Load the custom magic code implementation guide
+- Check your current auth system status
+- Guide you through build, verify, or migration scenarios

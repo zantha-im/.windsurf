@@ -13,40 +13,52 @@ This workflow loads the most critical constraints and patterns that AIs regularl
 
 ---
 
-## Step 1: Understand Your Core Tools (REQUIRED)
+## Step 1: Load Windows Command Syntax (REQUIRED - FIRST)
+
+⚠️ **ALL COMMANDS MUST USE WINDOWS SYNTAX**
+
+/run context-cmd
+
+This establishes the command syntax rules BEFORE any other context. All subsequent commands must follow these rules.
+
+**⚠️ Wait for Step 1 to complete before proceeding to Step 2.**
+
+---
+
+## Step 2: Understand Your Core Tools (REQUIRED)
 
 Run the following commands to understand available tools:
 
-### 1a. Schema Query Tool
+### 2a. Schema Query Tool
 ```bash
 cmd /c node .windsurf\tools\schema-query.js --help
 ```
 
-### 1b. File Delete Tool
+### 2b. File Delete Tool
 ```bash
 cmd /c node .windsurf\tools\file-delete.js --help
 ```
 
-### 1c. Code Review Tool
+### 2c. Code Review Tool
 ```bash
 cmd /c npm run --prefix .windsurf\review review:repo -- --help
 ```
 
-**⚠️ All three commands above must complete before proceeding to Step 2.**
+**⚠️ All three commands above must complete before proceeding to Step 3.**
 
 ---
 
-## Step 2: Load Core Engineering Guides (REQUIRED)
+## Step 3: Load Core Engineering Guides (REQUIRED)
 
 These short guides are always relevant and should be loaded for any task.
 
 /run load-core-guides
 
-**⚠️ Wait for Step 2 to complete before proceeding to Step 3.**
+**⚠️ Wait for Step 3 to complete before proceeding to Step 4.**
 
 ---
 
-## Step 3: Load Task-Specific Guides (REQUIRED)
+## Step 4: Load Task-Specific Guides (REQUIRED)
 
 Load both guides to ensure comprehensive context:
 
@@ -57,14 +69,6 @@ Load both guides to ensure comprehensive context:
   /run load-ui-guides
 
 **Note:** If uncertain which guides apply, load both. Having extra context is better than missing critical patterns.
-
-**⚠️ Wait for Step 3 to complete before proceeding to Step 4.**
-
----
-
-## Step 4: Load Windows CMD Context (REQUIRED)
-
-/run context-cmd
 
 **⚠️ Wait for Step 4 to complete before proceeding to Step 5.**
 
