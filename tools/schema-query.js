@@ -34,7 +34,15 @@ const loadModule = (name) => {
 }
 
 const { Client } = loadModule('pg')
-loadModule('dotenv').config({ quiet: true })
+const dotenv = loadModule('dotenv')
+dotenv.config({ path: '.env.local', quiet: true })
+dotenv.config({ quiet: true })
+
+// Validate DATABASE_URL is loaded
+if (!process.env.DATABASE_URL) {
+  console.error('Error: DATABASE_URL not found in .env or .env.local')
+  process.exit(1)
+}
 
 // Configuration
 const MAX_OUTPUT_BYTES = 7800
