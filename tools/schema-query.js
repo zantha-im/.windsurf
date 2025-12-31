@@ -1,7 +1,18 @@
 #!/usr/bin/env node
 
 /**
- * Schema Query Tool
+ * ⚠️ DEPRECATED: This tool is deprecated. Use Neon MCP instead.
+ * 
+ * All functionality is now available through Neon MCP tools:
+ * - Schema inspection → mcp1_describe_table_schema, mcp1_describe_branch
+ * - SQL execution → mcp1_run_sql, mcp1_run_sql_transaction
+ * - Table listing → mcp1_get_database_tables
+ * 
+ * See .windsurf/rules/database-tooling.md for the complete MCP tool reference.
+ */
+
+/**
+ * Schema Query Tool (DEPRECATED)
  *
  * Size-aware, paginated database schema query tool that outputs structured
  * information to stdout for AI models to use when planning database interactions
@@ -658,6 +669,10 @@ Output limit: ${MAX_OUTPUT_BYTES} bytes (auto-paginated)
 }
 
 if (require.main === module) {
+  // Deprecation warning on every run
+  console.error('\n⚠️  DEPRECATED: schema-query.js is deprecated. Use Neon MCP instead.')
+  console.error('   See .windsurf/rules/database-tooling.md for MCP tool reference.\n')
+  
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
     showUsage()
   } else {
