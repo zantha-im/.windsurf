@@ -34,6 +34,29 @@ Manage corporate governance documentation including board minutes, resolutions, 
 
 ## Available Tools
 
+**CRITICAL: Use the orchestrator `tools/company-secretary.js` - never write ad-hoc scripts.**
+
+### Orchestrator Functions (ai-advisor project)
+
+```javascript
+const cs = require('./tools/company-secretary');
+
+// Document access
+cs.listCompanies()                                    // ['AIL', 'Zantha']
+cs.listCompanyDocuments('AIL', 'Company Docs')        // List subfolder contents
+cs.findCompanyDocument('AIL', 'Certificate', 'Company Docs')  // Find by name
+cs.readCompanyDocument(fileId)                        // Read PDF/Doc/Word with OCR
+
+// Context management
+cs.loadCompanyContext()                               // Load _context/*.json
+cs.saveCompanyContext('companies', data)              // Save to _context/
+
+// Document indexing
+cs.indexDocument(doc)                                 // Index in database
+cs.searchDocuments(query, filters)                    // Search indexed docs
+```
+
+### Underlying APIs
 - **Google Drive API** - Document storage in Company Secretary folder
 - **Database** - Document indexing, company context
 - **Document Templates** - Standard formats for minutes, resolutions
