@@ -66,6 +66,8 @@ cs.searchDocuments(query, filters)                    // Search indexed docs
 ```
 AI Advisor/ (0AABrUwK6R3liUk9PVA)
 └── Company Secretary/ (1zaokguSgHs8qyv11lqAZo7YsLPxwTKNU)
+    ├── Templates/ (14mrYquVZgBmBXM1-lP57kmsKI475ilxk)
+    │   └── E-Signature Template - Directors (Jonathan & Kay Anderson)
     ├── AIL/ (1dFI4asTqOJdYeoczpQmC9krhkRlQQsVG)
     │   ├── Board Meetings/ (1mzUFRyJ8YQonZj8VLIndQJh6Ji02K12N)
     │   ├── Resolutions/ (1XZ6ZXrVlm9d90siwIW7dcmyqBq2PO5U_)
