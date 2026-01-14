@@ -64,21 +64,27 @@ cs.searchDocuments(query, filters)                    // Search indexed docs
 ## Google Drive Structure
 
 ```
-AI Advisor/
-└── Company Secretary/
-    ├── Board Meetings/
-    ├── Resolutions/
-    │   ├── Written Resolutions/
-    │   └── Board Resolutions/
-    ├── Contracts/
-    │   ├── Active/
-    │   ├── Archive/
-    │   └── Templates/
-    └── Statutory Registers/
-        ├── Directors Register/
-        ├── Shareholders Register/
-        └── Minutes Index/
+AI Advisor/ (0AABrUwK6R3liUk9PVA)
+└── Company Secretary/ (1zaokguSgHs8qyv11lqAZo7YsLPxwTKNU)
+    ├── AIL/ (1dFI4asTqOJdYeoczpQmC9krhkRlQQsVG)
+    │   ├── Board Meetings/ (1mzUFRyJ8YQonZj8VLIndQJh6Ji02K12N)
+    │   ├── Resolutions/ (1XZ6ZXrVlm9d90siwIW7dcmyqBq2PO5U_)
+    │   ├── Contracts/ (1vL8HSjWn1fHD6tzpwfS3RQDRymGTr35V)
+    │   └── Statutory Registers/ (1aqUjHng-rQiZnvsHwAq9fj98pwyvYnnm)
+    │       ├── Directors Register/
+    │       ├── Shareholders Register/
+    │       └── Minutes Index/
+    └── Zantha/ (1msoeJ0sj7C3eobEuQ6BK4spRwrtrLJ8A)
+        ├── Board Meetings/ (16oTZYBp_b9J9s6RDIP-xm38x10qSh-HL)
+        ├── Resolutions/ (1W9Ep_Y0ZahE6LRYp4YjK-Qx5EMZfgHGo)
+        ├── Contracts/ (18EcIKOm2CZxL78D85-KlC5YkhAFCWxEx)
+        └── Statutory Registers/ (1LsK8qifozaFOx5R1EaX9TLRXFXk0K9dO)
+            ├── Directors Register/
+            ├── Shareholders Register/
+            └── Minutes Index/
 ```
+
+**Note:** For intercompany documents (involving both AIL and Zantha), upload to BOTH company folders.
 
 ## Active Skill
 
