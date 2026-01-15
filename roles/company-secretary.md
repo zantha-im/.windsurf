@@ -34,12 +34,18 @@ Manage corporate governance documentation including board minutes, resolutions, 
 
 ## Available Tools
 
-**CRITICAL: Use the orchestrator `tools/company-secretary.js` - never write ad-hoc scripts.**
+**CRITICAL: Use the orchestrator `roles/company-secretary/orchestrator.js` - never write ad-hoc scripts.**
+
+### Discovery
+Run with no arguments to see all available commands:
+```bash
+node roles/company-secretary/orchestrator.js
+```
 
 ### Orchestrator Functions (ai-advisor project)
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./orchestrator');
 
 // Document access
 cs.listCompanies()                                    // ['AIL', 'Zantha']

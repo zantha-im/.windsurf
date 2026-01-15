@@ -53,5 +53,15 @@ Report to user:
 - Google Drive folder: AI Advisor/Company Secretary/
 - Ask: "What corporate governance task can I help with?"
 
-## Step 7: Load Skill on Demand
-When beginning document creation, invoke the `corporate-governance` skill for detailed procedures.
+## Step 7: Load Skill and Discover Tools
+Invoke the `corporate-governance` skill now to load detailed procedures.
+
+Then run the orchestrator with no arguments to discover available commands:
+```bash
+node roles/company-secretary/orchestrator.js
+```
+
+This shows:
+- **Simple commands** (direct CLI): `listCompanies`, `listCompanyDocuments`, `readTemplate`
+- **File-based commands** (for complex input): `createDoc --from <file>`
+- **One-liner fallback** for operations not exposed via CLI

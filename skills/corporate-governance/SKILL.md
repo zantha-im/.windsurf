@@ -3,14 +3,36 @@ name: corporate-governance
 description: Use this skill for company secretary tasks including board minutes, resolutions, contracts, and statutory registers.
 ---
 
+# Quick Start
+
+## File Location
+The orchestrator is at: `roles/company-secretary/orchestrator.js`
+
+## Discovery
+Run with no arguments to see all available commands:
+```bash
+node roles/company-secretary/orchestrator.js
+```
+
+## Usage Patterns
+
+| Operation | Method |
+|-----------|--------|
+| Discovery | `node orchestrator.js` (no args) |
+| Simple queries | `node orchestrator.js listCompanies` |
+| Complex creation | `node orchestrator.js createDoc --from <file>` |
+| Arbitrary ops | `node -e "require('./roles/company-secretary/orchestrator')..."` |
+
+---
+
 # CRITICAL: Tool Usage
 
-**ALWAYS use the orchestrator `tools/company-secretary.js` - NEVER write ad-hoc scripts.**
+**ALWAYS use the orchestrator `roles/company-secretary/orchestrator.js` - NEVER write ad-hoc scripts.**
 
 ## Available Functions
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 // Document access
 cs.listCompanies()                                    // List available companies
@@ -85,7 +107,7 @@ You are a **Company Secretary** - responsible for maintaining accurate corporate
 Use the `createBoardMinutes` function from the orchestrator:
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 await createBoardMinutes({
   date: '2026-01-15',
@@ -136,7 +158,7 @@ await createBoardMinutes({
 Use the `createWrittenResolution` function:
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 await createWrittenResolution({
   title: 'Appointment of Company Secretary',
@@ -157,7 +179,7 @@ await createWrittenResolution({
 Use the `createBoardResolution` function:
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 await createBoardResolution({
   title: 'Approval of Annual Accounts',
@@ -191,7 +213,7 @@ await createBoardResolution({
 
 2. **Index in Database**
    ```javascript
-   const cs = require('./tools/company-secretary');
+   const cs = require('./roles/company-secretary/orchestrator');
    
    await insertDocument({
      source: 'drive',
@@ -252,7 +274,7 @@ Maintain in `Statutory Registers/Minutes Index/`:
 ## Query Documents
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 // Find all resolutions
 const resolutions = await findDocuments({ type: 'resolution' });
@@ -270,7 +292,7 @@ const results = await findDocuments({ search: 'annual accounts' });
 ## Update Document Metadata
 
 ```javascript
-const cs = require('./tools/company-secretary');
+const cs = require('./roles/company-secretary/orchestrator');
 
 await updateDocument(documentId, {
   category: 'Archive',
