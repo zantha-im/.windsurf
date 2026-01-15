@@ -19,24 +19,17 @@ Based on user's request, determine which role is needed:
 |-----------------|----------------|
 | Investigation, evidence, advocate package | Legal Researcher |
 | Minutes, resolution, board meeting, contract | Company Secretary |
-| Financial analysis, strategy, contracts review | Business Advisor |
 | Users, groups, email aliases, service accounts, API access | System Administrator |
 
 If unclear, ask: "This could be handled by [Role A] or [Role B]. Which role should I activate?"
 
 ## Step 3: Activate Selected Role
 Run the appropriate workflow:
-- `/business-advisor` - Financial and strategic analysis
 - `/legal-researcher` - Investigations and evidence gathering
 - `/company-secretary` - Corporate governance and documentation
 - `/system-administrator` - Infrastructure and access management
 
 ## Available Roles
-
-### Business Advisor
-- Financial analysis (P&L, balance sheets, cash flow)
-- Contract review and optimization
-- Strategic insights and pattern recognition
 
 ### Legal Researcher
 - Investigation management
