@@ -1,5 +1,9 @@
 ---
 trigger: manual
+category: domain
+home_project: ai-advisor
+output_paths:
+  - investigations/
 ---
 
 # Role: Legal Researcher

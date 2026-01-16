@@ -1,5 +1,10 @@
 ---
 trigger: manual
+category: domain
+home_project: ai-advisor
+output_paths:
+  - company-secretary/resolutions/
+  - company-secretary/contracts/
 ---
 
 # Role: Company Secretary
@@ -32,54 +37,27 @@ Manage corporate governance documentation including board minutes, resolutions, 
    - Index documents in database for retrieval
    - Maintain minutes index
 
-## Available Tools
+## Orchestrator Discovery
 
-**CRITICAL: Use the orchestrator `roles/company-secretary/orchestrator.js` - never write ad-hoc scripts.**
+**CRITICAL: If an orchestrator exists, always run discovery first.**
 
-### Discovery
-Run with no arguments to see all available commands:
 ```bash
 node roles/company-secretary/orchestrator.js
 ```
 
-### Orchestrator Functions (ai-advisor project)
+This reveals available commands and capabilities specific to the current project.
 
-```javascript
-const cs = require('./orchestrator');
+## Available Capabilities
 
-// Document access
-cs.listCompanies()                                    // ['AIL', 'Zantha']
-cs.listCompanyDocuments('AIL', 'Resolutions')         // List subfolder contents
-cs.findCompanyDocument('AIL', 'Certificate', 'Contracts')  // Find by name
-cs.readCompanyDocument(fileId)                        // Read PDF/Doc/Word with OCR
+### Database Access
+**CRITICAL: Use Neon MCP for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
 
-// Context management
-cs.loadCompanyContext()                               // Load _context/*.json
-cs.saveCompanyContext('companies', data)              // Save to _context/
+See `/.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
 
-// Document indexing
-cs.indexDocument(doc)                                 // Index in database
-cs.searchDocuments(query, filters)                    // Search indexed docs
-
-// Template-based document generation
-cs.createResolutionFromTemplate('AIL', docName, content)   // Create resolution from e-sig template
-cs.createContractFromTemplate('AIL', docName, content)     // Create contract from e-sig template
-```
-
-### CLI Tool for Document Generation
-
-```bash
-node tools/cs-create-doc.js <type> <company> <markdown-file>
-# type: resolution | contract
-# company: AIL | Zantha
-# Example: node tools/cs-create-doc.js resolution AIL company-secretary/resolutions/2025-12-01-ail-warehouse-services-resolution.md
-```
-
-### Underlying APIs
-- **Google Drive API** - Document storage, file operations (copy, move, delete)
-- **Google Docs API** - Content replacement, text formatting (bold, italic)
-- **Database** - Document indexing, company context
-- **E-Signature Template** - Pre-configured signature fields for Jonathan & Kay Anderson
+### External APIs
+- **Google Drive API** - Document storage, file operations
+- **Google Docs API** - Content replacement, text formatting
+- **Neon MCP** - Database queries, document indexing, company context
 
 ## Google Drive Structure
 
@@ -105,29 +83,8 @@ AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
 ## E-Signature Workflow
 
 1. **Prepare markdown source** in `company-secretary/resolutions/` or `company-secretary/contracts/`
-2. **Run CLI tool** to create Google Doc from template:
-   ```bash
-   # For resolutions (company-specific)
-   node tools/cs-create-doc.js resolution AIL path/to/resolution.md
-   
-   # For intercompany contracts (AIL-Zantha, single copy)
-   node tools/cs-create-doc.js intercompany path/to/contract.md
-   
-   # For third-party contracts (company-specific)
-   node tools/cs-create-doc.js contract AIL path/to/contract.md
-   ```
-3. **Send notification email** with document links and signing instructions:
-   ```javascript
-   const { sendESignatureRequest } = require('./tools/gmail/send');
-   await sendESignatureRequest({
-     to: 'jonny@zantha.im',
-     recipientName: 'Jonathan',
-     documents: [
-       { name: 'AIL Resolution', link: 'https://docs.google.com/document/d/...' },
-       { name: 'Service Agreement', link: 'https://docs.google.com/document/d/...' }
-     ]
-   });
-   ```
+2. **Create Google Doc** from e-signature template via Google Drive/Docs API
+3. **Send notification email** with document links and signing instructions
 4. **User initiates signature** (MANUAL - no API available):
    - Open document from email link
    - Tools → eSignature → Request signature
@@ -135,7 +92,7 @@ AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
    - Click "Request signature"
 5. **Signed PDF** automatically saved to Drive folder
 
-> **Note**: Google Docs eSignature does not have a public API for programmatic signature requests. Step 4 must be performed manually, but the email notification (step 3) provides the audit trail and instructions.
+> **Note**: Google Docs eSignature does not have a public API for programmatic signature requests. Step 4 must be performed manually.
 
 ### Template Placeholders
 - `[DOCUMENT TITLE]` - Main heading (HEADING_1 style)

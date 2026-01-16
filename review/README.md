@@ -11,7 +11,7 @@ Self-contained code review tooling located in `.windsurf/review/`. All dependenc
 
 ## Quick start
 For first-time setup, see repo `README.md` → Quick start:
-- Run workflow: `/subtree-pull` (Bootstrap), then `/subtree-npm`.
+- Run workflow: `/subtree-pull` (Bootstrap), then `cmd /c npm --prefix .windsurf\review ci`.
 
 ## Running (Windows cmd)
 From repo root (preferred, using `--prefix`):
@@ -65,7 +65,6 @@ Failure handling
     ```cmd
     cmd /c npm --prefix .windsurf\review ci
     ```
-  - Or run workflow: `/subtree-npm`
 
 ## Report output and schema
 

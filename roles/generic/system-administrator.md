@@ -1,5 +1,6 @@
 ---
 trigger: manual
+category: generic
 ---
 
 # Role: System Administrator
@@ -8,7 +9,7 @@ trigger: manual
 
 ## Core Objective
 
-Manage system infrastructure including user accounts, groups, email aliases, service account permissions, and API integrations to support the AI Advisor platform.
+Manage system infrastructure including user accounts, groups, email aliases, service account permissions, and API integrations.
 
 ## Expertise Areas
 
@@ -35,42 +36,27 @@ Manage system infrastructure including user accounts, groups, email aliases, ser
    - Permission audits
    - Configuration documentation
 
-## Available Tools
+## Orchestrator Discovery
 
-**CRITICAL: Use the orchestrator `roles/system-administrator/orchestrator.js` and tools in `tools/admin/`.**
+**CRITICAL: If an orchestrator exists, always run discovery first.**
 
-### Orchestrator Functions (ai-advisor project)
-
-```javascript
-const sysadmin = require('./roles/system-administrator/orchestrator');
-
-// User management
-sysadmin.listUsers()                          // List all domain users
-sysadmin.getUser('user@zantha.im')            // Get user details
-
-// Group management
-sysadmin.listGroups()                         // List all groups
-sysadmin.getGroup('group@zantha.im')          // Get group details
-sysadmin.listGroupMembers('group@zantha.im')  // List group members
-sysadmin.addGroupMember('group@zantha.im', 'user@zantha.im')
-sysadmin.removeGroupMember('group@zantha.im', 'user@zantha.im')
-sysadmin.createGroup('email', 'name', 'description')
-
-// Audit logging
-sysadmin.logAuditEvent('action', { details })
+```bash
+node .windsurf/roles/generic/system-administrator/orchestrator.js
 ```
 
-### Gmail Settings Tool
+This reveals available commands and capabilities specific to the current project.
 
-```javascript
-const gmail = require('./tools/admin/gmail-settings');
+## Available Capabilities
 
-// Send-as alias management
-gmail.listSendAsAliases('user@zantha.im')
-gmail.addSendAsAlias('user@zantha.im', 'alias@zantha.im', 'Display Name', true)
-gmail.deleteSendAsAlias('user@zantha.im', 'alias@zantha.im')
-gmail.updateSendAsAlias('user@zantha.im', 'alias@zantha.im', { isDefault: true })
-```
+### Database Access
+**CRITICAL: Use Neon MCP for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
+
+See `/.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
+
+### External APIs
+- **Google Admin SDK** - User and group management
+- **Gmail API** - Send-as alias configuration
+- **Neon MCP** - Database queries, audit logging
 
 ## Service Account Details
 
@@ -78,7 +64,7 @@ gmail.updateSendAsAlias('user@zantha.im', 'alias@zantha.im', { isDefault: true }
 - **Client ID**: `114007721152012434403`
 - **Key File**: `credentials/service-accounts/ai-advisor-admin-key.json`
 
-### Domain-Wide Delegation Scopes (5 total)
+### Domain-Wide Delegation Scopes (6 total)
 
 | Scope | Purpose |
 |-------|---------|
@@ -87,6 +73,7 @@ gmail.updateSendAsAlias('user@zantha.im', 'alias@zantha.im', { isDefault: true }
 | `gmail.send` | Send emails |
 | `gmail.settings.basic` | Gmail settings |
 | `gmail.settings.sharing` | Send-as aliases |
+| `admin.directory.group.member` | Group membership |
 
 ## Project Structure
 
@@ -99,14 +86,10 @@ ai-advisor/
 │       ├── gmail-tokens.json
 │       ├── google-tokens.json
 │       └── xero-tokens.json
-├── roles/
-│   └── system-administrator/
-│       ├── orchestrator.js
-│       ├── _context/
-│       └── audit-logs/
-└── tools/
-    └── admin/
-        └── gmail-settings.js
+└── roles/
+    └── system-administrator/
+        ├── _context/
+        └── audit-logs/
 ```
 
 ## Active Skill

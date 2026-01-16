@@ -15,7 +15,7 @@ description: Database tooling protocol. Use Neon MCP as the exclusive tool for s
 
 ## Exclusive Tool: Neon MCP
 
-**Use Neon MCP tools for ALL database operations. Do NOT use schema-query.js.**
+**Use Neon MCP tools for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
 
 ### Discovery
 Use `mcp1_list_projects` to find the project ID, then `mcp1_describe_project` for branch/database details.
@@ -102,15 +102,4 @@ Need database info?
 - Ensure `pg_stat_statements` extension is installed before using `mcp1_list_slow_queries`
 - Allow 24-48h of normal app usage after enabling for meaningful slow query results
 
----
 
-## Deprecated: schema-query.js
-
-**WARNING DEPRECATED:** The `.windsurf/tools/schema-query.js` tool is deprecated and should NOT be used.
-
-All functionality previously provided by schema-query.js is now available through Neon MCP:
-- Schema inspection -> `mcp1_describe_table_schema`, `mcp1_describe_branch`
-- SQL execution -> `mcp1_run_sql`, `mcp1_run_sql_transaction`
-- Table listing -> `mcp1_get_database_tables`
-
-If you find yourself reaching for schema-query.js, use the equivalent MCP tool instead.

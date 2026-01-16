@@ -3,10 +3,12 @@
 Portable developer tooling and documentation shared across Windsurf projects. The `.windsurf/` folder is managed as a Git subtree pointing to an independent repository so that improvements can be pushed from one project and pulled into others without coupling main project history.
 
 What this contains:
-- `.windsurf/review/`: review tooling (ESLint, TypeScript, Knip, JSCPD, unified analyzer)
+- `.windsurf/tools/`: reusable tool modules (Google APIs, PDF processing)
+- `.windsurf/roles/`: role definitions (generic and domain-specific)
+- `.windsurf/skills/`: detailed procedures for each role
 - `.windsurf/workflows/`: common workflows and runbooks
-- `.windsurf/guides/`: guides and reference docs
-- `.windsurf/tools/`: utility scripts
+- `.windsurf/rules/`: conditional rules for specific contexts
+- `.windsurf/review/`: review tooling (ESLint, TypeScript, Knip, JSCPD)
 
 Policy and intent:
 - Treat `.windsurf/` as a portable, shared subtree. Make improvements here, publish them upstream to the subtree repo, and consume them in other projects via subtree pulls.
@@ -20,7 +22,6 @@ Repository source (upstream of this subtree):
 
 - New project (no `.windsurf/` yet):
   - Bootstrap manually (commands in Section 1 below)
-  - After bootstrap, workflows become available; you can run `/subtree-npm` to install local npm deps
 
 - Existing project (already has `.windsurf/`):
   - Run workflow: `/subtree-pull` (Update existing installation)
@@ -35,23 +36,35 @@ cmd /c git subtree add --prefix=.windsurf windsurf_subtree main --squash
 cmd /c npm --prefix .windsurf\review ci
 ```
 
-Quick verification:
-```cmd
-cmd /c node .windsurf\tools\schema-query.js --help
-```
-
 After bootstrap:
 - Workflows are now available under `.windsurf/workflows/`.
-- You can run `/subtree-npm` if you didn’t already run the npm install step above.
+- Read `.windsurf/tools/README.md` for available tool modules and extension patterns.
 
-## 2) Everyday use with workflows
+## 2) Using Roles
+
+Activate a role via its workflow (e.g., `/company-secretary`, `/senior-developer`). The workflow will:
+1. Load the role definition from `.windsurf/roles/`
+2. Update database state (if applicable)
+3. Load the associated skill for detailed procedures
+4. **Discover orchestrator** (if one exists in the project)
+
+### Role Categories
+
+| Category | Description | Examples |
+|----------|-------------|----------|
+| **Generic** | Portable across any project | `senior-developer`, `system-administrator` |
+| **Domain** | Project-specific output paths | `company-secretary`, `legal-researcher` |
+
+### Creating Project-Specific Tools
+
+See `.windsurf/rules/tool-extension.md` for patterns on:
+- Creating a bridge module (`tools/google-client.js`)
+- Building role orchestrators with CLI discovery
+- Using shared tools without duplicating API wrapper logic
+
+## 3) Everyday use with workflows
 
 Once the project contains `.windsurf/workflows/`, use these:
-
-- Subtree push (publish your local `.windsurf/` improvements upstream)
-  - See: `.windsurf/workflows/subtree-push.md`
-  - Summary:
-    - Splits `.windsurf/` into a branch and pushes it to the subtree repo
 
 - Subtree pull (bring down latest upstream improvements into this project)
   - See: `.windsurf/workflows/subtree-pull.md`
