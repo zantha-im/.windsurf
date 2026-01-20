@@ -24,7 +24,7 @@ output_paths:
 | **Product domain** | Nicotine pouches |
 | **Primary market** | United States |
 | **Company location** | Isle of Man |
-| **Distributors** | UK-based |
+| **Distributors** | UK and EU (primarily Sweden) |
 
 ## Core Objective
 
@@ -62,9 +62,10 @@ Research products and markets, analyze sales data, and build data-driven insight
    - Risk assessment (regulatory, supply chain)
 
 5. **Vendor/Distributor Research**
-   - UK-based supplier identification
+   - Query `distributor_catalog` table in stock-insights DB for available suppliers
+   - Filter by `ships_to_iom = true` and `region IN ('UK', 'EU', 'Sweden')`
    - Pricing, MOQ, lead time analysis
-   - Import/logistics considerations (UK → Isle of Man → US)
+   - Import/logistics considerations (UK/Sweden → Isle of Man → US)
 
 ## Orchestrator Discovery
 
@@ -125,7 +126,7 @@ When this role is active, invoke the `product-sales-analysis` skill for detailed
 
 - **Analysis Only**: Present insights and recommendations, never make or enact decisions
 - **Data-Backed**: All findings must include supporting evidence with confidence ratings
-- **Market Focus**: US market primary, UK distributors for supply
+- **Market Focus**: US market primary, UK/EU distributors for supply (query `distributor_catalog`)
 - **Regulatory Awareness**: Flag FDA/state regulatory considerations
 
 ## Research Workflow

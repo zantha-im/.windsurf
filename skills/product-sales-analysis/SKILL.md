@@ -153,16 +153,48 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
 
 ## Vendor Research Procedure
 
-### UK Distributor Evaluation
-1. Identify potential UK-based suppliers
-2. Request pricing, MOQ, lead times
-3. Assess reliability (reviews, references)
-4. Document import/logistics considerations
+### Distributor Catalog
+
+The `distributor_catalog` table in stock-insights DB contains verified distributors. Always query this first:
+
+```sql
+-- Find distributors that ship to Isle of Man
+SELECT name, website, region, price_per_can_min, brands_carried
+FROM distributor_catalog
+WHERE ships_to_iom = true 
+  AND region IN ('UK', 'EU', 'Sweden')
+ORDER BY price_per_can_min;
+
+-- Find distributors carrying a specific brand
+SELECT name, website, price_per_can_min, bulk_price_per_can
+FROM distributor_catalog
+WHERE 'ZYN' = ANY(brands_carried)
+  AND ships_to_iom = true;
+```
+
+### Regional Product Availability
+
+**CRITICAL:** Product availability varies by region. The same brand may have different flavors in different markets:
+
+| Region | Example Differences |
+|--------|--------------------|
+| **US** | ZYN Wintergreen, Coffee, Cinnamon |
+| **Sweden/EU** | ZYN Apple Mint, Bellini/Peach, higher strengths (11-20mg) |
+| **UK** | Limited ZYN range (~6 flavors), max 6mg typical |
+
+Always verify regional availability before recommending a product.
+
+### Distributor Evaluation
+1. Query `distributor_catalog` for suppliers in target region
+2. Verify product availability (regional flavor differences)
+3. Compare pricing, MOQ, lead times
+4. Assess reliability (data_quality field, verified_at date)
+5. Document import/logistics considerations
 
 ### Comparison Matrix
-| Supplier | Price/Unit | MOQ | Lead Time | Notes |
-|----------|------------|-----|-----------|-------|
-| [Name]   | £X.XX      | X   | X weeks   | [Notes] |
+| Supplier | Region | Price/Can | Bulk Price | Ships to IoM | Notes |
+|----------|--------|-----------|------------|--------------|-------|
+| [Name]   | [Region] | €X.XX   | €X.XX      | Yes/No       | [Notes] |
 
 ## Output Checklist
 
