@@ -259,6 +259,11 @@ const messages = await gmail.searchMessages('from:user@example.com after:2024/01
 const message = await gmail.getMessage(messageId);
 const headers = await gmail.getMessageHeaders(messageId);
 const { text, html } = await gmail.getMessageBody(messageId);
+
+// Attachments
+const attachments = await gmail.getAttachments(messageId);
+// Returns: [{ id, filename, mimeType, size }, ...]
+const buffer = await gmail.downloadAttachment(messageId, attachmentId);
 ```
 
 ### Admin SDK (`tools/google/admin.js`)

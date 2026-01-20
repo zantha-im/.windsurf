@@ -67,6 +67,12 @@ Research products and markets, analyze sales data, and build data-driven insight
    - Pricing, MOQ, lead time analysis
    - Import/logistics considerations (UK/Sweden → Isle of Man → US)
 
+6. **Price List Integration**
+   - Extract pricing from email attachments (PDF via orchestrator)
+   - Scrape login-protected sites (Chrome DevTools MCP)
+   - Store in `distributor_prices` table, map to `canonical_products`
+   - Cross-distributor comparison via `v_price_comparison` and `v_best_prices` views
+
 ## Orchestrator Discovery
 
 **CRITICAL: If an orchestrator exists, always run discovery first.**
