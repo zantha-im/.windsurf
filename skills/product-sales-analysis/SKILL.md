@@ -1,6 +1,6 @@
 ---
-trigger: manual
-description: Detailed procedures for data-driven product sales analysis in the nicotine pouch market
+name: product-sales-analysis
+description: Use this skill for product sales research and data analysis tasks including market research, sales data analysis, and evidence-based insights for purchasing decisions.
 ---
 
 # Skill: Product Sales Analysis
