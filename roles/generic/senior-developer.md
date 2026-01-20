@@ -50,9 +50,16 @@ This reveals available commands and capabilities specific to the current project
 ## Available Capabilities
 
 ### Database Access
-**CRITICAL: Use Neon MCP for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
+**CRITICAL: Use Neon MCP for ALL database operations. Ad-hoc scripts for database access are strictly prohibited.**
 
-See `/.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
+**Connection verification (required before any DB work):**
+1. Run `mcp1_list_projects` to confirm MCP connection
+2. Run `mcp1_describe_project` with the target projectId
+3. Confirm to user: "Connected to Neon project: **[project name]**"
+
+If connection fails, do NOT fall back to scripts - inform the user that MCP connection is required.
+
+See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ### Code Analysis
 - Use project's linting and type-checking tools

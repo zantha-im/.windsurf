@@ -8,82 +8,46 @@ description: Database tooling protocol. Use Neon MCP as the exclusive tool for s
 
 ## When this rule applies
 - Any task involving database schema inspection, queries, migrations, or performance tuning
-- When the AI needs to understand table structures, relationships, or constraints
-- When executing SQL statements or transactions
 
 ---
 
-## Exclusive Tool: Neon MCP
+## First Step: Verify Connection
 
-**Use Neon MCP tools for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
+**Before ANY database operation, you MUST:**
 
-### Discovery
-Use `mcp1_list_projects` to find the project ID, then `mcp1_describe_project` for branch/database details.
+1. Run `mcp1_list_projects` to confirm MCP is connected and retrieve available projects
+2. Run `mcp1_describe_project` with the target `projectId` to get database/branch details
+3. **Confirm to the user:** "Connected to Neon project: **[project name]**"
 
-### Available MCP Tools
+If `mcp1_list_projects` fails, the Neon MCP server is not connected. Do NOT fall back to scripts - inform the user that MCP connection is required.
 
-| Tool | Purpose |
-|------|---------|
-| `mcp1_list_projects` | List available Neon projects |
-| `mcp1_describe_project` | Get project details (branches, endpoints) |
-| `mcp1_describe_branch` | Tree view of all objects (databases, schemas, tables, views, functions) |
-| `mcp1_describe_table_schema` | Detailed schema for a specific table |
-| `mcp1_get_database_tables` | List all tables in the database |
-| `mcp1_run_sql` | Execute a single SQL statement |
-| `mcp1_run_sql_transaction` | Execute multiple SQL statements as a transaction |
-| `mcp1_explain_sql_statement` | Get query execution plan (EXPLAIN ANALYZE) |
-| `mcp1_list_slow_queries` | Find slow queries via pg_stat_statements |
-| `mcp1_prepare_database_migration` | Create migration on temp branch for safe testing |
-| `mcp1_complete_database_migration` | Apply tested migration to main branch |
-| `mcp1_prepare_query_tuning` | Analyze and suggest index optimizations |
-| `mcp1_complete_query_tuning` | Apply tuning changes to main branch |
+---
 
-### Quick Start Examples
+## Core Constraint
 
-**Discover project:**
-`
-mcp1_list_projects to find projectId
-mcp1_describe_project with projectId to get branch details
-`
-
-**Get table details:**
-`
-mcp1_describe_table_schema with projectId, tableName
-`
-
-**Run a query:**
-`
-mcp1_run_sql with projectId, sql: "SELECT * FROM table_name LIMIT 10"
-`
-
-**Browse all tables:**
-`
-mcp1_get_database_tables with projectId
-`
+**Use Neon MCP tools for ALL database operations. Ad-hoc scripts for database access are strictly prohibited.**
 
 ---
 
 ## Decision Tree
 
-`
+```
 Need database info?
-+-- Schema inspection (tables, columns, relationships)
-|   +-- Use: mcp1_describe_table_schema or mcp1_describe_branch
-+-- List all tables
-|   +-- Use: mcp1_get_database_tables
-+-- Execute SQL query
-|   +-- Use: mcp1_run_sql (any result size)
-+-- Execute multiple SQL statements
-|   +-- Use: mcp1_run_sql_transaction
-+-- Database migration
-|   +-- Use: mcp1_prepare_database_migration -> test -> mcp1_complete_database_migration
-+-- Query performance
-|   +-- Explain plan -> Use: mcp1_explain_sql_statement
-|   +-- Find slow queries -> Use: mcp1_list_slow_queries
-|   +-- Index optimization -> Use: mcp1_prepare_query_tuning workflow
-+-- CRUD form generation
-    +-- Use: mcp1_describe_table_schema (inspect columns, constraints, foreign keys)
-`
+├── Schema inspection (tables, columns, relationships)
+│   └── Use: mcp1_describe_table_schema or mcp1_describe_branch
+├── List all tables
+│   └── Use: mcp1_get_database_tables
+├── Execute SQL query
+│   └── Use: mcp1_run_sql
+├── Execute multiple SQL statements
+│   └── Use: mcp1_run_sql_transaction
+├── Database migration
+│   └── Use: prepare → test → complete workflow (see below)
+└── Query performance
+    ├── Explain plan → mcp1_explain_sql_statement
+    ├── Find slow queries → mcp1_list_slow_queries
+    └── Index optimization → mcp1_prepare_query_tuning workflow
+```
 
 ---
 
@@ -101,5 +65,3 @@ Need database info?
 
 - Ensure `pg_stat_statements` extension is installed before using `mcp1_list_slow_queries`
 - Allow 24-48h of normal app usage after enabling for meaningful slow query results
-
-

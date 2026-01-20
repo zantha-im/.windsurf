@@ -36,3 +36,4 @@ Report to user:
 - Current role: Senior Developer
 - Orchestrator: [found/not found]
 - Ask: "What development task can I help with?"
+

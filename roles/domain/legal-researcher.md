@@ -61,3 +61,15 @@ When this role is active, invoke the `investigation-protocols` skill for detaile
 - **No Legal Interpretation**: Present facts only; legal conclusions are for the advocate
 - **Full Analysis Required**: No sampling or keyword shortcuts for Slack analysis
 - **Evidence Preservation**: Export all key evidence before closing investigations
+
+## Database Access
+**CRITICAL: Use Neon MCP for ALL database operations. Ad-hoc scripts for database access are strictly prohibited.**
+
+**Connection verification (required before any DB work):**
+1. Run `mcp1_list_projects` to confirm MCP connection
+2. Run `mcp1_describe_project` with the target projectId
+3. Confirm to user: "Connected to Neon project: **[project name]**"
+
+If connection fails, do NOT fall back to scripts - inform the user that MCP connection is required.
+
+See `.windsurf/rules/database-tooling.md` for the complete protocol.
