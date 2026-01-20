@@ -31,20 +31,14 @@ The orchestrator handles project-specific setup:
 
 If no orchestrator exists, use the role definition, skill procedures, and shared tools directly.
 
-## Step 5: Confirm Activation
+## Step 5: Verify Database Connection
+Run `mcp1_list_projects` to confirm Neon MCP is connected, then `mcp1_describe_project` with the target projectId.
+
+Report the connection status with the **project name** (not ID).
+
+## Step 6: Confirm Activation
 Report to user:
 - Current role: Legal Researcher
 - Orchestrator: [found/not found]
+- Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
 - Ask: "Which investigation should we focus on?"
-
-### Database Access
-**CRITICAL: Use Neon MCP for ALL database operations. Ad-hoc scripts for database access are strictly prohibited.**
-
-**Connection verification (required before any DB work):**
-1. Run `mcp1_list_projects` to confirm MCP connection
-2. Run `mcp1_describe_project` with the target projectId
-3. Confirm to user: "Connected to Neon project: **[project name]**"
-
-If connection fails, do NOT fall back to scripts - inform the user that MCP connection is required.
-
-See `.windsurf/rules/database-tooling.md` for the complete protocol.
