@@ -155,10 +155,36 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
 
 ### Distributor Catalog
 
-The `distributor_catalog` table in stock-insights DB contains verified distributors. Always query this first:
+The `distributor_catalog` table in stock-insights DB contains verified distributors and manufacturers. **Always query this first** before web searching for new suppliers.
+
+#### Table Schema
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `name` | TEXT | Distributor/manufacturer name |
+| `code` | TEXT | Short code (e.g., SNUSDADDY) |
+| `website` | TEXT | Primary website URL |
+| `region` | TEXT | Geographic region: UK, EU, Sweden, Denmark, Finland, etc. |
+| `country_code` | VARCHAR(2) | ISO country code (SE, GB, DK, etc.) |
+| `ships_to_iom` | BOOLEAN | Can ship to Isle of Man |
+| `ships_to_uk` | BOOLEAN | Can ship to UK |
+| `wholesale_available` | BOOLEAN | Offers B2B/wholesale pricing |
+| `brands_carried` | TEXT[] | Array of brand names (query with `ANY()`) |
+| `product_categories` | TEXT[] | Array: nicotine_pouches, snus, vapes, etc. |
+| `price_per_can_min` | NUMERIC | Minimum price per can (EUR) |
+| `price_per_can_max` | NUMERIC | Maximum price per can (EUR) |
+| `bulk_discount_threshold` | INTEGER | Quantity for bulk pricing |
+| `bulk_price_per_can` | NUMERIC | Bulk discounted price |
+| `data_quality` | TEXT | Research confidence: HIGH, MEDIUM, LOW |
+| `verified_at` | TIMESTAMPTZ | When data was last verified |
+| `notes` | TEXT | Additional info (contains "MANUFACTURER" for factories) |
+| `source_url` | TEXT | Where data was sourced from |
+
+#### Common Queries
 
 ```sql
--- Find distributors that ship to Isle of Man
+-- Find all distributors that ship to Isle of Man
 SELECT name, website, region, price_per_can_min, brands_carried
 FROM distributor_catalog
 WHERE ships_to_iom = true 
@@ -170,7 +196,40 @@ SELECT name, website, price_per_can_min, bulk_price_per_can
 FROM distributor_catalog
 WHERE 'ZYN' = ANY(brands_carried)
   AND ships_to_iom = true;
+
+-- Find MANUFACTURERS (for private label/white label)
+SELECT name, website, region, notes
+FROM distributor_catalog
+WHERE notes LIKE '%MANUFACTURER%';
+
+-- Find wholesale-only suppliers
+SELECT name, website, region, data_quality
+FROM distributor_catalog
+WHERE wholesale_available = true
+ORDER BY region, name;
+
+-- Summary by region
+SELECT region, COUNT(*) as total,
+  COUNT(*) FILTER (WHERE wholesale_available) as wholesale,
+  COUNT(*) FILTER (WHERE notes LIKE '%MANUFACTURER%') as manufacturers
+FROM distributor_catalog
+GROUP BY region ORDER BY total DESC;
 ```
+
+#### Data Quality Ratings
+
+| Rating | Meaning | Action |
+|--------|---------|--------|
+| **HIGH** | Verified directly with distributor | Use with confidence |
+| **MEDIUM** | Data from website/e-commerce | Verify before ordering |
+| **LOW** | Unverified or limited info | Research further before use |
+
+#### Distinguishing Distributors vs Manufacturers
+
+- **Distributors**: Resell existing brands (ZYN, VELO, etc.)
+- **Manufacturers**: Produce pouches, offer private label/white label
+
+Check the `notes` field — manufacturers contain "MANUFACTURER" keyword.
 
 ### Regional Product Availability
 
@@ -188,8 +247,26 @@ Always verify regional availability before recommending a product.
 1. Query `distributor_catalog` for suppliers in target region
 2. Verify product availability (regional flavor differences)
 3. Compare pricing, MOQ, lead times
-4. Assess reliability (data_quality field, verified_at date)
+4. Assess reliability (`data_quality` field, `verified_at` date)
 5. Document import/logistics considerations
+
+### Adding New Distributors
+
+When discovering new distributors via web research, add them to the catalog:
+
+```sql
+INSERT INTO distributor_catalog (
+  name, code, website, region, country_code,
+  ships_to_iom, ships_to_uk, wholesale_available,
+  brands_carried, product_categories,
+  verified_at, data_quality, notes, source_url
+) VALUES (
+  'Distributor Name', 'CODE', 'https://example.com', 'Sweden', 'SE',
+  true, true, true,
+  ARRAY['ZYN', 'VELO'], ARRAY['nicotine_pouches'],
+  NOW(), 'MEDIUM', 'Notes about this distributor', 'https://source-url.com'
+);
+```
 
 ### Comparison Matrix
 | Supplier | Region | Price/Can | Bulk Price | Ships to IoM | Notes |
