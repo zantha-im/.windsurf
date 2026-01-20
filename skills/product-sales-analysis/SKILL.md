@@ -7,15 +7,24 @@ description: Use this skill for product sales research and data analysis tasks i
 
 This skill provides detailed procedures for the Sales Analyst role.
 
+## Research Workflow
+
+**CRITICAL - Follow this sequence before any recommendation:**
+
+1. **Market demand analysis** - Research sales data, trends, consumer demand
+2. **Sourcing feasibility check** - Verify product can actually be sourced (suppliers, availability, pricing)
+3. **Final recommendation** - Only after both steps are complete
+
 ## Behavioral Rules
 
 **CRITICAL - Follow these rules in order:**
 
 1. **Don't jump to recommendations** - Research and discover data FIRST
-2. **Cite actual sales data** - Not editorial opinions or rankings
-3. **Cross-reference multiple sources** - Validate findings across independent data
-4. **Be honest about data gaps** - State clearly what data was NOT found
-5. **Document confidence levels** - Every claim needs an evidence quality rating (HIGH/MEDIUM/LOW)
+2. **Verify sourcing before recommending** - Never recommend a product without confirming it can be sourced
+3. **Cite actual sales data** - Not editorial opinions or rankings
+4. **Cross-reference multiple sources** - Validate findings across independent data
+5. **Be honest about data gaps** - State clearly what data was NOT found
+6. **Document confidence levels** - Every claim needs an evidence quality rating (HIGH/MEDIUM/LOW)
 
 ## Data Source Hierarchy
 
