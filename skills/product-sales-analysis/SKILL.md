@@ -1,11 +1,11 @@
 ---
 trigger: manual
-description: Detailed procedures for data-driven procurement analysis in the nicotine pouch market
+description: Detailed procedures for data-driven product sales analysis in the nicotine pouch market
 ---
 
-# Skill: Purchase Analyst
+# Skill: Product Sales Analysis
 
-This skill provides detailed procedures for the Purchase Manager role.
+This skill provides detailed procedures for the Sales Analyst role.
 
 ## Data Source Discovery
 
@@ -42,7 +42,7 @@ This skill provides detailed procedures for the Purchase Manager role.
 3. Assess demand signals (search trends, social mentions)
 
 ### Step 4: Document Findings
-1. Create research summary in `purchase-manager/research/`
+1. Create research summary in `sales-analyst/research/`
 2. Include data sources and confidence levels
 3. Flag any regulatory considerations
 
@@ -83,7 +83,7 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
 <body>
   <h1>[Report Title]</h1>
   <p><strong>Date:</strong> [Date]</p>
-  <p><strong>Prepared by:</strong> Purchase Manager (AI-assisted)</p>
+  <p><strong>Prepared by:</strong> Sales Analyst (AI-assisted)</p>
   
   <h2>Executive Summary</h2>
   <p>[Summary]</p>
@@ -93,8 +93,8 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
     <canvas id="chart1"></canvas>
   </div>
   
-  <h2>Recommendation</h2>
-  <p>[Recommendation with supporting evidence]</p>
+  <h2>Findings</h2>
+  <p>[Key findings with supporting evidence]</p>
   
   <h2>Data Sources</h2>
   <ul>
@@ -105,15 +105,15 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
 </html>
 ```
 
-## Purchase Justification Procedure
+## Insight Generation Procedure
 
 ### Required Elements
 1. **Product identification** - Brand, SKU, specifications
 2. **Market opportunity** - Size, growth, demand signals
-3. **Financial analysis** - Cost, margin, ROI projection
+3. **Financial analysis** - Cost, margin, potential ROI
 4. **Competitive landscape** - How this fills a gap
 5. **Risk assessment** - Regulatory, supply chain, market risks
-6. **Recommendation** - Clear action with confidence level
+6. **Insight summary** - Clear findings with confidence level
 
 ### Confidence Levels
 - **High**: Multiple corroborating data sources, strong market signals
@@ -135,10 +135,10 @@ Use Neon MCP `mcp1_run_sql` for all database queries.
 
 ## Output Checklist
 
-Before finalizing any recommendation:
+Before finalizing any analysis:
 - [ ] Data sources cited with dates
 - [ ] Confidence level stated
 - [ ] Regulatory considerations flagged
-- [ ] Financial projections included
+- [ ] Financial projections included (where applicable)
 - [ ] Risks identified
-- [ ] Clear recommendation (or options) for human decision
+- [ ] Clear findings for human decision-makers

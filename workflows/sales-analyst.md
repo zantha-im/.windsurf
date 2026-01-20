@@ -1,17 +1,17 @@
 ---
-description: Activate Purchase Manager role for data-driven procurement analysis
+description: Activate Sales Analyst role for data-driven product sales analysis
 ---
 
-# Purchase Manager Role Activation
+# Sales Analyst Role Activation
 
 ## Step 1: Read Role Definition
 Read the role definition file:
-- `/.windsurf/roles/domain/purchase-manager.md`
+- `/.windsurf/roles/domain/sales-analyst.md`
 
 This is a **domain role** with project-specific output paths. Check the `home_project` and `output_paths` in the frontmatter.
 
 ## Step 2: Load Skill
-Invoke the `purchase-analyst` skill to load detailed procedures.
+Invoke the `product-sales-analysis` skill to load detailed procedures.
 
 ## Step 3: Discover Tools
 Read the tool documentation:
@@ -19,9 +19,9 @@ Read the tool documentation:
 - `/.windsurf/rules/tool-extension.md` - Patterns for creating project-specific tools
 
 ## Step 4: Discover Orchestrator
-**If an orchestrator exists** at `roles/purchase-manager/orchestrator.js`, run discovery:
+**If an orchestrator exists** at `roles/sales-analyst/orchestrator.js`, run discovery:
 ```bash
-node roles/purchase-manager/orchestrator.js
+node roles/sales-analyst/orchestrator.js
 ```
 
 The orchestrator handles project-specific setup:
@@ -37,7 +37,7 @@ Report the connection status with the **project name** (not ID).
 
 ## Step 6: Confirm Activation
 Report to user:
-- Current role: Purchase Manager
+- Current role: Sales Analyst
 - Orchestrator: [found/not found]
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
 - Domain: Nicotine pouches, US market, UK distributors
