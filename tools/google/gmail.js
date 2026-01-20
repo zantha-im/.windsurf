@@ -139,6 +139,58 @@ function createGmailClient(auth) {
       return response.data;
     },
     
+    /**
+     * Get message attachments metadata
+     * @param {string} messageId - Message ID
+     * @returns {Promise<Array>} Array of attachment info {id, filename, mimeType, size}
+     */
+    async getAttachments(messageId) {
+      const message = await this.getMessage(messageId, 'full');
+      const attachments = [];
+      
+      function findAttachments(part) {
+        if (part.filename && part.body && part.body.attachmentId) {
+          attachments.push({
+            id: part.body.attachmentId,
+            filename: part.filename,
+            mimeType: part.mimeType,
+            size: part.body.size
+          });
+        }
+        if (part.parts) {
+          for (const subPart of part.parts) {
+            findAttachments(subPart);
+          }
+        }
+      }
+      
+      if (message.payload) {
+        findAttachments(message.payload);
+      }
+      
+      return attachments;
+    },
+    
+    /**
+     * Download an attachment
+     * @param {string} messageId - Message ID
+     * @param {string} attachmentId - Attachment ID
+     * @returns {Promise<Buffer>} Attachment data as Buffer
+     */
+    async downloadAttachment(messageId, attachmentId) {
+      const response = await gmail.users.messages.attachments.get({
+        userId: 'me',
+        messageId,
+        id: attachmentId
+      });
+      
+      // Decode base64url to Buffer
+      const data = response.data.data
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      return Buffer.from(data, 'base64');
+    },
+    
     // Expose raw client for advanced operations
     raw: gmail
   };
