@@ -25,7 +25,7 @@ cmd /c git fetch windsurf_subtree
 
 3) Pull updates into `.windsurf/` using subtree with squash
 // turbo
-cmd /c git subtree pull --prefix=.windsurf windsurf_subtree main --squash
+cmd /c git subtree pull --prefix=.windsurf windsurf_subtree main --squash -m "Update .windsurf subtree"
 
 Notes:
 - `--squash` keeps the main repo history clean while updating only `.windsurf/` files.
