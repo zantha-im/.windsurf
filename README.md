@@ -1,6 +1,6 @@
 # .windsurf Subtree
 
-Portable developer tooling and documentation shared across Windsurf projects. The `.windsurf/` folder is managed as a Git subtree pointing to an independent repository so that improvements can be pushed from one project and pulled into others without coupling main project history.
+This repository is a Git subtree containing portable developer tooling and documentation shared across Windsurf projects. The `.windsurf/` folder is managed as a Git subtree pointing to an independent repository so that improvements can be pushed from one project and pulled into others without coupling main project history.
 
 What this contains:
 - `.windsurf/tools/`: reusable tool modules (Google APIs, PDF processing)
