@@ -32,7 +32,6 @@ Manual bootstrap:
 cmd /c git remote add windsurf_subtree https://github.com/zantha-im/.windsurf.git
 cmd /c git fetch windsurf_subtree
 cmd /c git subtree add --prefix=.windsurf windsurf_subtree main --squash
-cmd /c npm --prefix .windsurf\review ci
 ```
 
 After bootstrap:
