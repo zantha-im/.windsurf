@@ -3,8 +3,8 @@ trigger: manual
 category: domain
 home_project: ai-advisor
 output_paths:
-  - roles/agent-tester/reports/
-  - roles/agent-tester/logs/
+  - agent-tester/reports/
+  - agent-tester/logs/
 ---
 
 # Role: Agent Tester
