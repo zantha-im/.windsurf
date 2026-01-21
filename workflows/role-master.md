@@ -107,17 +107,13 @@ This is a **generic role** - used to create new roles following best practices.
 ## Step 3: Invoke Skill
 Use `@role-creation` to load detailed procedures for creating roles, skills, and workflows.
 
-## Step 4: Read Architecture Documentation
-Read the architecture reference:
-- `.windsurf/docs/architecture.md` - Complete architecture overview
-
-## Step 5: Review Existing Examples
+## Step 4: Review Existing Examples
 Familiarize yourself with existing patterns by reviewing:
 - `.windsurf/roles/domain/sales-analyst.md` - Example domain role (identity-focused)
 - `.windsurf/roles/generic/senior-developer.md` - Example generic role
 - `.windsurf/skills/product-sales-analysis/SKILL.md` - Example skill with workflow checklist
 
-## Step 6: Confirm Activation
+## Step 5: Confirm Activation
 Report to user:
 - Current role: Role Master
 - Workspace context: [Source project / Subtree - source added]

@@ -28,15 +28,67 @@ This skill guides the creation of new roles, skills, and workflows that follow t
 
 ---
 
-## Quick Reference
+## Architecture Overview
 
-| Component | Purpose | Location (in source repo) |
-|-----------|---------|---------------------------|
-| **Role** | Identity (WHO) | `.windsurf/roles/[domain\|generic]/` |
-| **Skill** | Procedures (HOW) | `.windsurf/skills/[skill-name]/` |
-| **Workflow** | Activation (WHEN) | `.windsurf/workflows/` |
+### Component Summary
 
-See `.windsurf/docs/architecture.md` for the complete architecture reference.
+| Component | Purpose | Location | Invocation |
+|-----------|---------|----------|------------|
+| **Role** | Identity (WHO) | `.windsurf/roles/[domain\|generic]/` | Read by workflow |
+| **Skill** | Procedures (HOW) | `.windsurf/skills/[skill-name]/` | `@skill-name` or automatic |
+| **Workflow** | Activation (WHEN) | `.windsurf/workflows/` | `/workflow-name` |
+| **Rule** | Constraints (MUST/MUST NOT) | `.windsurf/rules/` | Trigger-based |
+
+### How Components Work Together
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    ALWAYS ACTIVE                            │
+│  Rules (always_on): file-edit-safety, global constraints    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 CONTEXT-TRIGGERED                           │
+│  Rules (model_decision): database-tooling, git-workflow     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  ROLE ACTIVATION                            │
+│  /workflow-name → reads role → invokes @skill               │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  STANDALONE SKILLS                          │
+│  @tool-development (invoked when writing scripts)           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Separation of Concerns
+
+- **Role = Identity (WHO)** - Professional identity, principles, constraints, communication style. Keep concise (~50-80 lines).
+- **Skill = Procedures (HOW)** - Step-by-step workflows, checklists, templates, reference data. Can have supporting files.
+- **Rule = Constraints (MUST/MUST NOT)** - Behavioral guidelines that apply across conversations. Orthogonal to roles.
+- **Workflow = Activation (WHEN)** - Steps to load role, invoke skill, discover tools, verify connections.
+
+### Skill Invocation Methods
+
+| Method | How | When |
+|--------|-----|------|
+| **Automatic** | Cascade matches request to skill description | Progressive disclosure |
+| **Manual** | Type `@skill-name` in Cascade | Direct invocation |
+| **From Role** | Role references `Use @skill-name for...` | Role activation |
+
+### Rule Activation Modes
+
+| Mode | When Applied | Example |
+|------|--------------|---------|
+| **always_on** | Every conversation | `file-edit-safety.md` |
+| **model_decision** | Model decides based on description | `database-tooling.md` |
+| **glob** | Files matching pattern | `*.css` → css rules |
+| **manual** | Only via `@mention` | Rarely used |
 
 ---
 

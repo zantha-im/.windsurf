@@ -5,10 +5,9 @@ Portable developer tooling and documentation shared across Windsurf projects. Th
 What this contains:
 - `.windsurf/tools/`: reusable tool modules (Google APIs, PDF processing)
 - `.windsurf/roles/`: role definitions (generic and domain-specific)
-- `.windsurf/skills/`: detailed procedures for each role
-- `.windsurf/workflows/`: common workflows and runbooks
+- `.windsurf/skills/`: detailed procedures for each role (invoked via `@skill-name`)
+- `.windsurf/workflows/`: activation workflows and runbooks
 - `.windsurf/rules/`: conditional rules for specific contexts
-- `.windsurf/review/`: review tooling (ESLint, TypeScript, Knip, JSCPD)
 
 Policy and intent:
 - Treat `.windsurf/` as a portable, shared subtree. Make improvements here, publish them upstream to the subtree repo, and consume them in other projects via subtree pulls.
@@ -44,23 +43,38 @@ After bootstrap:
 
 Activate a role via its workflow (e.g., `/company-secretary`, `/senior-developer`). The workflow will:
 1. Load the role definition from `.windsurf/roles/`
-2. Update database state (if applicable)
-3. Load the associated skill for detailed procedures
-4. **Discover orchestrator** (if one exists in the project)
+2. Invoke the associated skill via `@skill-name` for detailed procedures
+3. Discover tools and orchestrator (if one exists in the project)
+4. Verify database connection (if applicable)
+
+### Available Roles
+
+| Role | Type | Skill | Workflow |
+|------|------|-------|----------|
+| Senior Developer | generic | — | `/senior-developer` |
+| System Administrator | generic | `@system-administration` | `/system-administrator` |
+| Role Master | generic | `@role-creation` | `/role-master` |
+| Company Secretary | domain | `@corporate-governance` | `/company-secretary` |
+| Legal Researcher | domain | `@investigation-protocols` | `/legal-researcher` |
+| Sales Analyst | domain | `@product-sales-analysis` | `/sales-analyst` |
 
 ### Role Categories
 
-| Category | Description | Examples |
-|----------|-------------|----------|
-| **Generic** | Portable across any project | `senior-developer`, `system-administrator` |
-| **Domain** | Project-specific output paths | `company-secretary`, `legal-researcher` |
+| Category | Description |
+|----------|-------------|
+| **Generic** | Portable across any project. Orchestrators live in this subtree. |
+| **Domain** | Project-specific output paths. Orchestrators live in consuming projects. |
+
+### Creating New Roles
+
+Use `/role-master` to create new roles, skills, and workflows following best practices.
 
 ### Creating Project-Specific Tools
 
 Use `@tool-development` skill for patterns on:
 - Creating a bridge module (`tools/google-client.js`)
 - Building role orchestrators with CLI discovery
-- Using shared tools without duplicating API wrapper logic
+- Converting one-off scripts into reusable tools
 
 ## 3) Everyday use with workflows
 
