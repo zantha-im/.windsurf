@@ -101,7 +101,7 @@ ai-advisor/
 
 ## Active Skill
 
-When this role is active, invoke the `system-administration` skill for detailed procedures.
+Use `@system-administration` for detailed procedures on user management, credentials, and API integrations.
 
 ## Communication Style
 

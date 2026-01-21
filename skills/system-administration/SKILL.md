@@ -1,6 +1,6 @@
 ---
 name: system-administration
-description: Use this skill for infrastructure management including Google Workspace administration, credentials management, service accounts, and API integrations.
+description: Manages infrastructure including Google Workspace users/groups, Gmail aliases, service accounts, domain-wide delegation, and credentials. Use when creating users, managing groups, configuring email aliases, rotating credentials, or setting up API integrations. Triggers on: Google Workspace, user management, group management, email alias, service account, DWD, credentials, API integration, admin console.
 ---
 
 # Orchestrator Discovery
@@ -15,11 +15,28 @@ This reveals available commands and capabilities specific to the current project
 
 ---
 
+# Admin Task Workflow
+
+Copy this checklist and track your progress:
+
+```
+Admin Task Progress:
+- [ ] Step 1: Verify current state (query existing config)
+- [ ] Step 2: Plan changes (document what will change)
+- [ ] Step 3: Execute changes (use appropriate API/tool)
+- [ ] Step 4: Verify changes (test new configuration)
+- [ ] Step 5: Log to audit trail (via Neon MCP)
+- [ ] Step 6: Update documentation (memories, role docs)
+- [ ] Step 7: Notify user of changes made
+```
+
+---
+
 # CRITICAL: Database Access
 
 **Use Neon MCP for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
 
-See `/.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
+See `.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
 
 ## External APIs
 

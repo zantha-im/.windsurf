@@ -6,7 +6,7 @@ description: Activate Senior Developer role for code quality and technical leade
 
 ## Step 1: Read Role Definition
 Read the role definition file:
-- `/.windsurf/roles/generic/senior-developer.md`
+- `.windsurf/roles/generic/senior-developer.md`
 
 This is a **generic role** - portable across any project.
 
@@ -15,8 +15,9 @@ This role does not have an associated skill. The orchestrator provides project-s
 
 ## Step 3: Discover Tools
 Read the tool documentation:
-- `/.windsurf/tools/README.md` - Available tool modules and API reference
-- `/.windsurf/rules/tool-extension.md` - Patterns for creating project-specific tools
+- `.windsurf/tools/README.md` - Available tool modules and API reference
+
+For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Run Orchestrator
 Run the base orchestrator to discover project capabilities:

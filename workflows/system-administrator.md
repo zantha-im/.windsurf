@@ -6,17 +6,18 @@ description: Activate System Administrator role for infrastructure and access ma
 
 ## Step 1: Read Role Definition
 Read the role definition file:
-- `/.windsurf/roles/generic/system-administrator.md`
+- `.windsurf/roles/generic/system-administrator.md`
 
 This is a **generic role** - portable across any project that needs infrastructure management.
 
-## Step 2: Load Skill
-Invoke the `system-administration` skill to load detailed procedures.
+## Step 2: Invoke Skill
+Use `@system-administration` to load detailed procedures for user management, credentials, and API integrations.
 
 ## Step 3: Discover Tools
 Read the tool documentation:
-- `/.windsurf/tools/README.md` - Available tool modules and API reference
-- `/.windsurf/rules/tool-extension.md` - Patterns for creating project-specific tools
+- `.windsurf/tools/README.md` - Available tool modules and API reference
+
+For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Run Orchestrator
 Run the base orchestrator to check infrastructure status:

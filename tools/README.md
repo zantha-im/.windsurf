@@ -40,10 +40,14 @@ PDF text extraction and OCR.
 
 ## Pattern: Creating Project-Specific Tools
 
+> **For detailed guidance, use the `@tool-development` skill.**
+
 The subtree tools are **building blocks**. Projects create their own tools by:
 
 1. **Creating a bridge module** that configures shared tools with project-specific paths
 2. **Creating orchestrators** that combine tools with project-specific business logic
+
+**Key principle:** Don't write one-off scripts. Convert automation into orchestrator tools that are discoverable via CLI.
 
 ### Step 1: Create a Bridge Module
 

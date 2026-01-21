@@ -6,17 +6,18 @@ description: Activate Legal Researcher role for investigations and evidence gath
 
 ## Step 1: Read Role Definition
 Read the role definition file:
-- `/.windsurf/roles/domain/legal-researcher.md`
+- `.windsurf/roles/domain/legal-researcher.md`
 
 This is a **domain role** with project-specific output paths. Check the `home_project` and `output_paths` in the frontmatter.
 
-## Step 2: Load Skill
-Invoke the `investigation-protocols` skill to load detailed procedures.
+## Step 2: Invoke Skill
+Use `@investigation-protocols` to load detailed procedures for evidence gathering, analysis, and advocate package creation.
 
 ## Step 3: Discover Tools
 Read the tool documentation:
-- `/.windsurf/tools/README.md` - Available tool modules and API reference
-- `/.windsurf/rules/tool-extension.md` - Patterns for creating project-specific tools
+- `.windsurf/tools/README.md` - Available tool modules and API reference
+
+For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Discover Orchestrator
 **If an orchestrator exists** at `roles/legal-researcher/orchestrator.js`, run discovery:

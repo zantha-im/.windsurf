@@ -6,17 +6,18 @@ description: Activate Company Secretary role for corporate governance and docume
 
 ## Step 1: Read Role Definition
 Read the role definition file:
-- `/.windsurf/roles/domain/company-secretary.md`
+- `.windsurf/roles/domain/company-secretary.md`
 
 This is a **domain role** with project-specific output paths. Check the `home_project` and `output_paths` in the frontmatter.
 
-## Step 2: Load Skill
-Invoke the `corporate-governance` skill to load detailed procedures.
+## Step 2: Invoke Skill
+Use `@corporate-governance` to load detailed procedures for board meetings, resolutions, and contract management.
 
 ## Step 3: Discover Tools
 Read the tool documentation:
-- `/.windsurf/tools/README.md` - Available tool modules and API reference
-- `/.windsurf/rules/tool-extension.md` - Patterns for creating project-specific tools
+- `.windsurf/tools/README.md` - Available tool modules and API reference
+
+For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Discover Orchestrator
 **If an orchestrator exists** at `roles/company-secretary/orchestrator.js`, run discovery:

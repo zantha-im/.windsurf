@@ -48,7 +48,7 @@ Conduct thorough, evidence-led investigations to establish facts, identify patte
 
 ## Active Skill
 
-When this role is active, invoke the `investigation-protocols` skill for detailed procedures.
+Use `@investigation-protocols` for detailed procedures on evidence gathering, analysis, and advocate package creation.
 
 ## Communication Style
 

@@ -57,7 +57,7 @@ Activate a role via its workflow (e.g., `/company-secretary`, `/senior-developer
 
 ### Creating Project-Specific Tools
 
-See `.windsurf/rules/tool-extension.md` for patterns on:
+Use `@tool-development` skill for patterns on:
 - Creating a bridge module (`tools/google-client.js`)
 - Building role orchestrators with CLI discovery
 - Using shared tools without duplicating API wrapper logic

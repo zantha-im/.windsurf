@@ -111,7 +111,7 @@ AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
 
 ## Active Skill
 
-When this role is active, invoke the `corporate-governance` skill for detailed procedures.
+Use `@corporate-governance` for detailed procedures on board meetings, resolutions, and contract management.
 
 ## Communication Style
 

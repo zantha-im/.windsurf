@@ -1,6 +1,6 @@
 ---
 name: corporate-governance
-description: Use this skill for company secretary tasks including board minutes, resolutions, contracts, and statutory registers.
+description: Manages corporate governance documents including board meeting minutes, written resolutions, contracts, and statutory registers. Use when preparing board meetings, drafting minutes, creating resolutions, managing contracts, or updating shareholder/director registers. Triggers on: board meeting, minutes, resolution, contract management, statutory register, company secretary, corporate governance, AGM.
 ---
 
 # Orchestrator Discovery
@@ -15,11 +15,41 @@ This reveals available commands and capabilities specific to the current project
 
 ---
 
+# Workflow Checklists
+
+## Board Meeting Workflow
+
+Copy this checklist and track your progress:
+
+```
+Board Meeting Progress:
+- [ ] Step 1: Prepare agenda (date, time, attendees, items)
+- [ ] Step 2: Gather supporting documents
+- [ ] Step 3: Record attendance and confirm quorum
+- [ ] Step 4: Document discussions and decisions
+- [ ] Step 5: Record resolutions (proposed by, seconded by, vote)
+- [ ] Step 6: Create minutes document via Google Docs API
+- [ ] Step 7: Index in database via Neon MCP
+```
+
+## Resolution Workflow
+
+```
+Resolution Progress:
+- [ ] Step 1: Determine resolution type (written vs board)
+- [ ] Step 2: Draft resolution text
+- [ ] Step 3: Identify required signatories
+- [ ] Step 4: Create document via Google Docs API
+- [ ] Step 5: Index in database via Neon MCP
+```
+
+---
+
 # CRITICAL: Database Access
 
 **Use Neon MCP for ALL database operations. NEVER write ad-hoc Node.js scripts for database access.**
 
-See `/.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
+See `.windsurf/rules/database-tooling.md` for the complete Neon MCP tool reference.
 
 ## Company Folder IDs (Google Drive)
 
