@@ -15,6 +15,16 @@ Execution rules:
 - Do not run any pre-flight checks (including `git status`) beyond the commands specified.
 
 Steps:
+
+0) Detect target project
+- Check the workspace for projects that have a `.windsurf/` subtree folder (not the `.windsurf` source repo itself).
+- A project is a subtree consumer if it has `.windsurf/` as a subfolder AND is NOT the `.windsurf` source repository (i.e., the folder is not the git root).
+- Exclude the `.windsurf` source repository from options (identified by being the git root of the `.windsurf` folder).
+- If exactly ONE subtree consumer project exists: use it automatically, no prompt needed.
+- If MULTIPLE subtree consumer projects exist: use `ask_user_question` tool to present options and let user select which project to update.
+- If NO subtree consumer projects exist: stop and inform user that no projects with `.windsurf` subtree were found.
+- Set the working directory (cwd) for all subsequent git commands to the selected project root.
+
 1) Ensure the subtree remote exists (no-op if already present)
 // turbo
 cmd /c git remote get-url windsurf_subtree || git remote add windsurf_subtree https://github.com/zantha-im/.windsurf.git
