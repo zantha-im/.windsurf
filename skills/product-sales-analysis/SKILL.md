@@ -7,6 +7,22 @@ description: Analyzes nicotine pouch market data, researches product sourcing fr
 
 Detailed procedures for the Sales Analyst role. Domain: nicotine pouches, US market, UK/EU distributors.
 
+---
+
+## CRITICAL: Output Location
+
+**All research files MUST be saved to the consuming project's role folder, NOT the `.windsurf/` subtree.**
+
+```
+[project-root]/
+├── roles/
+│   └── sales-analyst/
+│       ├── research/          # Market research documents
+│       ├── analysis/          # Data analysis reports
+│       └── recommendations/   # Purchase recommendations
+└── .windsurf/                 # Subtree - DO NOT write here
+```
+
 ## Research Workflow
 
 Copy this checklist and track your progress:

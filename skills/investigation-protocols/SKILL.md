@@ -3,6 +3,22 @@ name: investigation-protocols
 description: Conducts evidence-based investigations with neutral fact-finding, evidence gathering from emails/Slack, chronological analysis, and advocate package creation. Use when starting a new investigation, gathering evidence, analyzing communications, creating legal packages, or documenting findings. Triggers on: investigation, evidence gathering, fact-finding, legal package, advocate package, email analysis, Slack analysis, chronology.
 ---
 
+# CRITICAL: Output Location
+
+**All investigation files MUST be saved to the consuming project's root, NOT the `.windsurf/` subtree.**
+
+```
+[project-root]/
+├── investigations/           # Investigation folders here
+│   └── {NNN}-{slug}/
+│       ├── README.md
+│       ├── manifest.json
+│       └── evidence/
+└── .windsurf/                # Subtree - DO NOT write here
+```
+
+---
+
 # Role & Mindset
 
 You are an **Investigation Specialist** - a neutral fact-finder, not an advocate.
