@@ -52,25 +52,23 @@ read_file .windsurf/skills/css-audit/SKILL.md
 
 ## Step 4: Discovery - Quantify the Problem
 
-Run discovery commands to assess the scope:
+Use the `grep_search` tool to assess the scope. Do NOT use bash grep commands.
 
-// turbo
-```bash
-# Count inline styles in components
-grep -rc "style={{" components/ --include="*.tsx" 2>/dev/null | grep -v ":0$" | sort -t: -k2 -nr || echo "No inline styles in components/"
+**4.1 Find inline styles in components:**
+```
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
 ```
 
-// turbo
-```bash
-# Count inline styles in pages
-grep -rc "style={{" app/ --include="*.tsx" 2>/dev/null | grep -v ":0$" | sort -t: -k2 -nr || echo "No inline styles in app/"
+**4.2 Find inline styles in pages:**
+```
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
 ```
 
-// turbo
-```bash
-# Find empty CSS modules
-find . -name "*.module.css" -empty 2>/dev/null || echo "No empty CSS modules"
+**4.3 Find empty CSS modules:**
 ```
+find_by_name with Pattern="*.module.css" and SearchDirectory="." and Type="file"
+```
+Then check file sizes - any 0 byte files are empty.
 
 **Present findings to user:**
 - Total files with inline styles
@@ -79,18 +77,7 @@ find . -name "*.module.css" -empty 2>/dev/null || echo "No empty CSS modules"
 
 ---
 
-## Step 5: Create Audit Tracking Document
-
-Ask user: "Would you like me to create an audit tracking document at `plans/css-audit.md`?"
-
-If yes, create the document with:
-- Discovery summary
-- Files prioritized by inline style count
-- Status tracking table
-
----
-
-## Step 6: Triage and Prioritize
+## Step 5: Triage and Prioritize
 
 Categorize findings:
 
@@ -105,7 +92,7 @@ Present prioritized list to user and ask: "Which component would you like to sta
 
 ---
 
-## Step 7: Component Audit Loop
+## Step 6: Component Audit Loop
 
 For each component the user selects:
 
@@ -116,22 +103,23 @@ For each component the user selects:
 5. **Replace inline styles** with shared CSS classes
 6. **Protect imports** from formatter stripping
 7. **Verify zero inline styles:**
-   ```bash
-   grep -n "style={{" <component-path>
    ```
-8. **Update tracking document** with completion status
+   grep_search with Query="style={{" and SearchPath="<component-path>"
+   ```
+   Must return no matches.
 
 Repeat for each component until all are complete.
 
 ---
 
-## Step 8: Module Cleanup
+## Step 7: Module Cleanup
 
 After all components are fixed:
 
 1. **Identify CSS modules with duplicates:**
-   ```bash
-   grep -l "\.section\s*{" styles/*.module.css components/*.module.css 2>/dev/null
+   ```
+   grep_search with Query="\.section\s*\{" and SearchPath="styles/" and Includes=["*.module.css"]
+   grep_search with Query="\.section\s*\{" and SearchPath="components/" and Includes=["*.module.css"]
    ```
 
 2. **For each custom module:**
@@ -142,17 +130,18 @@ After all components are fixed:
 
 ---
 
-## Step 9: Final Verification
+## Step 8: Final Verification
 
-// turbo
-```bash
-# Must return nothing
-grep -rn "style={{" components/ app/ --include="*.tsx"
+**8.1 Verify zero inline styles:**
 ```
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+```
+Both must return no matches.
 
+**8.2 Build check:**
 // turbo
 ```bash
-# Build check
 npm run build
 ```
 
@@ -162,12 +151,3 @@ Report to user:
 - CSS modules cleaned up
 - Build status
 
----
-
-## Step 10: Documentation
-
-Update the audit tracking document with:
-- Completion date
-- Summary statistics
-- Any new patterns added to shared modules
-- Recommendations for preventing future drift

@@ -43,7 +43,6 @@ CSS Audit Stages:
 - [ ] Stage 4: Component Audit - Fix inline styles per component
 - [ ] Stage 5: Module Cleanup - Remove duplicate CSS classes
 - [ ] Stage 6: Verification - Confirm zero inline styles
-- [ ] Stage 7: Documentation - Update audit log
 ```
 
 ---
@@ -54,48 +53,27 @@ CSS Audit Stages:
 
 ### 1.1 Count Inline Styles
 
-```bash
+Use the `grep_search` tool (NOT bash grep):
+
+```
 # All components
-grep -rn "style={{" components/ --include="*.tsx" | wc -l
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
 
 # All pages
-grep -rn "style={{" app/ --include="*.tsx" | wc -l
-
-# List files with counts
-grep -rc "style={{" components/ --include="*.tsx" | grep -v ":0$" | sort -t: -k2 -nr
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
 ```
 
 ### 1.2 Identify CSS Module Issues
 
-```bash
-# Find empty CSS modules (0 bytes)
-find . -name "*.module.css" -empty
+```
+# Find CSS modules (check sizes for empty files)
+find_by_name with Pattern="*.module.css" and SearchDirectory="." and Type="file"
 
 # Find CSS modules with potential duplicates
-grep -l "\.section\s*{" styles/*.module.css components/*.module.css
+grep_search with Query="\.section\s*\{" and SearchPath="styles/" and Includes=["*.module.css"]
 
 # Check for duplicate @keyframes
-grep -rn "@keyframes spin" --include="*.module.css"
-```
-
-### 1.3 Create Audit Summary
-
-Document findings in a tracking file (e.g., `plans/css-audit.md`):
-
-```markdown
-# CSS Audit - [Date]
-
-## Discovery Summary
-- Total inline styles: X
-- Files with inline styles: Y
-- Empty CSS modules: Z
-- Modules with duplicates: W
-
-## Files by Inline Style Count
-| File | Count | Priority |
-|------|-------|----------|
-| ComponentA.tsx | 58 | High |
-| ComponentB.tsx | 32 | High |
+grep_search with Query="@keyframes spin" and SearchPath="." and Includes=["*.module.css"]
 ```
 
 ---
@@ -160,8 +138,8 @@ If a CSS module only contains classes that exist in shared modules:
 For each component with inline styles:
 
 1. **Count inline styles:**
-   ```bash
-   grep -n "style={{" <component>.tsx
+   ```
+   grep_search with Query="style={{" and SearchPath="<component>.tsx" and MatchPerLine=true
    ```
 
 2. **Identify pattern types needed:**
@@ -189,10 +167,10 @@ For each component with inline styles:
    ```
 
 6. **Verify zero inline styles:**
-   ```bash
-   grep -n "style={{" <component>.tsx
-   # Must return nothing
    ```
+   grep_search with Query="style={{" and SearchPath="<component>.tsx"
+   ```
+   Must return no matches.
 
 ### 4.2 Common Inline Style Replacements
 
@@ -235,9 +213,8 @@ Even conditional values must use classes:
 
 Check each custom CSS module for classes that exist in shared modules:
 
-```bash
-# Classes that might be duplicated
-grep -E "\.(section|table|label|input|button)" <custom>.module.css
+```
+grep_search with Query="\.(section|table|label|input|button)" and SearchPath="<custom>.module.css" and MatchPerLine=true
 ```
 
 ### 5.2 Migration Process
@@ -266,16 +243,16 @@ grep -E "\.(section|table|label|input|button)" <custom>.module.css
 
 ### 6.1 Final Inline Style Check
 
-```bash
-# Must return 0
-grep -rn "style={{" components/ --include="*.tsx" | wc -l
-grep -rn "style={{" app/ --include="*.tsx" | wc -l
 ```
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+```
+Both must return no matches.
 
 ### 6.2 Build Verification
 
-```bash
-npm run build
+```
+run_command: npm run build
 ```
 
 Ensure no CSS-related build errors.
@@ -291,49 +268,16 @@ Manually check key pages to ensure styling is correct:
 
 ---
 
-## Stage 7: Documentation
-
-**Goal:** Update audit log and document patterns.
-
-### 7.1 Update Audit Summary
-
-```markdown
-## Completion Summary - [Date]
-
-### Before
-- Total inline styles: X
-- Files with inline styles: Y
-
-### After
-- Total inline styles: 0
-- CSS modules deleted: Z
-- Patterns hoisted to shared modules: W
-
-### New Patterns Added
-| Pattern | Module | Use Case |
-|---------|--------|----------|
-| `.newClass` | `components.module.css` | Description |
-```
-
-### 7.2 Document New Patterns
-
-If new reusable patterns were created during the audit:
-1. Add to shared CSS module
-2. Document in the audit log
-3. Consider updating pattern skills
-
----
-
 ## Incremental Audit Mode
 
 For ongoing maintenance (not full audit):
 
-```bash
-# Quick check for new inline styles
-grep -rn "style={{" components/ app/ --include="*.tsx" | head -20
-
-# If any found, fix immediately before they accumulate
 ```
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+```
+
+If any found, fix immediately before they accumulate.
 
 **Recommendation:** Run quick check before each major PR merge.
 
@@ -343,12 +287,11 @@ grep -rn "style={{" components/ app/ --include="*.tsx" | head -20
 
 Before marking audit complete:
 
-- [ ] `grep -rn "style={{" components/ app/ --include="*.tsx"` returns nothing
+- [ ] `grep_search` for `style={{` returns no matches in components/ and app/
 - [ ] No empty CSS modules remain
 - [ ] No duplicate classes in custom modules
 - [ ] `npm run build` succeeds
 - [ ] Key pages visually verified
-- [ ] Audit documentation updated
 - [ ] Pattern skills referenced where applicable
 
 ---
