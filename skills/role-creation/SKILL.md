@@ -81,6 +81,26 @@ This skill guides the creation of new roles, skills, and workflows that follow t
 | **Manual** | Type `@skill-name` in Cascade | Direct invocation |
 | **From Role** | Role references `Use @skill-name for...` | Role activation |
 
+### Workflow Types
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| **Role Activation** | Activates a role and its skills | `/senior-developer` |
+| **Standalone** | Orchestrates a task, may activate a role | `/css-audit` activates senior-developer then runs audit |
+| **Utility** | Simple task, no role needed | `/subtree-pull` |
+
+### Config-Driven Skills
+
+Skills that need project-specific paths should use configuration files:
+
+```
+.windsurf/config/[role-name].json        # Project-specific config
+.windsurf/config/[role-name].example.json # Template for new projects
+.windsurf/config/README.md               # Documentation
+```
+
+**Pattern:** Skill reads config first, extracts paths, then uses them throughout.
+
 ### Rule Activation Modes
 
 | Mode | When Applied | Example |
@@ -362,6 +382,36 @@ Read the skill file at `.windsurf/skills/my-skill/SKILL.md`
 ```
 → Add to orchestrator, make discoverable
 
+### ❌ DO NOT: Use bash commands in skills/workflows
+```markdown
+## Discovery
+```bash
+grep -rn "pattern" components/
+find . -name "*.css" -empty
+```
+```
+→ Use Windsurf tools instead:
+```markdown
+## Discovery
+```
+grep_search with Query="pattern" and SearchPath="components/" and FixedStrings=true
+find_by_name with Pattern="*.css" and SearchDirectory="." and Type="file"
+```
+```
+
+### ❌ DO NOT: Require tracking documents
+```markdown
+## Step 5: Create Tracking Document
+Create `plans/audit.md` to track progress...
+```
+→ Keep workflows lean - track progress in conversation, not files
+
+### ❌ DO NOT: Hardcode project-specific paths in skills
+```markdown
+Read the canonical reference at `C:\Users\Jonny\Code\my-project\...`
+```
+→ Use config files: `.windsurf/config/[role-name].json`
+
 ---
 
 ## Examples
@@ -372,5 +422,5 @@ Read the skill file at `.windsurf/skills/my-skill/SKILL.md`
 |------|------|-------|-----------------|
 | `sales-analyst` | domain | `@product-sales-analysis` | Identity-focused role, data source hierarchy in skill |
 | `company-secretary` | domain | `@corporate-governance` | Google Drive integration, e-signature workflow |
-| `senior-developer` | generic | (none) | Portable role, orchestrator-based |
+| `senior-developer` | generic | `@table-patterns`, `@css-audit`, etc. | Config-driven skills, multiple skills per role |
 | `system-administrator` | generic | `@system-administration` | Infrastructure management |

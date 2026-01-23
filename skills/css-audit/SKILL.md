@@ -57,10 +57,10 @@ Use the `grep_search` tool (NOT bash grep):
 
 ```
 # All components
-grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
 
 # All pages
-grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 
 ### 1.2 Identify CSS Module Issues
@@ -70,10 +70,10 @@ grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
 find_by_name with Pattern="*.module.css" and SearchDirectory="." and Type="file"
 
 # Find CSS modules with potential duplicates
-grep_search with Query="\.section\s*\{" and SearchPath="styles/" and Includes=["*.module.css"]
+grep_search with Query=".section {" and SearchPath="styles/" and Includes=["*.module.css"] and FixedStrings=true
 
 # Check for duplicate @keyframes
-grep_search with Query="@keyframes spin" and SearchPath="." and Includes=["*.module.css"]
+grep_search with Query="@keyframes spin" and SearchPath="." and Includes=["*.module.css"] and FixedStrings=true
 ```
 
 ---
@@ -139,7 +139,7 @@ For each component with inline styles:
 
 1. **Count inline styles:**
    ```
-   grep_search with Query="style={{" and SearchPath="<component>.tsx" and MatchPerLine=true
+   grep_search with Query="style={{" and SearchPath="<component>.tsx" and MatchPerLine=true and FixedStrings=true
    ```
 
 2. **Identify pattern types needed:**
@@ -168,7 +168,7 @@ For each component with inline styles:
 
 6. **Verify zero inline styles:**
    ```
-   grep_search with Query="style={{" and SearchPath="<component>.tsx"
+   grep_search with Query="style={{" and SearchPath="<component>.tsx" and FixedStrings=true
    ```
    Must return no matches.
 
@@ -214,7 +214,8 @@ Even conditional values must use classes:
 Check each custom CSS module for classes that exist in shared modules:
 
 ```
-grep_search with Query="\.(section|table|label|input|button)" and SearchPath="<custom>.module.css" and MatchPerLine=true
+grep_search with Query=".section" and SearchPath="<custom>.module.css" and MatchPerLine=true and FixedStrings=true
+# Also search for: .table, .label, .input, .button
 ```
 
 ### 5.2 Migration Process
@@ -244,8 +245,8 @@ grep_search with Query="\.(section|table|label|input|button)" and SearchPath="<c
 ### 6.1 Final Inline Style Check
 
 ```
-grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
-grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 Both must return no matches.
 
@@ -273,8 +274,8 @@ Manually check key pages to ensure styling is correct:
 For ongoing maintenance (not full audit):
 
 ```
-grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
-grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 
 If any found, fix immediately before they accumulate.

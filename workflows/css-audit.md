@@ -56,12 +56,12 @@ Use the `grep_search` tool to assess the scope. Do NOT use bash grep commands.
 
 **4.1 Find inline styles in components:**
 ```
-grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 
 **4.2 Find inline styles in pages:**
 ```
-grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 
 **4.3 Find empty CSS modules:**
@@ -104,7 +104,7 @@ For each component the user selects:
 6. **Protect imports** from formatter stripping
 7. **Verify zero inline styles:**
    ```
-   grep_search with Query="style={{" and SearchPath="<component-path>"
+   grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
    ```
    Must return no matches.
 
@@ -118,8 +118,8 @@ After all components are fixed:
 
 1. **Identify CSS modules with duplicates:**
    ```
-   grep_search with Query="\.section\s*\{" and SearchPath="styles/" and Includes=["*.module.css"]
-   grep_search with Query="\.section\s*\{" and SearchPath="components/" and Includes=["*.module.css"]
+   grep_search with Query=".section {" and SearchPath="styles/" and Includes=["*.module.css"] and FixedStrings=true
+   grep_search with Query=".section {" and SearchPath="components/" and Includes=["*.module.css"] and FixedStrings=true
    ```
 
 2. **For each custom module:**
@@ -134,8 +134,8 @@ After all components are fixed:
 
 **8.1 Verify zero inline styles:**
 ```
-grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"]
-grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"]
+grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
+grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] and FixedStrings=true
 ```
 Both must return no matches.
 
