@@ -36,6 +36,14 @@ PDF text extraction and OCR.
 | `extract.js` | Extract text from PDFs (pdfjs-dist) |
 | `ocr.js` | OCR for scanned PDFs (tesseract.js) |
 
+### AWS (`tools/aws/`)
+
+AWS service wrappers for infrastructure management.
+
+| Module | Purpose |
+|--------|---------|
+| `route53.js` | DNS record management (CNAME, A records) |
+
 ---
 
 ## Pattern: Creating Project-Specific Tools
@@ -324,3 +332,46 @@ Or install via npm:
 ```bash
 npm install googleapis pdfjs-dist pdf-to-png-converter tesseract.js mammoth
 ```
+
+### AWS Route53 (`tools/aws/route53.js`)
+
+```javascript
+const { createRoute53Client } = require('.windsurf/tools/aws/route53');
+
+// Create client (uses AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars)
+const route53 = createRoute53Client({ region: 'eu-west-2' });
+
+// List hosted zones
+const zones = await route53.listHostedZones();
+// Returns: [{ id, name, recordCount, comment }, ...]
+
+// Get zone ID by domain
+const zoneId = await route53.getHostedZoneId('zantha.im');
+
+// List DNS records
+const records = await route53.listRecords(zoneId);
+
+// Create CNAME record
+const result = await route53.createCnameRecord(
+  'zantha.im',           // domain
+  'cs-bot',              // subdomain
+  'target.railway.app',  // target
+  300                    // TTL (optional, default 300)
+);
+
+// Create A record
+await route53.createARecord('zantha.im', 'api', '1.2.3.4', 300);
+
+// Delete record
+await route53.deleteRecord('zantha.im', 'old-subdomain', 'CNAME');
+```
+
+**Required dependency:**
+```bash
+npm install @aws-sdk/client-route-53
+```
+
+**Required env vars:**
+- `AWS_ACCESS_KEY_ID` - IAM user access key
+- `AWS_SECRET_ACCESS_KEY` - IAM user secret key
+- `AWS_REGION` (optional, default: eu-west-2)
