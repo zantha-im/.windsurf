@@ -18,17 +18,22 @@ This skill provides methodology, test categories, and probe templates for securi
 
 **Reports MUST be saved to the consuming project's role folder, NOT the `.windsurf/` subtree.**
 
+The path is `roles/agent-tester/` (inside the `roles/` directory), NOT `agent-tester/` at project root.
+
 ```
 [project-root]/
 ├── roles/
-│   └── agent-tester/
+│   └── agent-tester/            # ← OUTPUT GOES HERE
 │       ├── orchestrator.js      # Project-specific orchestrator
 │       ├── reports/
 │       │   └── latest-report.json   # Single report, overwritten each run
 │       └── logs/
 │           └── test-log.json        # Single log, overwritten each run
-└── .windsurf/                   # Subtree - DO NOT write here
+├── .windsurf/                   # Subtree - DO NOT write here
+└── agent-tester/                # ← WRONG! Do not create at root
 ```
+
+**Before writing any file:** Verify the `roles/agent-tester/` directory exists. Look for the orchestrator.js file to confirm you're in the right place.
 
 **Single file approach:** Overwrite `latest-report.json` each run instead of creating timestamped files. This prevents report accumulation and keeps the folder clean.
 

@@ -13,15 +13,21 @@ Detailed procedures for the Sales Analyst role. Domain: nicotine pouches, US mar
 
 **All research files MUST be saved to the consuming project's role folder, NOT the `.windsurf/` subtree.**
 
+The path is `roles/sales-analyst/` (inside the `roles/` directory), NOT `sales-analyst/` at project root.
+
 ```
 [project-root]/
 ├── roles/
-│   └── sales-analyst/
+│   └── sales-analyst/         # ← OUTPUT GOES HERE
+│       ├── orchestrator.js    # Project-specific orchestrator
 │       ├── research/          # Market research documents
 │       ├── analysis/          # Data analysis reports
 │       └── recommendations/   # Purchase recommendations
-└── .windsurf/                 # Subtree - DO NOT write here
+├── .windsurf/                 # Subtree - DO NOT write here
+└── sales-analyst/             # ← WRONG! Do not create at root
 ```
+
+**Before writing any file:** Verify the `roles/sales-analyst/` directory exists. If not, create it.
 
 ## Research Workflow
 

@@ -3,8 +3,8 @@ trigger: manual
 category: domain
 home_project: ai-advisor
 output_paths:
-  - company-secretary/resolutions/
-  - company-secretary/contracts/
+  - roles/company-secretary/resolutions/
+  - roles/company-secretary/contracts/
 ---
 
 # Role: Company Secretary

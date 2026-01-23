@@ -3,9 +3,9 @@ trigger: manual
 category: domain
 home_project: ai-advisor
 output_paths:
-  - sales-analyst/research/
-  - sales-analyst/analysis/
-  - sales-analyst/recommendations/
+  - roles/sales-analyst/research/
+  - roles/sales-analyst/analysis/
+  - roles/sales-analyst/recommendations/
 ---
 
 # Role: Sales Analyst
