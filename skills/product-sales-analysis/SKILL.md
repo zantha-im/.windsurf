@@ -80,7 +80,7 @@ Research Progress:
 3. Assess demand signals (search trends, social mentions)
 
 ### Step 4: Document Findings
-1. Create research summary in `sales-analyst/research/`
+1. Create research summary in `roles/sales-analyst/research/`
 2. Include data sources and confidence levels
 3. Flag any regulatory considerations
 

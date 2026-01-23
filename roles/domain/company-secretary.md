@@ -89,7 +89,7 @@ AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
 
 ## E-Signature Workflow
 
-1. **Prepare markdown source** in `company-secretary/resolutions/` or `company-secretary/contracts/`
+1. **Prepare markdown source** in `roles/company-secretary/resolutions/` or `roles/company-secretary/contracts/`
 2. **Create Google Doc** from e-signature template via Google Drive/Docs API
 3. **Send notification email** with document links and signing instructions
 4. **User initiates signature** (MANUAL - no API available):
