@@ -68,19 +68,16 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ## Active Skills
 
-This role has task-specific skills for UI pattern enforcement. Each skill reads from the canonical reference app to ensure consistency.
+This role has task-specific skills for UI pattern enforcement:
 
-**Canonical App:** `C:\Users\Jonny\Code\stock-insights`
+- `@table-patterns` - Data tables, sortable columns, table layouts
+- `@page-patterns` - Page scaffolds, sections, filters, stats
+- `@form-patterns` - Form inputs, filter bars, search boxes
+- `@modal-patterns` - Modal dialogs, confirmations, overlays
+- `@button-patterns` - Button styles, icon buttons, actions
+- `@css-audit` - Comprehensive CSS/design pattern review and consolidation
 
-| Skill | Trigger Words |
-|-------|---------------|
-| `@table-patterns` | build table, data table, table layout, sortable table |
-| `@page-patterns` | new page, create page, page layout, page scaffold |
-| `@form-patterns` | build form, form inputs, filter form, form layout |
-| `@modal-patterns` | create modal, modal dialog, popup, confirmation modal |
-| `@button-patterns` | button styles, icon button, action button |
-
-**Usage:** When building UI components, invoke the relevant skill to discover and apply patterns from the canonical app. Each skill will instruct you to use `read_file` to read the actual source files.
+Each skill reads from a **canonical reference app** configured per-project. See `.windsurf/config/README.md` for setup.
 
 ## Communication Style
 

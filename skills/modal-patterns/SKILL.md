@@ -1,21 +1,36 @@
 ---
 name: modal-patterns
-description: Enforces consistent modal dialog patterns by reading from the canonical app. Use when creating modals, dialogs, popups, confirmation dialogs, or edit forms in overlays. Triggers on: create modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog.
+description: Enforces consistent modal dialog patterns using shared CSS modules. Use when creating modals, dialogs, popups, confirmation dialogs, or edit forms in overlays. Triggers on: create modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal.
 ---
 
 # Skill: Modal Patterns
 
-This skill ensures consistent modal implementation by reading patterns from the canonical reference app.
-
-**Canonical App:** `C:\Users\Jonny\Code\stock-insights`
+This skill ensures consistent modal implementation using shared CSS modules and established patterns.
 
 ---
 
-## CRITICAL: Discovery Before Implementation
+## CRITICAL: Shared Modules First
 
-**You MUST use `read_file` to read the canonical files below. Do NOT rely on memory or cached knowledge of these files.**
+**Before creating ANY modal CSS, search shared modules for existing classes.**
 
-Before building any modal, execute this discovery workflow:
+Modals use THREE CSS modules:
+1. **Modal module** - Structure, overlay, header, body, footer
+2. **Components module** - Form inputs, text colors, utilities
+3. **Buttons module** - Action buttons in footer
+
+---
+
+## Config Discovery
+
+Read the configuration file to find the canonical reference app:
+
+```
+.windsurf/config/senior-developer.json
+```
+
+This contains `canonicalApp.path` pointing to the reference application with proven patterns.
+
+**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
 
 ---
 
@@ -23,77 +38,54 @@ Before building any modal, execute this discovery workflow:
 
 ```
 Modal Patterns Checklist:
+- [ ] Step 0: Read config to get canonical app path
 - [ ] Step 1: Read modal.module.css from canonical app
-- [ ] Step 2: Read an example modal component from canonical app
-- [ ] Step 3: Extract modal structure pattern (overlay/content/header/body/footer)
-- [ ] Step 4: Extract button placement pattern
-- [ ] Step 5: Extract form-in-modal pattern (if applicable)
-- [ ] Step 6: Apply patterns to current project
-- [ ] Step 7: Verify imports match canonical conventions
+- [ ] Step 2: Read components.module.css for form inputs
+- [ ] Step 3: Read canonical modal example
+- [ ] Step 4: Apply modal structure pattern
+- [ ] Step 5: Apply footer button pattern
+- [ ] Step 6: Verify zero inline styles
+- [ ] Step 7: Protect imports from formatter
 ```
 
 ---
 
-## Step 1: Read Modal CSS
+## CRITICAL: No Inline Styles
 
-**MANDATORY: Use read_file tool with this exact path:**
-
-```
-C:\Users\Jonny\Code\stock-insights\styles\modal.module.css
-```
-
-Extract:
-- Structure classes (`.modalOverlay`, `.modalContent`, `.modalHeader`, `.modalBody`, `.modalFooter`)
-- Title classes (`.modalTitle`, `.modalTitleWithIcon`)
-- Button classes (`.closeButton`, `.cancelButton`, `.pickedButton`)
-- Content classes (`.modalDescription`, `.itemsContainer`, `.itemRow`)
-
----
-
-## Step 2: Read Example Modal
-
-**MANDATORY: Use read_file tool with one of these paths:**
-
-For edit/form modal:
-```
-C:\Users\Jonny\Code\stock-insights\components\UserFormModal.tsx
-```
-
-For confirmation modal:
-```
-C:\Users\Jonny\Code\stock-insights\components\ConfirmDeleteModal.tsx
-```
-
-For complex modal with list:
-```
-C:\Users\Jonny\Code\stock-insights\components\OrderItemsModal.tsx
-```
+**Inline styles are BANNED.** Even conditional values must use classes.
 
 ---
 
 ## Canonical Modal Structure
 
-After reading the files, apply this structure:
-
 ```tsx
-import modalStyles from '@/styles/modal.module.css';
-import btnStyles from '@/styles/buttons.module.css';
+import modalStyles from '@/styles/modal.module.css'
+import styles from '@/styles/components.module.css'
+import btnStyles from '@/styles/buttons.module.css'
+import { X } from 'lucide-react'
+
+// Protect imports from formatter
+const _modalStyles = modalStyles
+const _styles = styles
+const _btnStyles = btnStyles
 
 interface MyModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
 }
 
 export function MyModal({ isOpen, onClose, onConfirm }: MyModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className={modalStyles.modalOverlay} onClick={onClose}>
       <div className={modalStyles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={modalStyles.modalHeader}>
           <h2 className={modalStyles.modalTitle}>Modal Title</h2>
-          <button className={modalStyles.closeButton} onClick={onClose}>×</button>
+          <button className={modalStyles.closeButton} onClick={onClose}>
+            <X size={20} />
+          </button>
         </div>
         
         <div className={modalStyles.modalBody}>
@@ -110,19 +102,32 @@ export function MyModal({ isOpen, onClose, onConfirm }: MyModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 ```
+
+**Key behaviors:**
+- Overlay click closes modal
+- Content click stops propagation (prevents closing when clicking inside)
+- Close button (X) in header
+- Footer has cancel + action buttons
 
 ---
 
 ## Modal with Icon in Title
 
 ```tsx
-<h2 className={modalStyles.modalTitleWithIcon}>
-  <span>🗑️</span>
-  Delete Confirmation
-</h2>
+import { Trash2 } from 'lucide-react'
+
+<div className={modalStyles.modalHeader}>
+  <h2 className={modalStyles.modalTitleWithIcon}>
+    <Trash2 size={20} />
+    Delete Confirmation
+  </h2>
+  <button className={modalStyles.closeButton} onClick={onClose}>
+    <X size={20} />
+  </button>
+</div>
 ```
 
 ---
@@ -164,24 +169,47 @@ export function MyModal({ isOpen, onClose, onConfirm }: MyModalProps) {
 
 ## Modal with Form
 
-```tsx
-import modalStyles from '@/styles/modal.module.css';
-import styles from '@/styles/components.module.css';
+For forms inside modals, use vertical stacking with `formLabel`:
 
+```tsx
 <div className={modalStyles.modalBody}>
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Name</label>
-    <input type="text" className={styles.input} value={name} onChange={...} />
-  </div>
-  
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Type</label>
-    <select className={styles.select} value={type} onChange={...}>
-      <option>Option 1</option>
-    </select>
+  <div className={styles.utilStackMd}>
+    <div className={styles.filterGroup}>
+      <label className={styles.formLabel}>Name</label>
+      <input 
+        type="text" 
+        className={styles.input} 
+        value={name} 
+        onChange={e => setName(e.target.value)} 
+      />
+    </div>
+    
+    <div className={styles.filterGroup}>
+      <label className={styles.formLabel}>Type</label>
+      <select 
+        className={styles.select} 
+        value={type} 
+        onChange={e => setType(e.target.value)}
+      >
+        <option value="">Select type...</option>
+        <option value="a">Type A</option>
+      </select>
+    </div>
+    
+    <div className={styles.filterGroup}>
+      <label className={styles.formLabel}>Quantity</label>
+      <input 
+        type="number" 
+        className={`${styles.input} ${styles.inputNarrow}`}
+        value={quantity} 
+        onChange={e => setQuantity(e.target.value)} 
+      />
+    </div>
   </div>
 </div>
 ```
+
+**Note:** Use `styles.formLabel` (14px, bold) for modal forms, not `styles.label` (12px, uppercase) which is for filter bars.
 
 ---
 
@@ -199,33 +227,71 @@ import styles from '@/styles/components.module.css';
 ```tsx
 <div className={modalStyles.modalFooter}>
   <button className={modalStyles.cancelButton} onClick={onClose}>Cancel</button>
-  <button className={modalStyles.pickedButton} onClick={onDelete}>Delete</button>
+  <button className={btnStyles.btnDanger} onClick={onDelete}>Delete</button>
+</div>
+```
+
+**Success action (Cancel + Confirm):**
+```tsx
+<div className={modalStyles.modalFooter}>
+  <button className={modalStyles.cancelButton} onClick={onClose}>Cancel</button>
+  <button className={btnStyles.btnSuccess} onClick={onConfirm}>Confirm</button>
 </div>
 ```
 
 ---
 
-## Import Conventions
-
-Always use these import aliases for consistency:
+## Loading State in Modal
 
 ```tsx
-import modalStyles from '@/styles/modal.module.css';
-import styles from '@/styles/components.module.css';  // If modal has form inputs
-import btnStyles from '@/styles/buttons.module.css';  // If modal has action buttons
+<div className={modalStyles.modalBody}>
+  {loading ? (
+    <div className={styles.loading}>Loading...</div>
+  ) : (
+    <div>{/* Content */}</div>
+  )}
+</div>
+
+<div className={modalStyles.modalFooter}>
+  <button className={modalStyles.cancelButton} onClick={onClose} disabled={loading}>
+    Cancel
+  </button>
+  <button className={btnStyles.btnPrimary} onClick={onConfirm} disabled={loading}>
+    {loading ? 'Saving...' : 'Save'}
+  </button>
+</div>
+```
+
+---
+
+## Import Protection
+
+The formatter strips unused imports. Protect them immediately:
+
+```tsx
+import modalStyles from '@/styles/modal.module.css'
+import styles from '@/styles/components.module.css'
+import btnStyles from '@/styles/buttons.module.css'
+
+// Protect from formatter
+const _modalStyles = modalStyles
+const _styles = styles
+const _btnStyles = btnStyles
 ```
 
 ---
 
 ## Validation Checklist
 
-Before completing the modal implementation, verify:
+Before completing the modal implementation:
 
+- [ ] Zero inline styles (`grep -n "style={{" <file>` returns nothing)
 - [ ] Uses canonical structure (overlay → content → header → body → footer)
 - [ ] Overlay click closes modal
 - [ ] Content click stops propagation
-- [ ] Close button in header
+- [ ] Close button (X icon) in header
 - [ ] Footer has cancel + action buttons
-- [ ] Form inputs use shared component styles
-- [ ] Imports use standard aliases
+- [ ] Form inputs use `styles.formLabel` (not `styles.label`)
+- [ ] Form fields use `styles.utilStackMd` for vertical spacing
+- [ ] Imports are protected from formatter
 - [ ] No custom CSS duplicating shared patterns

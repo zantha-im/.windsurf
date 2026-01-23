@@ -1,21 +1,33 @@
 ---
 name: form-patterns
-description: Enforces consistent form and input patterns by reading from the canonical app. Use when building forms, adding inputs, creating filter bars, or styling form elements. Triggers on: build form, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation.
+description: Enforces consistent form and input patterns using shared CSS modules. Use when building forms, adding inputs, creating filter bars, or styling form elements. Triggers on: build form, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation, refactor form.
 ---
 
 # Skill: Form Patterns
 
-This skill ensures consistent form and input implementation by reading patterns from the canonical reference app.
-
-**Canonical App:** `C:\Users\Jonny\Code\stock-insights`
+This skill ensures consistent form and input implementation using shared CSS modules and established patterns.
 
 ---
 
-## CRITICAL: Discovery Before Implementation
+## CRITICAL: Shared Modules First
 
-**You MUST use `read_file` to read the canonical files below. Do NOT rely on memory or cached knowledge of these files.**
+**Before creating ANY form CSS, search shared modules for existing classes.**
 
-Before building any form, execute this discovery workflow:
+Forms use the **Components module** for all input styling.
+
+---
+
+## Config Discovery
+
+Read the configuration file to find the canonical reference app:
+
+```
+.windsurf/config/senior-developer.json
+```
+
+This contains `canonicalApp.path` pointing to the reference application with proven patterns.
+
+**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
 
 ---
 
@@ -23,49 +35,27 @@ Before building any form, execute this discovery workflow:
 
 ```
 Form Patterns Checklist:
+- [ ] Step 0: Read config to get canonical app path
 - [ ] Step 1: Read components.module.css from canonical app
-- [ ] Step 2: Read an example component with forms from canonical app
-- [ ] Step 3: Extract input styling classes
-- [ ] Step 4: Extract filter layout pattern
-- [ ] Step 5: Extract search box pattern (if applicable)
-- [ ] Step 6: Apply patterns to current project
-- [ ] Step 7: Verify imports match canonical conventions
+- [ ] Step 2: Read canonical page example for filter patterns
+- [ ] Step 3: Apply input classes
+- [ ] Step 4: Apply filter layout pattern
+- [ ] Step 5: Verify zero inline styles
+- [ ] Step 6: Protect imports from formatter
 ```
 
 ---
 
-## Step 1: Read Components CSS
+## CRITICAL: No Inline Styles
 
-**MANDATORY: Use read_file tool with this exact path:**
+**Inline styles are BANNED.** Even conditional values must use classes:
 
-```
-C:\Users\Jonny\Code\stock-insights\styles\components.module.css
-```
+```tsx
+// ❌ BAD - inline style
+<input style={{ opacity: disabled ? 0.5 : 1 }} />
 
-Extract form-related classes:
-- `.input` - Text input
-- `.select` - Dropdown select
-- `.dateInput` - Date input (dark theme)
-- `.searchBox`, `.searchIcon`, `.searchInput` - Search with icon
-- `.checkboxLabel` - Checkbox with label
-- `.filtersContainer` - Filter bar container
-- `.filterGroup` - Label + input group
-- `.label` - Uppercase label
-
----
-
-## Step 2: Read Example Component
-
-**MANDATORY: Use read_file tool with one of these paths:**
-
-For filter forms:
-```
-C:\Users\Jonny\Code\stock-insights\components\OrdersTab.tsx
-```
-
-For modal forms:
-```
-C:\Users\Jonny\Code\stock-insights\components\UserFormModal.tsx
+// ✅ GOOD - conditional class
+<input className={disabled ? styles.inputDisabled : styles.input} />
 ```
 
 ---
@@ -74,62 +64,77 @@ C:\Users\Jonny\Code\stock-insights\components\UserFormModal.tsx
 
 | Input Type | Class | Notes |
 |------------|-------|-------|
-| Text input | `styles.input` | Standard text field |
-| Select dropdown | `styles.select` | Styled dropdown |
+| Text input | `styles.input` | Standard text field, 42px height |
+| Select dropdown | `styles.select` | Styled dropdown, 42px height |
 | Date input | `styles.dateInput` | Dark theme date picker |
 | Checkbox | `styles.checkboxLabel` | Wraps checkbox + label |
+| Narrow input | `styles.input` + `styles.inputNarrow` | Max 120px width |
+| Budget input | `styles.input` + `styles.inputBudget` | Fixed 100px width |
+| Disabled input | `styles.input` + `styles.inputDisabled` | Muted, centered text |
+| Uppercase input | `styles.input` + `styles.inputUppercase` | Forces uppercase |
 
 ---
 
 ## Filter Bar Pattern
 
-```tsx
-import styles from '@/styles/components.module.css';
+Filter controls belong in a **section** with `filtersContainer`:
 
-<div className={styles.filtersContainer}>
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Status</label>
-    <select className={styles.select} value={status} onChange={e => setStatus(e.target.value)}>
-      <option value="">All</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
+```tsx
+import styles from '@/styles/components.module.css'
+
+// Protect from formatter
+const _styles = styles
+
+<section className={styles.section}>
+  <div className={styles.filtersContainer}>
+    <div className={styles.filterGroup}>
+      <label className={styles.label}>Supplier</label>
+      <select className={styles.select} value={supplier} onChange={e => setSupplier(e.target.value)}>
+        <option value="">All Suppliers</option>
+        <option value="1">Supplier A</option>
+      </select>
+    </div>
+    
+    <div className={styles.filterGroup}>
+      <label className={styles.label}>Date From</label>
+      <input 
+        type="date" 
+        className={styles.dateInput}
+        value={dateFrom}
+        onChange={e => setDateFrom(e.target.value)}
+      />
+    </div>
+    
+    <div className={styles.filterGroup}>
+      <label className={styles.label}>Budget</label>
+      <input 
+        type="number" 
+        className={`${styles.input} ${styles.inputBudget}`}
+        value={budget}
+        onChange={e => setBudget(e.target.value)}
+      />
+    </div>
   </div>
-  
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Date From</label>
-    <input 
-      type="date" 
-      className={styles.dateInput}
-      value={dateFrom}
-      onChange={e => setDateFrom(e.target.value)}
-    />
-  </div>
-  
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Search</label>
-    <input 
-      type="text" 
-      className={styles.input}
-      placeholder="Search..."
-      value={search}
-      onChange={e => setSearch(e.target.value)}
-    />
-  </div>
-</div>
+</section>
 ```
+
+**Pattern:** `section > filtersContainer > filterGroup > label + input/select`
+
+**Key rule:** Filter controls that affect data display belong in filter sections, NOT floating above tables or in card headers.
 
 ---
 
 ## Search Box with Icon
 
 ```tsx
+import { Search } from 'lucide-react'
+
 <div className={styles.searchBox}>
-  <span className={styles.searchIcon}>🔍</span>
+  <Search size={16} className={styles.searchIcon} />
   <input 
     type="text"
     className={styles.searchInput}
-    placeholder="Search..."
+    placeholder="Search products..."
     value={searchTerm}
     onChange={e => setSearchTerm(e.target.value)}
   />
@@ -144,60 +149,103 @@ import styles from '@/styles/components.module.css';
 <label className={styles.checkboxLabel}>
   <input 
     type="checkbox"
-    checked={isChecked}
-    onChange={e => setIsChecked(e.target.checked)}
+    checked={showOnlyActive}
+    onChange={e => setShowOnlyActive(e.target.checked)}
   />
-  Checkbox Label Text
+  <span className={styles.checkboxLabelText}>Show only active items</span>
 </label>
+```
+
+---
+
+## Select with Inherited/Default Value
+
+For selects that show an inherited or default value:
+
+```tsx
+<select 
+  className={`${styles.select} ${!hasOverride ? styles.selectInherited : ''}`}
+  value={value}
+  onChange={e => setValue(e.target.value)}
+>
+  <option value="">Use default (inherited)</option>
+  <option value="custom">Custom value</option>
+</select>
+```
+
+The `selectInherited` class adds dashed border and muted text to indicate the value is inherited.
+
+---
+
+## Toggle Switch Pattern
+
+```tsx
+<div className={styles.toggleContainer}>
+  <button 
+    className={`${styles.toggle} ${isEnabled ? styles.active : ''}`}
+    onClick={() => setIsEnabled(!isEnabled)}
+  />
+  <span className={styles.toggleLabel}>Enable feature</span>
+</div>
 ```
 
 ---
 
 ## Modal Form Layout
 
-For forms inside modals, use the modal body structure:
+For forms inside modals, use vertical stacking:
 
 ```tsx
-import modalStyles from '@/styles/modal.module.css';
-import styles from '@/styles/components.module.css';
+import modalStyles from '@/styles/modal.module.css'
+import styles from '@/styles/components.module.css'
 
 <div className={modalStyles.modalBody}>
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Field Name</label>
-    <input type="text" className={styles.input} />
-  </div>
-  
-  <div className={styles.filterGroup}>
-    <label className={styles.label}>Select Option</label>
-    <select className={styles.select}>
-      <option>Option 1</option>
-    </select>
+  <div className={styles.utilStackMd}>
+    <div className={styles.filterGroup}>
+      <label className={styles.formLabel}>Field Name</label>
+      <input type="text" className={styles.input} />
+    </div>
+    
+    <div className={styles.filterGroup}>
+      <label className={styles.formLabel}>Select Option</label>
+      <select className={styles.select}>
+        <option>Option 1</option>
+      </select>
+    </div>
   </div>
 </div>
 ```
 
+**Note:** Use `styles.formLabel` (14px, bold) for modal forms instead of `styles.label` (12px, uppercase) used in filter bars.
+
 ---
 
-## Import Conventions
+## Import Protection
 
-Always use these import aliases for consistency:
+The formatter strips unused imports. Protect them immediately:
 
 ```tsx
-import styles from '@/styles/components.module.css';
-import modalStyles from '@/styles/modal.module.css';  // If form is in modal
+import styles from '@/styles/components.module.css'
+import modalStyles from '@/styles/modal.module.css'
+
+// Protect from formatter
+const _styles = styles
+const _modalStyles = modalStyles
 ```
 
 ---
 
 ## Validation Checklist
 
-Before completing the form implementation, verify:
+Before completing the form implementation:
 
+- [ ] Zero inline styles (`grep -n "style={{" <file>` returns nothing)
 - [ ] Text inputs use `styles.input`
 - [ ] Selects use `styles.select`
 - [ ] Date inputs use `styles.dateInput`
-- [ ] Filter bars use `styles.filtersContainer` and `styles.filterGroup`
-- [ ] Labels use `styles.label`
+- [ ] Filter bars use `section > filtersContainer > filterGroup` pattern
+- [ ] Labels use `styles.label` (filter bars) or `styles.formLabel` (modal forms)
 - [ ] Checkboxes use `styles.checkboxLabel`
-- [ ] Imports use standard aliases
+- [ ] Disabled inputs use `styles.inputDisabled`
+- [ ] Imports are protected from formatter
 - [ ] No custom CSS duplicating shared patterns

@@ -10,8 +10,13 @@ Read the role definition file:
 
 This is a **generic role** - portable across any project.
 
-## Step 2: Load Skill
-This role does not have an associated skill. The orchestrator provides project-specific capabilities.
+## Step 2: Check Config for UI Pattern Skills
+Read the configuration file (if it exists):
+- `.windsurf/config/senior-developer.json`
+
+**If config exists:** Report the canonical app path configured for UI patterns.
+
+**If config is missing:** Note that UI pattern skills (`@table-patterns`, `@page-patterns`, etc.) require configuration. The user can copy `.windsurf/config/senior-developer.example.json` to set up their canonical reference app.
 
 ## Step 3: Discover Tools
 Read the tool documentation:
@@ -41,6 +46,7 @@ Report the connection status with the **project name** (not ID).
 Report to user:
 - Current role: Senior Developer
 - Orchestrator: [found/not found]
+- Canonical app: [configured path] or "Not configured - UI pattern skills unavailable"
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
 - Ask: "What development task can I help with?"
 

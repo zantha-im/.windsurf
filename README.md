@@ -8,6 +8,7 @@ What this contains:
 - `.windsurf/skills/`: detailed procedures for each role (invoked via `@skill-name`)
 - `.windsurf/workflows/`: activation workflows and runbooks
 - `.windsurf/rules/`: conditional rules for specific contexts
+- `.windsurf/config/`: configuration files for roles that need project-specific settings
 
 Policy and intent:
 - Treat `.windsurf/` as a portable, shared subtree. Make improvements here, publish them upstream to the subtree repo, and consume them in other projects via subtree pulls.
@@ -37,6 +38,7 @@ cmd /c git subtree add --prefix=.windsurf windsurf_subtree main --squash
 After bootstrap:
 - Workflows are now available under `.windsurf/workflows/`.
 - Read `.windsurf/tools/README.md` for available tool modules and extension patterns.
+- Read `.windsurf/config/README.md` for configuration setup.
 
 ## 2) Using Roles
 
@@ -48,14 +50,23 @@ Activate a role via its workflow (e.g., `/company-secretary`, `/senior-developer
 
 ### Available Roles
 
-| Role | Type | Skill | Workflow |
-|------|------|-------|----------|
-| Senior Developer | generic | — | `/senior-developer` |
+| Role | Type | Skills | Workflow |
+|------|------|--------|----------|
+| Senior Developer | generic | `@table-patterns`, `@page-patterns`, `@form-patterns`, `@modal-patterns`, `@button-patterns`, `@css-audit` | `/senior-developer` |
 | System Administrator | generic | `@system-administration` | `/system-administrator` |
-| Role Master | generic | `@role-creation` | `/role-master` |
+| Role Master | generic | `@role-creation`, `@tool-development` | `/role-master` |
+| Agent Tester | domain | `@adversarial-testing` | `/agent-tester` |
 | Company Secretary | domain | `@corporate-governance` | `/company-secretary` |
 | Legal Researcher | domain | `@investigation-protocols` | `/legal-researcher` |
 | Sales Analyst | domain | `@product-sales-analysis` | `/sales-analyst` |
+
+### Standalone Workflows
+
+| Workflow | Description |
+|----------|-------------|
+| `/css-audit` | Comprehensive CSS/design pattern review and consolidation |
+| `/ngrok-setup` | Start ngrok and update Slack API configuration |
+| `/subtree-pull` | Pull latest updates from the shared subtree repository |
 
 ### Role Categories
 
@@ -75,7 +86,17 @@ Use `@tool-development` skill for patterns on:
 - Building role orchestrators with CLI discovery
 - Converting one-off scripts into reusable tools
 
-## 3) Everyday use with workflows
+## 3) Configuration
+
+Some roles require project-specific configuration. See `.windsurf/config/README.md` for details.
+
+**Senior Developer** requires `senior-developer.json` to configure the canonical reference app for UI pattern skills:
+```bash
+cp .windsurf/config/senior-developer.example.json .windsurf/config/senior-developer.json
+# Edit to set your canonical app path
+```
+
+## 4) Everyday use with workflows
 
 Once the project contains `.windsurf/workflows/`, use these:
 
