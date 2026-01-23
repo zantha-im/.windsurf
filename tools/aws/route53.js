@@ -3,7 +3,7 @@
  * Configurable wrapper for AWS Route53 operations
  * 
  * Usage:
- *   const { createRoute53Client } = require('.windsurf/tools/aws/route53');
+ *   const { createRoute53Client } = require('./.windsurf/tools/aws/route53');
  *   
  *   const route53 = createRoute53Client({
  *     region: 'eu-west-2',
