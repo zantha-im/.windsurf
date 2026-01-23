@@ -23,7 +23,9 @@ Read the tool documentation:
 - `.windsurf/tools/README.md` - Available tool modules and API reference
 
 ## Step 4: Discover Orchestrator
-Run orchestrator discovery to load endpoint configuration and test runner:
+Run orchestrator discovery to load endpoint configuration and test runner.
+
+// turbo
 ```bash
 node roles/agent-tester/orchestrator.js
 ```

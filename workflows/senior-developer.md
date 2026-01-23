@@ -25,7 +25,9 @@ Read the tool documentation:
 For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Run Orchestrator
-Run the base orchestrator to discover project capabilities:
+Run the base orchestrator to discover project capabilities.
+
+// turbo
 ```bash
 node .windsurf/roles/generic/senior-developer/orchestrator.js
 ```

@@ -312,7 +312,10 @@ Read the tool documentation:
 - `.windsurf/tools/README.md` - Available tool modules and API reference
 
 ## Step 4: Discover Orchestrator
-**If an orchestrator exists** at `roles/[role-name]/orchestrator.js`, run discovery:
+**If an orchestrator exists** at `roles/[role-name]/orchestrator.js`, run discovery to load available commands and capabilities.
+
+// turbo
+Run the orchestrator discovery command:
 \`\`\`bash
 node roles/[role-name]/orchestrator.js
 \`\`\`

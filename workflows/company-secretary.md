@@ -20,7 +20,9 @@ Read the tool documentation:
 For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Discover Orchestrator
-**If an orchestrator exists** at `roles/company-secretary/orchestrator.js`, run discovery:
+**If an orchestrator exists** at `roles/company-secretary/orchestrator.js`, run discovery to load available commands and capabilities.
+
+// turbo
 ```bash
 node roles/company-secretary/orchestrator.js
 ```
