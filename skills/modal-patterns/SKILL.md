@@ -1,6 +1,6 @@
 ---
 name: modal-patterns
-description: Enforces consistent modal dialog patterns by reading from the canonical reference app (stock-insights). Use when creating modals, dialogs, popups, confirmation dialogs, or edit forms in overlays. Triggers on: create modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal.
+description: Enforces consistent modal dialog patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing modals. Triggers on: create modal, fix modal, modal height, modal layout, modal not working, review modal, canonical modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal, modal jumping, modal scrolling, modal overflow.
 ---
 
 # Skill: Modal Patterns

@@ -1,6 +1,6 @@
 ---
 name: form-patterns
-description: Enforces consistent form and input patterns by reading from the canonical reference app (stock-insights). Use when building forms, adding inputs, creating filter bars, or styling form elements. Triggers on: build form, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation, refactor form.
+description: Enforces consistent form and input patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing forms. Triggers on: build form, fix form, form not working, review form, canonical form, form alignment, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation, refactor form, input styling, form spacing.
 ---
 
 # Skill: Form Patterns

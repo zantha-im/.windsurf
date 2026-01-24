@@ -1,6 +1,6 @@
 ---
 name: button-patterns
-description: Enforces consistent button styling by reading from the canonical reference app (stock-insights). Use when adding buttons, icon buttons, action buttons, or styling interactive elements. Triggers on: button styles, icon button, action button, primary button, delete button, add button, submit button, cancel button, refactor button.
+description: Enforces consistent button styling by reading from the canonical reference app. Use when creating, fixing, or reviewing buttons. Triggers on: button styles, fix button, button not working, review button, canonical button, button alignment, icon button, action button, primary button, delete button, add button, submit button, cancel button, refactor button, button spacing, button hover.
 ---
 
 # Skill: Button Patterns

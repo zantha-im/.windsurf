@@ -1,6 +1,6 @@
 ---
 name: page-patterns
-description: Enforces consistent page layout patterns by reading from the canonical reference app (stock-insights). Use when creating new pages, building page scaffolds, adding sections, tabs, or refactoring page layouts. Triggers on: new page, create page, page layout, page scaffold, page structure, add section, page container, page header, tabs, refactor page.
+description: Enforces consistent page layout patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing page layouts. Triggers on: new page, fix page layout, page not aligned, review page, canonical page, page spacing, create page, page layout, page scaffold, page structure, add section, page container, page header, tabs, refactor page, page margins, page padding.
 ---
 
 # Skill: Page Patterns

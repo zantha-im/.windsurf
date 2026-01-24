@@ -1,6 +1,6 @@
 ---
 name: table-patterns
-description: Enforces consistent data table patterns by reading from the canonical reference app (stock-insights). Use when building data tables, adding sortable columns, creating table layouts, or refactoring table styling. Triggers on: build table, data table, create table component, table layout, sortable table, table with sorting, grid component, data grid, refactor table.
+description: Enforces consistent data table patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing tables. Triggers on: build table, fix table, table not working, review table, canonical table, table alignment, table sorting broken, data table, create table component, table layout, sortable table, table with sorting, grid component, data grid, refactor table, table columns, table headers.
 ---
 
 # Skill: Table Patterns
