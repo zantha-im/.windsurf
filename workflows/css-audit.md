@@ -117,15 +117,39 @@ read_file [canonicalApp.path]/components/PORecommendationsTable.tsx
 
 ### 5.3 Fix Inline Styles
 
-1. **Identify pattern types** needed (table, page, form, modal, button)
-2. **Load relevant pattern skill(s)**
-3. **Replace inline styles** with shared CSS classes
-4. **Protect imports** from formatter stripping
-5. **Verify zero inline styles:**
-   ```
-   grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
-   ```
-   Must return no matches.
+**CRITICAL: Read CSS modules BEFORE writing any code.**
+
+The LLM tends to write inline styles first, then check for classes. This is backwards. Follow this strict order:
+
+#### Step A: Inventory Available Classes (MANDATORY)
+```
+read_file [canonicalApp.path]/styles/components.module.css
+read_file [canonicalApp.path]/styles/buttons.module.css
+read_file [canonicalApp.path]/styles/pages.module.css
+```
+
+List the classes that could replace each inline style. Example:
+- `marginTop: '1rem'` → `.spacer` or `.sectionGap`
+- `display: 'flex'` → `.flexRow` or `.flexColumn`
+- `gap: '0.5rem'` → `.gap-sm`
+
+#### Step B: Plan Replacements (Before Any Edits)
+For each inline style, write out:
+1. The inline style to remove
+2. The existing class that replaces it
+3. If no class exists, note it for Step C
+
+#### Step C: Write Code (Only After A and B)
+1. Import the CSS module (if not already imported)
+2. Replace inline styles with class references
+3. **Protect imports** with `const _styles = styles`
+4. Only create new classes if no suitable class exists in shared modules
+
+#### Step D: Verify
+```
+grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
+```
+Must return no matches.
 
 Repeat for EVERY component until all are complete.
 

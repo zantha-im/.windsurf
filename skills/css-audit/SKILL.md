@@ -213,6 +213,12 @@ For EACH component in the list from Stage 1.3:
 
 **Goal:** Fix inline styles in each component using pattern skills.
 
+### CRITICAL: Read CSS First, Write Code Second
+
+**LLMs tend to write inline styles first, then check for classes. This is backwards.**
+
+The natural flow during code generation is to reach for the quickest solution (inline style), then realize a class exists. This creates unnecessary churn. **Force yourself to read CSS modules BEFORE writing any replacement code.**
+
 ### 5.1 Per-Component Process
 
 For each component with inline styles:
@@ -222,16 +228,26 @@ For each component with inline styles:
    grep_search with Query="style={{" and SearchPath="<component>.tsx" and MatchPerLine=true and FixedStrings=true
    ```
 
-2. **Identify pattern types needed:**
+2. **Read ALL relevant CSS modules FIRST (MANDATORY):**
+   ```
+   read_file [canonicalApp.path]/styles/components.module.css
+   read_file [canonicalApp.path]/styles/buttons.module.css
+   read_file [project]/styles/*.module.css
+   ```
+   
+3. **Plan replacements BEFORE editing:**
+   For each inline style, write out:
+   - The inline style to remove
+   - The existing class that replaces it (or "NEW" if none exists)
+
+4. **Identify pattern types needed:**
    - Tables → Use `@table-patterns` skill
    - Pages → Use `@page-patterns` skill
    - Forms → Use `@form-patterns` skill
    - Modals → Use `@modal-patterns` skill
    - Buttons → Use `@button-patterns` skill
 
-3. **Read canonical reference** from config
-
-4. **Replace inline styles with classes:**
+5. **Replace inline styles with classes (only after steps 2-4):**
    ```tsx
    // ❌ Before
    style={{ color: isError ? '#ef4444' : '#10b981' }}
@@ -240,13 +256,13 @@ For each component with inline styles:
    className={isError ? styles.textError : styles.textSuccess}
    ```
 
-5. **Protect imports from formatter:**
+6. **Protect imports from formatter:**
    ```tsx
    import styles from '@/styles/components.module.css'
    const _styles = styles // Protect from formatter
    ```
 
-6. **Verify zero inline styles:**
+7. **Verify zero inline styles:**
    ```
    grep_search with Query="style={{" and SearchPath="<component>.tsx" and FixedStrings=true
    ```

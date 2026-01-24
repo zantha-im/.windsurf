@@ -68,24 +68,13 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ## Google Drive Structure
 
-```
-AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
-└── Company Secretary (1zaokguSgHs8qyv11lqAZo7YsLPxwTKNU)/
-    ├── Templates (14mrYquVZgBmBXM1-lP57kmsKI475ilxk)/
-    │   └── E-Signature Template - Directors (1dGCUFGJT1zbk0NktPa6gDghqunSKJvrd-AtI-et0UUY)
-    ├── Intercompany Contracts (1nTltYhq5KD9Vnfzkl3ET0laqgsHzthsB)/
-    │   └── Contracts between AIL and Zantha (single copy, both parties sign)
-    ├── AIL (1dFI4asTqOJdYeoczpQmC9krhkRlQQsVG)/
-    │   ├── Board Meetings/
-    │   ├── Resolutions (1XZ6ZXrVlm9d90siwIW7dcmyqBq2PO5U_)/
-    │   ├── Contracts (1vL8HSjWn1fHD6tzpwfS3RQDRymGTr35V)/ - third-party contracts only
-    │   └── Statutory Registers/
-    └── Zantha (1msoeJ0sj7C3eobEuQ6BK4spRwrtrLJ8A)/
-        ├── Board Meetings/
-        ├── Resolutions (1W9Ep_Y0ZahE6LRYp4YjK-Qx5EMZfgHGo)/
-        ├── Contracts (18EcIKOm2CZxL78D85-KlC5YkhAFCWxEx)/ - third-party contracts only
-        └── Statutory Registers/
-```
+**Discovered via orchestrator.** Run orchestrator discovery to see:
+- Shared Drive ID and folder structure
+- Company-specific folder IDs (AIL, Zantha, etc.)
+- Template document IDs
+- Resolution and contract folder locations
+
+These details are project-specific and maintained in the consuming project's orchestrator.
 
 ## E-Signature Workflow
 
@@ -95,7 +84,7 @@ AI Advisor Shared Drive (0AABrUwK6R3liUk9PVA)/
 4. **User initiates signature** (MANUAL - no API available):
    - Open document from email link
    - Tools → eSignature → Request signature
-   - Add signatories: jonny@zantha.im, kay@zantha.im
+   - Add signatories (discovered via orchestrator)
    - Click "Request signature"
 5. **Signed PDF** automatically saved to Drive folder
 

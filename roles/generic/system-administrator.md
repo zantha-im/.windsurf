@@ -67,37 +67,13 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ## Service Account Details
 
-- **Email**: `ai-advisor-admin@ai-business-advisor-481316.iam.gserviceaccount.com`
-- **Client ID**: `114007721152012434403`
-- **Key File**: `credentials/service-accounts/ai-advisor-admin-key.json`
+**Discovered via orchestrator.** Run orchestrator discovery to see:
+- Service account email and client ID
+- Key file location
+- Domain-wide delegation scopes
+- Project credential structure
 
-### Domain-Wide Delegation Scopes (6 total)
-
-| Scope | Purpose |
-|-------|---------|
-| `admin.directory.user` | Manage users |
-| `admin.directory.group` | Manage groups |
-| `gmail.send` | Send emails |
-| `gmail.settings.basic` | Gmail settings |
-| `gmail.settings.sharing` | Send-as aliases |
-| `admin.directory.group.member` | Group membership |
-
-## Project Structure
-
-```
-ai-advisor/
-├── credentials/
-│   ├── service-accounts/
-│   │   └── ai-advisor-admin-key.json
-│   └── oauth-tokens/
-│       ├── gmail-tokens.json
-│       ├── google-tokens.json
-│       └── xero-tokens.json
-└── roles/
-    └── system-administrator/
-        ├── _context/
-        └── audit-logs/
-```
+These details are project-specific and maintained in the consuming project's orchestrator.
 
 ## Active Skill
 
