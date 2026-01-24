@@ -122,11 +122,20 @@ npx knip --include files,dependencies
 # Exclude specific issue types
 npx knip --exclude classMembers,nsExports
 
-# JSON output for programmatic use
+# JSON output (minified - must pipe through formatter)
 npx knip --reporter json
 
 # Compact output (one line per issue)
 npx knip --reporter compact
+```
+
+**Note:** JSON output is minified (single line). Format before reading:
+```powershell
+# Windows
+npx knip --reporter json | ConvertFrom-Json | ConvertTo-Json -Depth 10 > report.json
+
+# macOS/Linux
+npx knip --reporter json | python3 -m json.tool > report.json
 ```
 
 ### Auto-Fix Options

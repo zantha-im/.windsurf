@@ -103,22 +103,38 @@ npx knip --max-show-issues 10
 mkdir -p roles/senior-developer
 ```
 
-**Step 2: Run knip with JSON output**
+**Step 2: Create knip.json config (if not exists)**
 
-**IMPORTANT:** Exclude the `.windsurf/` subtree - it's shared tooling, not project code.
+**IMPORTANT:** Exclude `.windsurf/` subtree. The `--ignore` flag does NOT exist - you must use config file.
 
-```bash
-npx knip --reporter json --ignore ".windsurf/**" > roles/senior-developer/knip-report.json
-```
-
-Or add to `knip.json` config (preferred):
+Create `knip.json` in project root:
 ```json
 {
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
   "ignore": [".windsurf/**"]
 }
 ```
 
-**Step 3: Read results**
+**Step 3: Run knip and format JSON output**
+
+Knip outputs minified JSON (single line). You MUST format it for `read_file` to work properly.
+
+**On Windows (PowerShell):**
+```powershell
+npx knip --reporter json | ConvertFrom-Json | ConvertTo-Json -Depth 10 > roles/senior-developer/knip-report.json
+```
+
+**On macOS/Linux:**
+```bash
+npx knip --reporter json | python3 -m json.tool > roles/senior-developer/knip-report.json
+```
+
+**Alternative (if jq installed):**
+```bash
+npx knip --reporter json | jq '.' > roles/senior-developer/knip-report.json
+```
+
+**Step 4: Read results**
 
 **CRITICAL:** You MUST use the `read_file` tool to read the JSON file. Do NOT:
 - Use `cat` or `type` commands (output will be truncated)
@@ -133,10 +149,11 @@ read_file(file_path="<absolute-path>/roles/senior-developer/knip-report.json")
 For large files (>1000 lines), use `offset` and `limit` parameters to read in chunks.
 
 **For very large projects**, process incrementally by issue type:
-```bash
-npx knip --include files --reporter json > roles/senior-developer/knip-files.json
-npx knip --include dependencies --reporter json > roles/senior-developer/knip-deps.json
-npx knip --include exports --reporter json > roles/senior-developer/knip-exports.json
+```powershell
+# Windows - run each separately and format
+npx knip --include files --reporter json | ConvertFrom-Json | ConvertTo-Json -Depth 10 > roles/senior-developer/knip-files.json
+npx knip --include dependencies --reporter json | ConvertFrom-Json | ConvertTo-Json -Depth 10 > roles/senior-developer/knip-deps.json
+npx knip --include exports --reporter json | ConvertFrom-Json | ConvertTo-Json -Depth 10 > roles/senior-developer/knip-exports.json
 ```
 
 Then use `read_file` tool on each file separately.
