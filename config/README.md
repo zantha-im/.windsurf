@@ -4,9 +4,9 @@ This directory contains configuration files for roles that need project-specific
 
 ## How It Works
 
-1. **Example files** (`.example.json`) live in this directory as templates
-2. **Consuming projects** copy the example to their `.windsurf/config/` directory and customize
-3. **Roles/skills** read from the consuming project's config, falling back to defaults
+1. **Schema files** (`.schema.json`) live in this directory for validation
+2. **Consuming projects** create their own config files in `.windsurf/config/`
+3. **Roles/skills** read from the project's config - no defaults provided
 
 ## Available Configurations
 
@@ -16,12 +16,7 @@ Configures the canonical reference app for UI pattern skills and CSS audits.
 
 **Setup in your project:**
 
-```bash
-# Copy the example to your project's .windsurf/config/
-cp .windsurf/config/senior-developer.example.json .windsurf/config/senior-developer.json
-
-# Edit the path to point to your canonical app
-```
+Create `.windsurf/config/senior-developer.json` with your project-specific paths.
 
 **Fields:**
 
@@ -92,7 +87,7 @@ cp .windsurf/config/senior-developer.example.json .windsurf/config/senior-develo
 
 When creating skills that need external references:
 
-1. Define an example config in this directory
+1. Define a schema file in this directory for validation
 2. In your skill, instruct the AI to read the config first
-3. Provide fallback behavior if config is missing
+3. If config is missing, inform the user they need to create it
 4. Document required fields in this README

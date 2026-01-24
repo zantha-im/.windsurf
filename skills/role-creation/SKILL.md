@@ -1,11 +1,11 @@
 ---
 name: role-creation
-description: Guides creation of new AI roles, skills, and workflows following best practices. Use when designing a new role, creating a skill for a role, or setting up the activation workflow. Triggers on: create role, new role, design role, role template, skill template, workflow template, role architecture.
+description: Guides creation and iterative refinement of AI roles, skills, and workflows. Use when designing a new role, refining an existing role based on failure feedback, creating a skill, or setting up activation workflows. Triggers on: create role, new role, design role, refine role, fix role, role failed, role template, skill template, workflow template, role architecture, role feedback.
 ---
 
-# Skill: Role Creation
+# Skill: Role Creation & Refinement
 
-This skill guides the creation of new roles, skills, and workflows that follow the established architecture patterns.
+This skill guides the creation of new roles and the iterative refinement of existing ones based on real-world feedback when they fail to act as expected.
 
 ---
 
@@ -112,6 +112,56 @@ Skills that need project-specific paths should use configuration files:
 
 ---
 
+## Workflow: Refining an Existing Role
+
+Use this workflow when a role fails to act as expected. Copy this checklist:
+
+```
+Role Refinement Progress:
+- [ ] Step 1: Gather failure details (what happened vs expected)
+- [ ] Step 2: Identify the component (role, skill, workflow, or rule)
+- [ ] Step 3: Read the relevant file(s)
+- [ ] Step 4: Diagnose root cause
+- [ ] Step 5: Propose fix (confirm with user before editing)
+- [ ] Step 6: Apply targeted edit
+- [ ] Step 7: Test the fix
+- [ ] Step 8: Commit and push changes to source repo
+- [ ] Step 9: Run /subtree-pull in consuming projects
+```
+
+### Gathering Failure Details
+
+Ask the user:
+1. **What role/workflow were you using?** (e.g., `/sales-analyst`)
+2. **What did you ask it to do?**
+3. **What actually happened?** (copy/paste the problematic output if possible)
+4. **What did you expect to happen?**
+
+### Diagnosing Root Cause
+
+Common failure patterns:
+
+| Symptom | Likely Cause | Fix Location |
+|---------|--------------|--------------|
+| Role ignores instructions | Missing/weak principle | Role file |
+| Wrong procedure followed | Skill steps unclear | Skill file |
+| Skips important step | Missing workflow step | Workflow file |
+| Does something forbidden | Missing constraint | Role or rule file |
+| Uses wrong tool | Tool guidance missing | Role or skill file |
+| Wrong output location | Path not specified | Skill file |
+
+### Applying Fixes
+
+**Principle:** Make minimal, targeted edits. Don't rewrite entire files.
+
+1. **Add missing principle** → Edit role's Core Principles section
+2. **Clarify procedure** → Edit skill's workflow steps
+3. **Add constraint** → Edit role's Constraints section
+4. **Fix workflow order** → Edit workflow steps
+5. **Add rule** → Create/edit rule file if behavior should apply globally
+
+---
+
 ## Workflow: Creating a New Role
 
 Copy this checklist and track your progress:
@@ -160,66 +210,7 @@ Before writing the role file, answer these questions:
 
 ## Step 3: Create Role File
 
-Use this template:
-
-```markdown
----
-trigger: manual
-category: [domain|generic]
-home_project: [project-name]  # domain roles only
-output_paths:                  # domain roles only
-  - [role-name]/output/
----
-
-# Role: [Role Name]
-
-**Identity:** [1-2 sentence description of WHO this role is]
-
-## Core Principles
-
-- **[Principle 1]** - [Brief explanation]
-- **[Principle 2]** - [Brief explanation]
-- **[Principle 3]** - [Brief explanation]
-
-## Expertise Areas
-
-1. **[Area 1]** - [What this covers]
-2. **[Area 2]** - [What this covers]
-
-## Available Tools
-
-- **[Tool 1]** - [Purpose]
-- **[Tool 2]** - [Purpose]
-
-## Database Access
-
-**CRITICAL: Use Neon MCP for ALL database operations.**
-
-Connection verification (required before any DB work):
-1. Run `mcp1_list_projects` to confirm MCP connection
-2. Run `mcp1_describe_project` with target projectId
-3. Confirm: "Connected to Neon project: **[project name]**"
-
-See `.windsurf/rules/database-tooling.md` for the complete protocol.
-
-## Orchestrator
-
-If an orchestrator exists at `roles/[role-name]/orchestrator.js`, run discovery first.
-
-## Active Skill
-
-Use `@[skill-name]` for detailed procedures.
-
-## Communication Style
-
-- [Style point 1]
-- [Style point 2]
-
-## Constraints
-
-- **[Constraint 1]**: [What this role must NOT do]
-- **[Constraint 2]**: [What this role must NOT do]
-```
+Use the role template: [references/role-template.md](references/role-template.md)
 
 **Key rules:**
 - Keep under 80 lines
@@ -233,53 +224,12 @@ Use `@[skill-name]` for detailed procedures.
 
 Create folder: `.windsurf/skills/[skill-name]/`
 
-Use this template for `SKILL.md`:
-
-```markdown
----
-name: [skill-name]
-description: [Clear description of WHAT this skill does and WHEN to use it. Include trigger keywords. Max 1024 chars.]
----
-
-# Skill: [Skill Name]
-
-[Brief intro - what this skill provides]
-
-## Workflow
-
-Copy this checklist and track your progress:
-
-\`\`\`
-[Skill Name] Progress:
-- [ ] Step 1: [First step]
-- [ ] Step 2: [Second step]
-- [ ] Step 3: [Third step]
-\`\`\`
-
----
-
-## [Procedure 1]
-
-[Detailed steps for this procedure]
-
----
-
-## [Procedure 2]
-
-[Detailed steps for this procedure]
-
----
-
-## Output Checklist
-
-Before completing:
-- [ ] [Verification 1]
-- [ ] [Verification 2]
-```
+Use the skill template: [references/skill-template.md](references/skill-template.md)
 
 **Key rules:**
 - Strong description with trigger keywords
 - Include copyable workflow checklist
+- **Keep SKILL.md under ~200 lines** - extract detailed content to reference files
 - Add supporting files in `references/` or `assets/` subdirectories
 - Reference files with relative paths: `[references/file.md](references/file.md)`
 
@@ -289,51 +239,7 @@ Before completing:
 
 Create: `.windsurf/workflows/[role-name].md`
 
-Use this template:
-
-```markdown
----
-description: Activate [Role Name] role for [brief purpose]
----
-
-# [Role Name] Role Activation
-
-## Step 1: Read Role Definition
-Read the role definition file:
-- `.windsurf/roles/[domain|generic]/[role-name].md`
-
-This is a **[domain|generic] role**. [Additional context if needed]
-
-## Step 2: Invoke Skill
-Use `@[skill-name]` to load detailed procedures for [what the skill covers].
-
-## Step 3: Discover Tools
-Read the tool documentation:
-- `.windsurf/tools/README.md` - Available tool modules and API reference
-
-## Step 4: Discover Orchestrator
-**If an orchestrator exists** at `roles/[role-name]/orchestrator.js`, run discovery to load available commands and capabilities.
-
-// turbo
-Run the orchestrator discovery command:
-\`\`\`bash
-node roles/[role-name]/orchestrator.js
-\`\`\`
-
-If no orchestrator exists, use the role definition, skill procedures, and shared tools directly.
-
-## Step 5: Verify Database Connection
-Run `mcp1_list_projects` to confirm Neon MCP is connected, then `mcp1_describe_project` with the target projectId.
-
-Report the connection status with the **project name** (not ID).
-
-## Step 6: Confirm Activation
-Report to user:
-- Current role: [Role Name]
-- Orchestrator: [found/not found]
-- Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
-- Ask: "[Relevant question for this role]"
-```
+Use the workflow template: [references/workflow-template.md](references/workflow-template.md)
 
 ---
 
@@ -358,62 +264,15 @@ Check all files for:
 
 ## Anti-Patterns
 
-### ❌ DO NOT: Put procedures in roles
-```markdown
-## How to Generate Reports
-1. Query the database
-2. Format the data
-3. Create the output file
-```
-→ Move to skill
-
-### ❌ DO NOT: Use absolute paths
-```markdown
-- `/.windsurf/roles/domain/my-role.md`
-```
-→ Use `.windsurf/roles/domain/my-role.md`
-
-### ❌ DO NOT: Reference skills by file path
-```markdown
-Read the skill file at `.windsurf/skills/my-skill/SKILL.md`
-```
-→ Use `@my-skill`
-
-### ❌ DO NOT: Create one-off scripts
-```javascript
-// scripts/generate-report.js
-```
-→ Add to orchestrator, make discoverable
-
-### ❌ DO NOT: Use bash commands in skills/workflows
-```markdown
-## Discovery
-```bash
-grep -rn "pattern" components/
-find . -name "*.css" -empty
-```
-```
-→ Use Windsurf tools instead:
-```markdown
-## Discovery
-```
-grep_search with Query="pattern" and SearchPath="components/" and FixedStrings=true
-find_by_name with Pattern="*.css" and SearchDirectory="." and Type="file"
-```
-```
-
-### ❌ DO NOT: Require tracking documents
-```markdown
-## Step 5: Create Tracking Document
-Create `plans/audit.md` to track progress...
-```
-→ Keep workflows lean - track progress in conversation, not files
-
-### ❌ DO NOT: Hardcode project-specific paths in skills
-```markdown
-Read the canonical reference at `C:\Users\Jonny\Code\my-project\...`
-```
-→ Use config files: `.windsurf/config/[role-name].json`
+See [references/anti-patterns.md](references/anti-patterns.md) for common mistakes to avoid, including:
+- Putting procedures in roles
+- Using absolute paths
+- Referencing skills by file path
+- Creating one-off scripts
+- Using bash commands instead of Windsurf tools
+- Requiring tracking documents
+- Hardcoding project-specific paths
+- Creating long monolithic skills
 
 ---
 

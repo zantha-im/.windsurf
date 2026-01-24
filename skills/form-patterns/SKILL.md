@@ -1,33 +1,19 @@
 ---
 name: form-patterns
-description: Enforces consistent form and input patterns using shared CSS modules. Use when building forms, adding inputs, creating filter bars, or styling form elements. Triggers on: build form, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation, refactor form.
+description: Enforces consistent form and input patterns by reading from the canonical reference app (stock-insights). Use when building forms, adding inputs, creating filter bars, or styling form elements. Triggers on: build form, form inputs, filter form, form layout, input field, select dropdown, search box, checkbox, date picker, form validation, refactor form.
 ---
 
 # Skill: Form Patterns
 
-This skill ensures consistent form and input implementation using shared CSS modules and established patterns.
+This skill ensures consistent form and input implementation by reading patterns from the **canonical reference app** (living document), not hardcoded examples.
 
 ---
 
-## CRITICAL: Shared Modules First
+## CRITICAL: Read From Canonical App
 
-**Before creating ANY form CSS, search shared modules for existing classes.**
+**DO NOT use hardcoded CSS class names or patterns from this skill file.**
 
-Forms use the **Components module** for all input styling.
-
----
-
-## Config Discovery
-
-Read the configuration file to find the canonical reference app:
-
-```
-.windsurf/config/senior-developer.json
-```
-
-This contains `canonicalApp.path` pointing to the reference application with proven patterns.
-
-**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
+Instead, read the actual files from the canonical reference app configured in `.windsurf/config/senior-developer.json`.
 
 ---
 
@@ -35,217 +21,110 @@ This contains `canonicalApp.path` pointing to the reference application with pro
 
 ```
 Form Patterns Checklist:
-- [ ] Step 0: Read config to get canonical app path
-- [ ] Step 1: Read components.module.css from canonical app
-- [ ] Step 2: Read canonical page example for filter patterns
-- [ ] Step 3: Apply input classes
-- [ ] Step 4: Apply filter layout pattern
+- [ ] Step 1: Read config to get canonical app path
+- [ ] Step 2: Read canonical components CSS module
+- [ ] Step 3: Read canonical page example for filter patterns
+- [ ] Step 4: Apply patterns learned from canonical files
 - [ ] Step 5: Verify zero inline styles
 - [ ] Step 6: Protect imports from formatter
 ```
 
 ---
 
-## CRITICAL: No Inline Styles
+## Step 1: Read Configuration
 
-**Inline styles are BANNED.** Even conditional values must use classes:
-
-```tsx
-// ❌ BAD - inline style
-<input style={{ opacity: disabled ? 0.5 : 1 }} />
-
-// ✅ GOOD - conditional class
-<input className={disabled ? styles.inputDisabled : styles.input} />
+```
+read_file .windsurf/config/senior-developer.json
 ```
 
----
+Extract:
+- `canonicalApp.path` - Base path to reference app
+- `patterns.components.css` - Path to components CSS module
+- `patterns.form.example` - Path to canonical form example
+- `patterns.page.example` - Path to canonical page with filters
 
-## Form Input Classes
-
-| Input Type | Class | Notes |
-|------------|-------|-------|
-| Text input | `styles.input` | Standard text field, 42px height |
-| Select dropdown | `styles.select` | Styled dropdown, 42px height |
-| Date input | `styles.dateInput` | Dark theme date picker |
-| Checkbox | `styles.checkboxLabel` | Wraps checkbox + label |
-| Narrow input | `styles.input` + `styles.inputNarrow` | Max 120px width |
-| Budget input | `styles.input` + `styles.inputBudget` | Fixed 100px width |
-| Disabled input | `styles.input` + `styles.inputDisabled` | Muted, centered text |
-| Uppercase input | `styles.input` + `styles.inputUppercase` | Forces uppercase |
+**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
 
 ---
 
-## Filter Bar Pattern
+## Step 2: Read Canonical Components CSS
 
-Filter controls belong in a **section** with `filtersContainer`:
+```
+read_file [canonicalApp.path]/[patterns.components.css]
+```
+
+Learn from this file:
+- Input field classes
+- Select dropdown classes
+- Date input classes
+- Checkbox/label classes
+- Filter container and group classes
+- Form label classes
+
+**DO NOT assume class names** - read them from the file.
+
+---
+
+## Step 3: Read Canonical Page Example
+
+```
+read_file [canonicalApp.path]/[patterns.page.example]
+```
+
+The canonical page (PO Generator) demonstrates:
+- Filter bar structure and hierarchy
+- Input/select usage in context
+- Label patterns (filter vs form)
+- Search box implementation
+
+**Copy patterns from this living document**, not from static examples in this skill.
+
+---
+
+## Step 4: Apply Patterns
+
+Using what you learned from the canonical files:
+
+1. **Match the filter structure** from the canonical page
+2. **Use the exact class names** from the CSS module
+3. **Follow the same patterns** for inputs, selects, checkboxes
+4. **Never invent new patterns** - if it's not in canonical, ask user
+
+**Key structural rules learned from canonical:**
+- Filter controls belong in sections with proper hierarchy
+- Different label classes for filter bars vs modal forms
+- Inline styles are banned - use conditional classes
+
+---
+
+## Step 5: Verify Zero Inline Styles
+
+```
+grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
+```
+
+Must return no matches. All styling must use CSS classes from the canonical modules.
+
+---
+
+## Step 6: Protect Imports
+
+The formatter strips unused imports. After adding imports, protect them:
 
 ```tsx
 import styles from '@/styles/components.module.css'
-
-// Protect from formatter
-const _styles = styles
-
-<section className={styles.section}>
-  <div className={styles.filtersContainer}>
-    <div className={styles.filterGroup}>
-      <label className={styles.label}>Supplier</label>
-      <select className={styles.select} value={supplier} onChange={e => setSupplier(e.target.value)}>
-        <option value="">All Suppliers</option>
-        <option value="1">Supplier A</option>
-      </select>
-    </div>
-    
-    <div className={styles.filterGroup}>
-      <label className={styles.label}>Date From</label>
-      <input 
-        type="date" 
-        className={styles.dateInput}
-        value={dateFrom}
-        onChange={e => setDateFrom(e.target.value)}
-      />
-    </div>
-    
-    <div className={styles.filterGroup}>
-      <label className={styles.label}>Budget</label>
-      <input 
-        type="number" 
-        className={`${styles.input} ${styles.inputBudget}`}
-        value={budget}
-        onChange={e => setBudget(e.target.value)}
-      />
-    </div>
-  </div>
-</section>
-```
-
-**Pattern:** `section > filtersContainer > filterGroup > label + input/select`
-
-**Key rule:** Filter controls that affect data display belong in filter sections, NOT floating above tables or in card headers.
-
----
-
-## Search Box with Icon
-
-```tsx
-import { Search } from 'lucide-react'
-
-<div className={styles.searchBox}>
-  <Search size={16} className={styles.searchIcon} />
-  <input 
-    type="text"
-    className={styles.searchInput}
-    placeholder="Search products..."
-    value={searchTerm}
-    onChange={e => setSearchTerm(e.target.value)}
-  />
-</div>
-```
-
----
-
-## Checkbox Pattern
-
-```tsx
-<label className={styles.checkboxLabel}>
-  <input 
-    type="checkbox"
-    checked={showOnlyActive}
-    onChange={e => setShowOnlyActive(e.target.checked)}
-  />
-  <span className={styles.checkboxLabelText}>Show only active items</span>
-</label>
-```
-
----
-
-## Select with Inherited/Default Value
-
-For selects that show an inherited or default value:
-
-```tsx
-<select 
-  className={`${styles.select} ${!hasOverride ? styles.selectInherited : ''}`}
-  value={value}
-  onChange={e => setValue(e.target.value)}
->
-  <option value="">Use default (inherited)</option>
-  <option value="custom">Custom value</option>
-</select>
-```
-
-The `selectInherited` class adds dashed border and muted text to indicate the value is inherited.
-
----
-
-## Toggle Switch Pattern
-
-```tsx
-<div className={styles.toggleContainer}>
-  <button 
-    className={`${styles.toggle} ${isEnabled ? styles.active : ''}`}
-    onClick={() => setIsEnabled(!isEnabled)}
-  />
-  <span className={styles.toggleLabel}>Enable feature</span>
-</div>
-```
-
----
-
-## Modal Form Layout
-
-For forms inside modals, use vertical stacking:
-
-```tsx
-import modalStyles from '@/styles/modal.module.css'
-import styles from '@/styles/components.module.css'
-
-<div className={modalStyles.modalBody}>
-  <div className={styles.utilStackMd}>
-    <div className={styles.filterGroup}>
-      <label className={styles.formLabel}>Field Name</label>
-      <input type="text" className={styles.input} />
-    </div>
-    
-    <div className={styles.filterGroup}>
-      <label className={styles.formLabel}>Select Option</label>
-      <select className={styles.select}>
-        <option>Option 1</option>
-      </select>
-    </div>
-  </div>
-</div>
-```
-
-**Note:** Use `styles.formLabel` (14px, bold) for modal forms instead of `styles.label` (12px, uppercase) used in filter bars.
-
----
-
-## Import Protection
-
-The formatter strips unused imports. Protect them immediately:
-
-```tsx
-import styles from '@/styles/components.module.css'
-import modalStyles from '@/styles/modal.module.css'
-
-// Protect from formatter
-const _styles = styles
-const _modalStyles = modalStyles
+const _styles = styles // Protect from formatter
 ```
 
 ---
 
 ## Validation Checklist
 
-Before completing the form implementation:
+Before completing:
 
-- [ ] Zero inline styles (`grep -n "style={{" <file>` returns nothing)
-- [ ] Text inputs use `styles.input`
-- [ ] Selects use `styles.select`
-- [ ] Date inputs use `styles.dateInput`
-- [ ] Filter bars use `section > filtersContainer > filterGroup` pattern
-- [ ] Labels use `styles.label` (filter bars) or `styles.formLabel` (modal forms)
-- [ ] Checkboxes use `styles.checkboxLabel`
-- [ ] Disabled inputs use `styles.inputDisabled`
-- [ ] Imports are protected from formatter
-- [ ] No custom CSS duplicating shared patterns
+- [ ] Read canonical components CSS module (not assumed class names)
+- [ ] Read canonical page example for filter patterns
+- [ ] Filter structure matches canonical hierarchy
+- [ ] Zero inline styles
+- [ ] Imports protected from formatter
+- [ ] No custom CSS duplicating canonical patterns

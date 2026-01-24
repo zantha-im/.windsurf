@@ -1,0 +1,129 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Senior Developer Configuration",
+    "description": "Configuration for the Senior Developer role, specifying the canonical reference app and pattern locations",
+    "type": "object",
+    "required": [
+        "canonicalApp",
+        "patterns"
+    ],
+    "properties": {
+        "canonicalApp": {
+            "type": "object",
+            "description": "The reference application containing canonical UI patterns",
+            "required": [
+                "path"
+            ],
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Absolute path to the canonical reference application"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description of the canonical app and its key feature"
+                }
+            }
+        },
+        "patterns": {
+            "type": "object",
+            "description": "Paths to canonical pattern files within the reference app",
+            "properties": {
+                "table": {
+                    "type": "object",
+                    "description": "Table pattern configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to table CSS module"
+                        },
+                        "example": {
+                            "type": "string",
+                            "description": "Relative path to canonical table component"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "page": {
+                    "type": "object",
+                    "description": "Page layout pattern configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to page CSS module"
+                        },
+                        "example": {
+                            "type": "string",
+                            "description": "Relative path to canonical page component"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "components": {
+                    "type": "object",
+                    "description": "Shared components CSS configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to components CSS module"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "buttons": {
+                    "type": "object",
+                    "description": "Button pattern configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to buttons CSS module"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "modal": {
+                    "type": "object",
+                    "description": "Modal pattern configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to modal CSS module"
+                        },
+                        "example": {
+                            "type": "string",
+                            "description": "Relative path to canonical modal component"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "form": {
+                    "type": "object",
+                    "description": "Form pattern configuration",
+                    "properties": {
+                        "css": {
+                            "type": "string",
+                            "description": "Relative path to form CSS module (if separate from components)"
+                        },
+                        "example": {
+                            "type": "string",
+                            "description": "Relative path to canonical form/filter example"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

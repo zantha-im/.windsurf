@@ -1,33 +1,19 @@
 ---
 name: button-patterns
-description: Enforces consistent button styling using shared CSS modules. Use when adding buttons, icon buttons, action buttons, or styling interactive elements. Triggers on: button styles, icon button, action button, primary button, delete button, add button, submit button, cancel button, refactor button.
+description: Enforces consistent button styling by reading from the canonical reference app (stock-insights). Use when adding buttons, icon buttons, action buttons, or styling interactive elements. Triggers on: button styles, icon button, action button, primary button, delete button, add button, submit button, cancel button, refactor button.
 ---
 
 # Skill: Button Patterns
 
-This skill ensures consistent button implementation using shared CSS modules and established patterns.
+This skill ensures consistent button implementation by reading patterns from the **canonical reference app** (living document), not hardcoded examples.
 
 ---
 
-## CRITICAL: Shared Modules First
+## CRITICAL: Read From Canonical App
 
-**Before creating ANY button CSS, search shared modules for existing classes.**
+**DO NOT use hardcoded CSS class names or patterns from this skill file.**
 
-Buttons use the **Buttons module** exclusively. Never create custom button styles.
-
----
-
-## Config Discovery
-
-Read the configuration file to find the canonical reference app:
-
-```
-.windsurf/config/senior-developer.json
-```
-
-This contains `canonicalApp.path` pointing to the reference application with proven patterns.
-
-**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
+Instead, read the actual files from the canonical reference app configured in `.windsurf/config/senior-developer.json`.
 
 ---
 
@@ -35,264 +21,110 @@ This contains `canonicalApp.path` pointing to the reference application with pro
 
 ```
 Button Patterns Checklist:
-- [ ] Step 0: Read config to get canonical app path
-- [ ] Step 1: Read buttons.module.css from canonical app
-- [ ] Step 2: Identify button type needed
-- [ ] Step 3: Apply appropriate class
-- [ ] Step 4: Verify zero inline styles
-- [ ] Step 5: Protect imports from formatter
+- [ ] Step 1: Read config to get canonical app path
+- [ ] Step 2: Read canonical buttons CSS module
+- [ ] Step 3: Read canonical component examples for button usage
+- [ ] Step 4: Apply patterns learned from canonical files
+- [ ] Step 5: Verify zero inline styles
+- [ ] Step 6: Protect imports from formatter
 ```
 
 ---
 
-## CRITICAL: No Inline Styles
+## Step 1: Read Configuration
 
-**Inline styles are BANNED.** Even conditional values must use classes:
-
-```tsx
-// ❌ BAD - inline style
-<button style={{ opacity: disabled ? 0.5 : 1 }}>Save</button>
-
-// ✅ GOOD - use disabled attribute (native styling)
-<button disabled={disabled}>Save</button>
 ```
+read_file .windsurf/config/senior-developer.json
+```
+
+Extract:
+- `canonicalApp.path` - Base path to reference app
+- `patterns.buttons.css` - Path to buttons CSS module
+- `patterns.table.example` - Path to canonical table (for action buttons)
+- `patterns.page.example` - Path to canonical page (for header buttons)
+
+**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
 
 ---
 
-## Button Categories
+## Step 2: Read Canonical Buttons CSS
 
-### Primary Action Buttons
+```
+read_file [canonicalApp.path]/[patterns.buttons.css]
+```
 
-| Class | Use Case | Appearance |
-|-------|----------|------------|
-| `btnStyles.btnPrimary` | Main action (Save, Submit) | Blue filled |
-| `btnStyles.btnSuccess` | Positive action (Confirm, Approve) | Green filled |
-| `btnStyles.btnDanger` | Destructive action (Delete) | Red filled |
-| `btnStyles.btnSecondary` | Secondary action | Outlined |
-| `btnStyles.btnSmall` | Compact button | Smaller size |
-| `btnStyles.btnBlock` | Full width button | 100% width |
-| `btnStyles.btnDashed` | Add/Create action | Dashed outline |
-| `btnStyles.btnSuccessSmall` | Small positive action | Small green |
+Learn from this file:
+- Primary action button classes
+- Success/danger/secondary button classes
+- Icon button classes (with and without borders)
+- Small/compact button classes
+- Dashed/add button classes
 
-### Icon Buttons (with border)
-
-| Class | Hover Color | Use Case |
-|-------|-------------|----------|
-| `btnStyles.btnIcon` | Base | Generic icon button |
-| `btnStyles.btnIconEdit` | Blue | Edit action |
-| `btnStyles.btnIconView` | Purple | View/Preview action |
-| `btnStyles.btnIconDownload` | Green | Download action |
-| `btnStyles.btnIconDelete` | Red | Delete action |
-| `btnStyles.btnIconGhost` | Gray | Subtle action |
-
-### Icon Buttons (no border)
-
-| Class | Hover Color | Use Case |
-|-------|-------------|----------|
-| `btnStyles.btnIconAdd` | Green | Add inline |
-| `btnStyles.btnIconDeleteNoBorder` | Red | Delete inline |
+**DO NOT assume class names** - read them from the file.
 
 ---
 
-## Usage Examples
+## Step 3: Read Canonical Component Examples
 
-### Primary Button with Icon
-```tsx
-import btnStyles from '@/styles/buttons.module.css'
-import { Save } from 'lucide-react'
-
-// Protect from formatter
-const _btnStyles = btnStyles
-
-<button className={btnStyles.btnPrimary} onClick={handleSave}>
-  <Save size={16} />
-  Save Changes
-</button>
+```
+read_file [canonicalApp.path]/[patterns.table.example]
+read_file [canonicalApp.path]/[patterns.page.example]
 ```
 
-### Success Button
-```tsx
-<button className={btnStyles.btnSuccess} onClick={handleConfirm}>
-  Confirm Order
-</button>
-```
+The canonical components demonstrate:
+- Button usage in page headers
+- Action buttons in table rows
+- Button groups and alignment
+- Loading states in buttons
 
-### Danger Button
-```tsx
-<button className={btnStyles.btnDanger} onClick={handleDelete}>
-  Delete
-</button>
-```
-
-### Secondary Button
-```tsx
-<button className={btnStyles.btnSecondary} onClick={handleCancel}>
-  Cancel
-</button>
-```
-
-### Small Button (in table headers)
-```tsx
-<button className={btnStyles.btnSmall} onClick={handleSync}>
-  <RefreshCcw size={16} />
-  Sync
-</button>
-```
-
-### Icon Button with Edit
-```tsx
-import { Pencil } from 'lucide-react'
-
-<button className={btnStyles.btnIconEdit} onClick={() => handleEdit(item.id)}>
-  <Pencil size={16} />
-</button>
-```
-
-### Icon Button with Delete
-```tsx
-import { Trash2 } from 'lucide-react'
-
-<button className={btnStyles.btnIconDelete} onClick={() => handleDelete(item.id)}>
-  <Trash2 size={16} />
-</button>
-```
-
-### Add Button (Dashed)
-```tsx
-import { Plus } from 'lucide-react'
-
-<button className={btnStyles.btnDashed} onClick={handleAdd}>
-  <Plus size={16} />
-  Add New Item
-</button>
-```
+**Copy patterns from these living documents**, not from static examples in this skill.
 
 ---
 
-## Button Groups
+## Step 4: Apply Patterns
 
-For multiple buttons in a row (e.g., page header):
+Using what you learned from the canonical files:
 
-```tsx
-import styles from '@/styles/components.module.css'
-import btnStyles from '@/styles/buttons.module.css'
+1. **Use the exact class names** from the buttons CSS module
+2. **Follow the same patterns** for button placement and grouping
+3. **Match the icon button styles** from canonical components
+4. **Never invent new button styles** - if it's not in canonical, ask user
 
-<div className={styles.headerActions}>
-  <button className={btnStyles.btnSecondary}>Export</button>
-  <button className={btnStyles.btnPrimary}>Add New</button>
-</div>
-```
-
----
-
-## Table Row Actions
-
-For action buttons in table rows, use `actionsCell` wrapper:
-
-```tsx
-import styles from '@/styles/components.module.css'
-import btnStyles from '@/styles/buttons.module.css'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
-
-<td>
-  <div className={styles.actionsCell}>
-    <button className={btnStyles.btnIconView} onClick={() => handleView(row.id)}>
-      <Eye size={16} />
-    </button>
-    <button className={btnStyles.btnIconEdit} onClick={() => handleEdit(row.id)}>
-      <Pencil size={16} />
-    </button>
-    <button className={btnStyles.btnIconDelete} onClick={() => handleDelete(row.id)}>
-      <Trash2 size={16} />
-    </button>
-  </div>
-</td>
-```
-
-**Note:** The `actionsCell` class provides proper flex alignment with `align-items: center`.
+**Key rules learned from canonical:**
+- Inline styles are banned - use native `disabled` attribute
+- Table row actions use a wrapper class for proper alignment
+- Loading states use spinner icon class
 
 ---
 
-## Split Button Pattern
+## Step 5: Verify Zero Inline Styles
 
-For buttons with dropdown options:
-
-```tsx
-<div className={styles.splitButtonGroup}>
-  <div className={styles.splitButtonRow}>
-    <button 
-      className={`${btnStyles.btnPrimary} ${styles.splitButtonLeft}`}
-      onClick={handleMainAction}
-    >
-      Generate PDF
-    </button>
-    <button 
-      className={`${btnStyles.btnPrimary} ${styles.splitButtonRight}`}
-      onClick={() => setDropdownOpen(!dropdownOpen)}
-    >
-      <ChevronDown size={16} />
-    </button>
-  </div>
-  {dropdownOpen && (
-    <div className={styles.dropdownMenu}>
-      <button className={styles.dropdownItem} onClick={handleOption1}>
-        Option 1
-      </button>
-      <button className={styles.dropdownItem} onClick={handleOption2}>
-        Option 2
-      </button>
-    </div>
-  )}
-</div>
 ```
+grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
+```
+
+Must return no matches. All styling must use CSS classes from the canonical modules.
 
 ---
 
-## Loading State in Buttons
+## Step 6: Protect Imports
 
-```tsx
-import { Loader2 } from 'lucide-react'
-import styles from '@/styles/components.module.css'
-
-<button className={btnStyles.btnPrimary} disabled={loading} onClick={handleSave}>
-  {loading ? (
-    <>
-      <Loader2 size={16} className={styles.spinnerIcon} />
-      Saving...
-    </>
-  ) : (
-    'Save'
-  )}
-</button>
-```
-
----
-
-## Import Protection
-
-The formatter strips unused imports. Protect them immediately:
+The formatter strips unused imports. After adding imports, protect them:
 
 ```tsx
 import btnStyles from '@/styles/buttons.module.css'
-import styles from '@/styles/components.module.css'
-
-// Protect from formatter
-const _btnStyles = btnStyles
-const _styles = styles
+const _btnStyles = btnStyles // Protect from formatter
 ```
 
 ---
 
 ## Validation Checklist
 
-Before completing the button implementation:
+Before completing:
 
-- [ ] Zero inline styles (`grep -n "style={{" <file>` returns nothing)
-- [ ] Primary actions use `btnStyles.btnPrimary` or `btnStyles.btnSuccess`
-- [ ] Destructive actions use `btnStyles.btnDanger` or `btnStyles.btnIconDelete`
-- [ ] Secondary/cancel actions use `btnStyles.btnSecondary`
-- [ ] Icon buttons use appropriate `btnStyles.btnIcon*` class
-- [ ] Table row actions wrapped in `styles.actionsCell`
-- [ ] Loading states use `styles.spinnerIcon` for animation
-- [ ] Imports are protected from formatter
-- [ ] No custom CSS duplicating shared patterns
+- [ ] Read canonical buttons CSS module (not assumed class names)
+- [ ] Read canonical component examples for button usage
+- [ ] Button classes match canonical patterns
+- [ ] Zero inline styles
+- [ ] Imports protected from formatter
+- [ ] No custom CSS duplicating canonical patterns

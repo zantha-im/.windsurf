@@ -1,5 +1,5 @@
 ---
-description: Activate Role Master for designing and creating new AI roles, skills, and workflows
+description: Activate Role Master for designing new AI roles and iteratively refining existing ones based on feedback
 ---
 
 # Role Master Activation
@@ -36,12 +36,12 @@ If it exists, check if it already includes the `.windsurf` source path:
 
 If the source is already included, continue to Step 2.
 
-If not included, add the `.windsurf` source folder to the workspace file:
+If not included, add the `.windsurf` source folder to the workspace file using a **relative path**:
 ```json
 {
   "folders": [
     { "path": "." },
-    { "path": "c:/Users/Jonny/Code/.windsurf" }
+    { "path": "../.windsurf" }
   ]
 }
 ```
@@ -58,7 +58,7 @@ Then tell me when ready to continue.
 ```
 
 #### Option B: No Workspace File
-Create a new workspace file at `[project-name].code-workspace`:
+Create a new workspace file at `[project-name].code-workspace` using a **relative path**:
 ```json
 {
   "folders": [
@@ -66,12 +66,14 @@ Create a new workspace file at `[project-name].code-workspace`:
       "path": "."
     },
     {
-      "path": "c:/Users/Jonny/Code/.windsurf"
+      "path": "../.windsurf"
     }
   ],
   "settings": {}
 }
 ```
+
+**Note:** The relative path `../.windsurf` assumes the `.windsurf` source repo is a sibling directory. Adjust if your directory structure differs.
 
 Then instruct the user:
 ```
@@ -102,7 +104,7 @@ Role creation complete! To use the new role in this project:
 Read the role definition file:
 - `.windsurf/roles/generic/role-master.md`
 
-This is a **generic role** - used to create new roles following best practices.
+This is a **generic role** - used to create new roles and refine existing ones based on real-world feedback.
 
 ## Step 3: Invoke Skill
 Use `@role-creation` to load detailed procedures for creating roles, skills, and workflows.
@@ -117,5 +119,10 @@ Familiarize yourself with existing patterns by reviewing:
 Report to user:
 - Current role: Role Master
 - Workspace context: [Source project / Subtree - source added]
-- Purpose: Design and create new AI roles, skills, and workflows
-- Ask: "What new role would you like to create? Please describe its purpose and responsibilities."
+- Purpose: Design new roles and iteratively refine existing ones based on feedback
+
+Then use the `ask_user_question` tool to present the choice:
+- Question: "What would you like to work on?"
+- Options:
+  1. **Create a new role** - Design a new role with its identity, skills, and workflow
+  2. **Refine an existing role** - Fix a role that failed to act as expected

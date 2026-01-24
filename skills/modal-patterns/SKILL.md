@@ -1,36 +1,19 @@
 ---
 name: modal-patterns
-description: Enforces consistent modal dialog patterns using shared CSS modules. Use when creating modals, dialogs, popups, confirmation dialogs, or edit forms in overlays. Triggers on: create modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal.
+description: Enforces consistent modal dialog patterns by reading from the canonical reference app (stock-insights). Use when creating modals, dialogs, popups, confirmation dialogs, or edit forms in overlays. Triggers on: create modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal.
 ---
 
 # Skill: Modal Patterns
 
-This skill ensures consistent modal implementation using shared CSS modules and established patterns.
+This skill ensures consistent modal implementation by reading patterns from the **canonical reference app** (living document), not hardcoded examples.
 
 ---
 
-## CRITICAL: Shared Modules First
+## CRITICAL: Read From Canonical App
 
-**Before creating ANY modal CSS, search shared modules for existing classes.**
+**DO NOT use hardcoded CSS class names or patterns from this skill file.**
 
-Modals use THREE CSS modules:
-1. **Modal module** - Structure, overlay, header, body, footer
-2. **Components module** - Form inputs, text colors, utilities
-3. **Buttons module** - Action buttons in footer
-
----
-
-## Config Discovery
-
-Read the configuration file to find the canonical reference app:
-
-```
-.windsurf/config/senior-developer.json
-```
-
-This contains `canonicalApp.path` pointing to the reference application with proven patterns.
-
-**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
+Instead, read the actual files from the canonical reference app configured in `.windsurf/config/senior-developer.json`.
 
 ---
 
@@ -38,260 +21,126 @@ This contains `canonicalApp.path` pointing to the reference application with pro
 
 ```
 Modal Patterns Checklist:
-- [ ] Step 0: Read config to get canonical app path
-- [ ] Step 1: Read modal.module.css from canonical app
-- [ ] Step 2: Read components.module.css for form inputs
-- [ ] Step 3: Read canonical modal example
-- [ ] Step 4: Apply modal structure pattern
-- [ ] Step 5: Apply footer button pattern
+- [ ] Step 1: Read config to get canonical app path
+- [ ] Step 2: Read canonical modal CSS module
+- [ ] Step 3: Read canonical modal component example
+- [ ] Step 4: Read buttons CSS for footer actions
+- [ ] Step 5: Apply patterns learned from canonical files
 - [ ] Step 6: Verify zero inline styles
 - [ ] Step 7: Protect imports from formatter
 ```
 
 ---
 
-## CRITICAL: No Inline Styles
+## Step 1: Read Configuration
 
-**Inline styles are BANNED.** Even conditional values must use classes.
+```
+read_file .windsurf/config/senior-developer.json
+```
+
+Extract:
+- `canonicalApp.path` - Base path to reference app
+- `patterns.modal.css` - Path to modal CSS module
+- `patterns.modal.example` - Path to canonical modal component
+- `patterns.buttons.css` - Path to buttons CSS module
+
+**If config missing:** Check for `.windsurf/config/senior-developer.example.json` and inform user to copy and configure it.
 
 ---
 
-## Canonical Modal Structure
+## Step 2: Read Canonical Modal CSS
 
-```tsx
-import modalStyles from '@/styles/modal.module.css'
-import styles from '@/styles/components.module.css'
-import btnStyles from '@/styles/buttons.module.css'
-import { X } from 'lucide-react'
-
-// Protect imports from formatter
-const _modalStyles = modalStyles
-const _styles = styles
-const _btnStyles = btnStyles
-
-interface MyModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-}
-
-export function MyModal({ isOpen, onClose, onConfirm }: MyModalProps) {
-  if (!isOpen) return null
-
-  return (
-    <div className={modalStyles.modalOverlay} onClick={onClose}>
-      <div className={modalStyles.modalContent} onClick={e => e.stopPropagation()}>
-        <div className={modalStyles.modalHeader}>
-          <h2 className={modalStyles.modalTitle}>Modal Title</h2>
-          <button className={modalStyles.closeButton} onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-        
-        <div className={modalStyles.modalBody}>
-          {/* Modal content */}
-        </div>
-        
-        <div className={modalStyles.modalFooter}>
-          <button className={modalStyles.cancelButton} onClick={onClose}>
-            Cancel
-          </button>
-          <button className={btnStyles.btnPrimary} onClick={onConfirm}>
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+```
+read_file [canonicalApp.path]/[patterns.modal.css]
 ```
 
-**Key behaviors:**
+Learn from this file:
+- Modal overlay classes
+- Modal content/container classes
+- Header, body, footer classes
+- Title and close button classes
+
+**DO NOT assume class names** - read them from the file.
+
+---
+
+## Step 3: Read Canonical Modal Component
+
+```
+read_file [canonicalApp.path]/[patterns.modal.example]
+```
+
+The canonical modal component (e.g., `POEditModal.tsx`) demonstrates:
+- Modal structure (overlay → content → header → body → footer)
+- Click handling (overlay closes, content stops propagation)
+- Close button implementation
+- Footer button patterns
+- Form layout inside modals
+
+**Copy patterns from this living document**, not from static examples in this skill.
+
+---
+
+## Step 4: Read Buttons CSS
+
+```
+read_file [canonicalApp.path]/[patterns.buttons.css]
+```
+
+Learn available button classes for:
+- Primary action buttons
+- Danger/destructive buttons
+- Success buttons
+- Cancel buttons
+
+---
+
+## Step 5: Apply Patterns
+
+Using what you learned from the canonical files:
+
+1. **Match the modal structure** from the canonical component
+2. **Use the exact class names** from the CSS modules
+3. **Follow the same patterns** for headers, footers, forms
+4. **Never invent new patterns** - if it's not in canonical, ask user
+
+**Key behavioral rules learned from canonical:**
 - Overlay click closes modal
-- Content click stops propagation (prevents closing when clicking inside)
+- Content click stops propagation
 - Close button (X) in header
 - Footer has cancel + action buttons
 
 ---
 
-## Modal with Icon in Title
+## Step 6: Verify Zero Inline Styles
 
-```tsx
-import { Trash2 } from 'lucide-react'
-
-<div className={modalStyles.modalHeader}>
-  <h2 className={modalStyles.modalTitleWithIcon}>
-    <Trash2 size={20} />
-    Delete Confirmation
-  </h2>
-  <button className={modalStyles.closeButton} onClick={onClose}>
-    <X size={20} />
-  </button>
-</div>
 ```
+grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
+```
+
+Must return no matches. All styling must use CSS classes from the canonical modules.
 
 ---
 
-## Modal with Description
+## Step 7: Protect Imports
 
-```tsx
-<div className={modalStyles.modalBody}>
-  <p className={modalStyles.modalDescription}>
-    Are you sure you want to delete this item? This action cannot be undone.
-  </p>
-</div>
-```
-
----
-
-## Modal with Item List
-
-```tsx
-<div className={modalStyles.modalBody}>
-  <div className={modalStyles.itemsContainer}>
-    {items.map(item => (
-      <div key={item.id} className={modalStyles.itemRow}>
-        <span className={modalStyles.itemSku}>{item.sku}</span>
-        <span className={modalStyles.itemName}>{item.name}</span>
-        <span className={modalStyles.itemInfo}>{item.quantity}</span>
-      </div>
-    ))}
-  </div>
-  
-  <div className={modalStyles.totalRow}>
-    <span className={modalStyles.totalLabel}>Total:</span>
-    <span className={modalStyles.totalValue}>{total}</span>
-  </div>
-</div>
-```
-
----
-
-## Modal with Form
-
-For forms inside modals, use vertical stacking with `formLabel`:
-
-```tsx
-<div className={modalStyles.modalBody}>
-  <div className={styles.utilStackMd}>
-    <div className={styles.filterGroup}>
-      <label className={styles.formLabel}>Name</label>
-      <input 
-        type="text" 
-        className={styles.input} 
-        value={name} 
-        onChange={e => setName(e.target.value)} 
-      />
-    </div>
-    
-    <div className={styles.filterGroup}>
-      <label className={styles.formLabel}>Type</label>
-      <select 
-        className={styles.select} 
-        value={type} 
-        onChange={e => setType(e.target.value)}
-      >
-        <option value="">Select type...</option>
-        <option value="a">Type A</option>
-      </select>
-    </div>
-    
-    <div className={styles.filterGroup}>
-      <label className={styles.formLabel}>Quantity</label>
-      <input 
-        type="number" 
-        className={`${styles.input} ${styles.inputNarrow}`}
-        value={quantity} 
-        onChange={e => setQuantity(e.target.value)} 
-      />
-    </div>
-  </div>
-</div>
-```
-
-**Note:** Use `styles.formLabel` (14px, bold) for modal forms, not `styles.label` (12px, uppercase) which is for filter bars.
-
----
-
-## Footer Button Patterns
-
-**Standard (Cancel + Primary):**
-```tsx
-<div className={modalStyles.modalFooter}>
-  <button className={modalStyles.cancelButton} onClick={onClose}>Cancel</button>
-  <button className={btnStyles.btnPrimary} onClick={onConfirm}>Save</button>
-</div>
-```
-
-**Destructive (Cancel + Delete):**
-```tsx
-<div className={modalStyles.modalFooter}>
-  <button className={modalStyles.cancelButton} onClick={onClose}>Cancel</button>
-  <button className={btnStyles.btnDanger} onClick={onDelete}>Delete</button>
-</div>
-```
-
-**Success action (Cancel + Confirm):**
-```tsx
-<div className={modalStyles.modalFooter}>
-  <button className={modalStyles.cancelButton} onClick={onClose}>Cancel</button>
-  <button className={btnStyles.btnSuccess} onClick={onConfirm}>Confirm</button>
-</div>
-```
-
----
-
-## Loading State in Modal
-
-```tsx
-<div className={modalStyles.modalBody}>
-  {loading ? (
-    <div className={styles.loading}>Loading...</div>
-  ) : (
-    <div>{/* Content */}</div>
-  )}
-</div>
-
-<div className={modalStyles.modalFooter}>
-  <button className={modalStyles.cancelButton} onClick={onClose} disabled={loading}>
-    Cancel
-  </button>
-  <button className={btnStyles.btnPrimary} onClick={onConfirm} disabled={loading}>
-    {loading ? 'Saving...' : 'Save'}
-  </button>
-</div>
-```
-
----
-
-## Import Protection
-
-The formatter strips unused imports. Protect them immediately:
+The formatter strips unused imports. After adding imports, protect them:
 
 ```tsx
 import modalStyles from '@/styles/modal.module.css'
-import styles from '@/styles/components.module.css'
-import btnStyles from '@/styles/buttons.module.css'
-
-// Protect from formatter
-const _modalStyles = modalStyles
-const _styles = styles
-const _btnStyles = btnStyles
+const _modalStyles = modalStyles // Protect from formatter
 ```
 
 ---
 
 ## Validation Checklist
 
-Before completing the modal implementation:
+Before completing:
 
-- [ ] Zero inline styles (`grep -n "style={{" <file>` returns nothing)
-- [ ] Uses canonical structure (overlay → content → header → body → footer)
-- [ ] Overlay click closes modal
-- [ ] Content click stops propagation
-- [ ] Close button (X icon) in header
-- [ ] Footer has cancel + action buttons
-- [ ] Form inputs use `styles.formLabel` (not `styles.label`)
-- [ ] Form fields use `styles.utilStackMd` for vertical spacing
-- [ ] Imports are protected from formatter
-- [ ] No custom CSS duplicating shared patterns
+- [ ] Read canonical modal CSS module (not assumed class names)
+- [ ] Read canonical modal component example
+- [ ] Structure matches canonical (overlay → content → header → body → footer)
+- [ ] Click behaviors match canonical
+- [ ] Zero inline styles
+- [ ] Imports protected from formatter
+- [ ] No custom CSS duplicating canonical patterns
