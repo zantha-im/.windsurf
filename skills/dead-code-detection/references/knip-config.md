@@ -64,6 +64,13 @@ All files to analyze. Knip will check if these are used.
 ### `ignore`
 Files to completely ignore (won't be analyzed or reported).
 
+**Always ignore the `.windsurf/` subtree** - it's shared tooling, not project code:
+```json
+{
+  "ignore": [".windsurf/**"]
+}
+```
+
 ### `ignoreDependencies`
 Dependencies that knip reports as unused but are actually needed (e.g., PostCSS plugins loaded by config).
 

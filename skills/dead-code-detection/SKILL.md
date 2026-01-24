@@ -104,12 +104,33 @@ mkdir -p roles/senior-developer
 ```
 
 **Step 2: Run knip with JSON output**
+
+**IMPORTANT:** Exclude the `.windsurf/` subtree - it's shared tooling, not project code.
+
 ```bash
-npx knip --reporter json > roles/senior-developer/knip-report.json
+npx knip --reporter json --ignore ".windsurf/**" > roles/senior-developer/knip-report.json
+```
+
+Or add to `knip.json` config (preferred):
+```json
+{
+  "ignore": [".windsurf/**"]
+}
 ```
 
 **Step 3: Read results**
-Use `read_file` tool (NOT `cat`) to read `roles/senior-developer/knip-report.json` - this handles large files without truncation.
+
+**CRITICAL:** You MUST use the `read_file` tool to read the JSON file. Do NOT:
+- Use `cat` or `type` commands (output will be truncated)
+- Try to read command output directly (will be truncated)
+- Use `run_command` to view the file
+
+**Correct approach:**
+```
+read_file(file_path="<absolute-path>/roles/senior-developer/knip-report.json")
+```
+
+For large files (>1000 lines), use `offset` and `limit` parameters to read in chunks.
 
 **For very large projects**, process incrementally by issue type:
 ```bash
@@ -118,7 +139,7 @@ npx knip --include dependencies --reporter json > roles/senior-developer/knip-de
 npx knip --include exports --reporter json > roles/senior-developer/knip-exports.json
 ```
 
-Read each file separately with `read_file` tool.
+Then use `read_file` tool on each file separately.
 
 **Cleanup:** Delete report files after processing is complete.
 

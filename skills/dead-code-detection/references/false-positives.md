@@ -49,15 +49,27 @@ export type ApiResponse = { ... }  // Used by consumers, not internally
 
 Packages used by tools, not code:
 
-| Package        | Used By               |
-| -------------- | --------------------- |
-| `autoprefixer` | PostCSS config        |
-| `postcss`      | Next.js/build tools   |
-| `@types/*`     | TypeScript (implicit) |
-| `eslint-*`     | ESLint config         |
-| `prettier-*`   | Prettier config       |
+| Package                            | Used By                             |
+| ---------------------------------- | ----------------------------------- |
+| `autoprefixer`                     | PostCSS config                      |
+| `postcss`                          | Next.js/build tools                 |
+| `@types/*`                         | TypeScript (implicit)               |
+| `eslint-*`                         | ESLint config                       |
+| `@typescript-eslint/eslint-plugin` | ESLint config (extends)             |
+| `@typescript-eslint/parser`        | ESLint config (parser)              |
+| `prettier-*`                       | Prettier config                     |
+| `dotenv`                           | Scripts via `node -r dotenv/config` |
 
-**Fix:** Add to `ignoreDependencies`
+**Fix:** Add to `ignoreDependencies`:
+```json
+{
+  "ignoreDependencies": [
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "dotenv"
+  ]
+}
+```
 
 ## CLI Tools
 
