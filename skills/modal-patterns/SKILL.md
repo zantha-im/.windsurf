@@ -9,11 +9,18 @@ This skill ensures consistent modal implementation by reading patterns from the 
 
 ---
 
-## CRITICAL: Read From Canonical App
+## MANDATORY FIRST ACTION
 
-**DO NOT use hardcoded CSS class names or patterns from this skill file.**
+**STOP. Before exploring the codebase or making any changes, you MUST:**
 
-Instead, read the actual files from the canonical reference app configured in `.windsurf/config/senior-developer.json`.
+1. Read the config file: `.windsurf/config/senior-developer.json`
+2. Read the canonical modal CSS module from the config path
+3. Read the canonical modal component example from the config path
+
+**DO NOT use Fast Context, code_search, or grep to explore the codebase first.**
+**DO NOT ask the user what needs fixing before reading canonical patterns.**
+
+The canonical files ARE your context. Read them first, then you'll know what patterns to apply.
 
 ---
 
@@ -25,14 +32,15 @@ Modal Patterns Checklist:
 - [ ] Step 2: Read canonical modal CSS module
 - [ ] Step 3: Read canonical modal component example
 - [ ] Step 4: Read buttons CSS for footer actions
-- [ ] Step 5: Apply patterns learned from canonical files
-- [ ] Step 6: Verify zero inline styles
-- [ ] Step 7: Protect imports from formatter
+- [ ] Step 5: THEN explore the target component
+- [ ] Step 6: Apply patterns learned from canonical files
+- [ ] Step 7: Verify zero inline styles
+- [ ] Step 8: Protect imports from formatter
 ```
 
 ---
 
-## Step 1: Read Configuration
+## Step 1: Read Configuration (DO THIS FIRST)
 
 ```
 read_file .windsurf/config/senior-developer.json
