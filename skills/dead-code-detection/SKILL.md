@@ -175,12 +175,41 @@ Then use `read_file` tool on each file separately.
 
 ## Step 3: AI Review and Filtering
 
-**CRITICAL:** Not all knip findings are safe to remove. Review each category:
+**CRITICAL:** Not all knip findings are safe to remove.
+
+### DO NOT Re-Verify with Grep
+
+**You MUST NOT use `grep` or `grep_search` to verify knip findings.** Knip has already performed comprehensive static analysis. Re-checking with grep is:
+- **Redundant** - knip already traced all imports
+- **Unreliable** - grep misses dynamic imports, path aliases, re-exports
+- **Slow** - adds unnecessary shell commands
+
+**Trust knip's analysis.** Your job is to filter false positives using the reference, not to re-analyze the codebase.
+
+### MANDATORY: Check False Positives Reference FIRST
+
+**Before categorizing ANY devDependency as "safe to remove", you MUST:**
+1. Read [references/false-positives.md](references/false-positives.md)
+2. Check if the dependency is listed as a known false positive
+3. If listed, mark as **Keep** regardless of what knip reports
+
+**Known false positives that knip ALWAYS gets wrong:**
+- `@typescript-eslint/eslint-plugin` - Used by ESLint config (extends)
+- `@typescript-eslint/parser` - Used by ESLint config (parser)  
+- `dotenv` - Used via `node -r dotenv/config` in scripts
+- `autoprefixer`, `postcss` - Used by build tools
+- `eslint-*` plugins - Used by ESLint config
+
+**How to verify ESLint plugins are used:**
+```bash
+# Check .eslintrc.json for extends/plugins/parser
+grep -E "(extends|plugins|parser)" .eslintrc.json
+```
 
 ### Safe to Remove (High Confidence)
 - Unused files in `components/` that aren't dynamic imports
 - Unused exports that are clearly internal
-- Unused devDependencies for removed tooling
+- Unused devDependencies **NOT in the false positives list** for removed tooling
 
 ### Requires Judgment (Medium Confidence)
 - Files that might be dynamically imported
@@ -190,9 +219,8 @@ Then use `read_file` tool on each file separately.
 ### Keep (False Positives)
 - Entry points (pages, API routes, config files)
 - Files imported via path aliases knip doesn't understand
-- Dependencies used in ways knip can't detect (e.g., CLI tools)
-
-See [references/false-positives.md](references/false-positives.md) for common patterns.
+- Dependencies used in ways knip can't detect (e.g., CLI tools, config files)
+- **ALL items listed in false-positives.md**
 
 ---
 
