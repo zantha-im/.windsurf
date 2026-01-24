@@ -68,8 +68,10 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ## Active Skills
 
-This role has task-specific skills for UI pattern enforcement:
+### Code Quality & Maintenance
+- `@dead-code-detection` - Find and remove unused files, exports, and dependencies (uses knip)
 
+### UI Pattern Enforcement
 - `@table-patterns` - Data tables, sortable columns, table layouts
 - `@page-patterns` - Page scaffolds, sections, filters, stats
 - `@form-patterns` - Form inputs, filter bars, search boxes
@@ -77,7 +79,7 @@ This role has task-specific skills for UI pattern enforcement:
 - `@button-patterns` - Button styles, icon buttons, actions
 - `@css-audit` - Comprehensive CSS/design pattern review and consolidation
 
-Each skill reads from a **canonical reference app** configured per-project. See `.windsurf/config/README.md` for setup.
+UI pattern skills read from a **canonical reference app** configured per-project. See `.windsurf/config/README.md` for setup.
 
 ## Communication Style
 

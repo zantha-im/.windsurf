@@ -1,5 +1,5 @@
 ---
-description: Activate Role Master for designing new AI roles and iteratively refining existing ones based on feedback
+description: Activate Role Master for designing and creating new AI roles, skills, and workflows
 ---
 
 # Role Master Activation
@@ -125,4 +125,101 @@ Then use the `ask_user_question` tool to present the choice:
 - Question: "What would you like to work on?"
 - Options:
   1. **Create a new role** - Design a new role with its identity, skills, and workflow
-  2. **Refine an existing role** - Fix a role that failed to act as expected
+  2. **Refine an existing role** - Improve or fix an existing role or its skills
+  3. **Add a workflow to a role** - Add new capability to an existing role (may create/update skills)
+
+---
+
+## Step 6: If "Refine an existing role" Selected
+
+### 6a: Enumerate Existing Roles
+Scan the roles directories and present them as selectable options:
+
+```
+Directories to scan:
+- .windsurf/roles/domain/*.md
+- .windsurf/roles/generic/*.md
+```
+
+Use `ask_user_question` with up to 4 roles at a time (tool limit). If more than 4 roles exist, group by category:
+- Option 1-3: Individual roles
+- Option 4: "Show more roles..."
+
+### 6b: After Role Selection - Present Action Menu
+Once a role is selected, use `ask_user_question` to present:
+- Question: "What would you like to do with [role-name]?"
+- Options:
+  1. **Fix a problem** - The role failed to act as expected; diagnose and fix
+  2. **Work on skills** - Add, modify, or improve the role's associated skills
+  3. **Other** - Describe what you want to change
+
+### 6c: Route to Appropriate Workflow
+
+**If "Fix a problem":**
+Follow the Role Refinement workflow in `@role-creation`:
+1. Gather failure details (what happened vs expected)
+2. Identify the component (role, skill, workflow, or rule)
+3. Read the relevant file(s)
+4. Diagnose root cause
+5. Propose fix (confirm before editing)
+6. Apply targeted edit
+7. Test the fix
+
+**If "Work on skills":**
+1. List the role's associated skills (from the role file's "Active Skill" section)
+2. Use `ask_user_question` to let user select a skill or create new
+3. For existing skill: read SKILL.md and ask what to improve
+4. For new skill: follow skill creation workflow in `@role-creation`
+
+**If "Other":**
+Ask the user to describe what they want to change, then proceed accordingly.
+
+---
+
+## Step 7: If "Add a workflow to a role" Selected
+
+This option adds new capability to an existing role. The AI determines which skills to create or modify.
+
+### 7a: Enumerate Existing Roles
+Same as Step 6a - scan and present roles as selectable options.
+
+### 7b: Gather Workflow Requirements
+After role selection, ask the user:
+- "Describe the new workflow you want to add to [role-name]. What should the role be able to do?"
+
+Let the user describe their goals in natural language.
+
+### 7c: AI Analysis and Proposal
+Based on the user's description:
+
+1. **Read the selected role file** to understand current skills and capabilities
+2. **Read existing skills** referenced by the role
+3. **Analyze the request** and determine:
+   - Does this fit an existing skill? → Propose skill update
+   - Does this need a new skill? → Propose new skill creation
+   - Does this need reference files? → Plan reference file creation
+
+4. **Present a proposal** to the user:
+   ```
+   To add [workflow description], I propose:
+   
+   **Skills to modify:**
+   - @skill-name: Add [specific capability]
+   
+   **New skills to create:**
+   - @new-skill-name: [purpose]
+   
+   **Reference files to create:**
+   - references/file-name.md: [content description]
+   
+   Proceed?
+   ```
+
+5. **Wait for user confirmation** before making changes
+
+### 7d: Execute the Proposal
+Once confirmed:
+1. Create/update skill files following `@role-creation` templates
+2. Create reference files as needed (keep SKILL.md under ~200 lines)
+3. Update the role file's "Active Skills" section if adding new skills
+4. Update the role's activation workflow if needed
