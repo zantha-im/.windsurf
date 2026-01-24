@@ -1,6 +1,6 @@
 ---
 name: modal-patterns
-description: Enforces consistent modal dialog patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing modals. Triggers on: create modal, fix modal, modal height, modal layout, modal not working, review modal, canonical modal, modal dialog, popup, confirmation modal, edit modal, delete confirmation, modal form, overlay dialog, refactor modal, modal jumping, modal scrolling, modal overflow.
+description: Enforces consistent modal dialog patterns by reading from the canonical reference app. Use when the user mentions modal, dialog, popup, overlay, or needs to create, fix, or review modal components.
 ---
 
 # Skill: Modal Patterns
@@ -11,11 +11,15 @@ This skill ensures consistent modal implementation by reading patterns from the 
 
 ## MANDATORY FIRST ACTION
 
-**STOP. Before exploring the codebase or making any changes, you MUST:**
+**1. ANNOUNCE:** Output this line first:
+```
+📋 Skill Invoked: @modal-patterns - Loading canonical modal patterns...
+```
 
-1. Read the config file: `.windsurf/config/senior-developer.json`
-2. Read the canonical modal CSS module from the config path
-3. Read the canonical modal component example from the config path
+**2. THEN immediately read these files (no exploration first):**
+- `.windsurf/config/senior-developer.json` - Get canonical app path
+- `[canonicalApp.path]/[patterns.modal.css]` - Modal CSS patterns
+- `[canonicalApp.path]/[patterns.modal.example]` - Modal component example
 
 **DO NOT use Fast Context, code_search, or grep to explore the codebase first.**
 **DO NOT ask the user what needs fixing before reading canonical patterns.**
@@ -103,7 +107,19 @@ Learn available button classes for:
 
 ---
 
-## Step 5: Apply Patterns
+## Step 5: Explore Target Component
+
+Now that you have the canonical patterns loaded, explore the target component:
+
+```
+read_file <target-component-path>
+```
+
+Compare against the canonical patterns you just read.
+
+---
+
+## Step 6: Apply Patterns
 
 Using what you learned from the canonical files:
 
@@ -120,7 +136,7 @@ Using what you learned from the canonical files:
 
 ---
 
-## Step 6: Verify Zero Inline Styles
+## Step 7: Verify Zero Inline Styles
 
 ```
 grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
@@ -130,7 +146,7 @@ Must return no matches. All styling must use CSS classes from the canonical modu
 
 ---
 
-## Step 7: Protect Imports
+## Step 8: Protect Imports
 
 The formatter strips unused imports. After adding imports, protect them:
 

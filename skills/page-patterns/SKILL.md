@@ -1,6 +1,6 @@
 ---
 name: page-patterns
-description: Enforces consistent page layout patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing page layouts. Triggers on: new page, fix page layout, page not aligned, review page, canonical page, page spacing, create page, page layout, page scaffold, page structure, add section, page container, page header, tabs, refactor page, page margins, page padding.
+description: Enforces consistent page layout patterns by reading from the canonical reference app. Use when the user mentions page layout, scaffold, tabs, sections, or needs to create, fix, or review page structure.
 ---
 
 # Skill: Page Patterns
@@ -11,11 +11,15 @@ This skill ensures consistent page layout implementation by reading patterns fro
 
 ## MANDATORY FIRST ACTION
 
-**STOP. Before exploring the codebase or making any changes, you MUST:**
+**1. ANNOUNCE:** Output this line first:
+```
+📋 Skill Invoked: @page-patterns - Loading canonical page patterns...
+```
 
-1. Read the config file: `.windsurf/config/senior-developer.json`
-2. Read the canonical page CSS module from the config path
-3. Read the canonical page component example from the config path
+**2. THEN immediately read these files (no exploration first):**
+- `.windsurf/config/senior-developer.json` - Get canonical app path
+- `[canonicalApp.path]/[patterns.page.css]` - Page CSS patterns
+- `[canonicalApp.path]/[patterns.page.example]` - Page component example
 
 **DO NOT use Fast Context, code_search, or grep to explore the codebase first.**
 **DO NOT ask the user what needs fixing before reading canonical patterns.**
@@ -104,7 +108,19 @@ Learn available classes for:
 
 ---
 
-## Step 5: Apply Patterns
+## Step 5: Explore Target Component
+
+Now that you have the canonical patterns loaded, explore the target component:
+
+```
+read_file <target-component-path>
+```
+
+Compare against the canonical patterns you just read.
+
+---
+
+## Step 6: Apply Patterns
 
 Using what you learned from the canonical files:
 
@@ -121,7 +137,7 @@ Using what you learned from the canonical files:
 
 ---
 
-## Step 6: Verify Zero Inline Styles
+## Step 7: Verify Zero Inline Styles
 
 ```
 grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
@@ -131,7 +147,7 @@ Must return no matches. All styling must use CSS classes from the canonical modu
 
 ---
 
-## Step 7: Protect Imports
+## Step 8: Protect Imports
 
 The formatter strips unused imports. After adding imports, protect them:
 

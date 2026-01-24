@@ -1,6 +1,6 @@
 ---
 name: table-patterns
-description: Enforces consistent data table patterns by reading from the canonical reference app. Use when creating, fixing, or reviewing tables. Triggers on: build table, fix table, table not working, review table, canonical table, table alignment, table sorting broken, data table, create table component, table layout, sortable table, table with sorting, grid component, data grid, refactor table, table columns, table headers.
+description: Enforces consistent data table patterns by reading from the canonical reference app. Use when the user mentions table, grid, columns, sorting, or needs to create, fix, or review table components.
 ---
 
 # Skill: Table Patterns
@@ -11,11 +11,15 @@ This skill ensures consistent table implementation by reading patterns from the 
 
 ## MANDATORY FIRST ACTION
 
-**STOP. Before exploring the codebase or making any changes, you MUST:**
+**1. ANNOUNCE:** Output this line first:
+```
+📋 Skill Invoked: @table-patterns - Loading canonical table patterns...
+```
 
-1. Read the config file: `.windsurf/config/senior-developer.json`
-2. Read the canonical table CSS module from the config path
-3. Read the canonical table component example from the config path
+**2. THEN immediately read these files (no exploration first):**
+- `.windsurf/config/senior-developer.json` - Get canonical app path
+- `[canonicalApp.path]/[patterns.table.css]` - Table CSS patterns
+- `[canonicalApp.path]/[patterns.table.example]` - Table component example
 
 **DO NOT use Fast Context, code_search, or grep to explore the codebase first.**
 **DO NOT ask the user what needs fixing before reading canonical patterns.**
@@ -103,7 +107,19 @@ Learn available utility classes for:
 
 ---
 
-## Step 5: Apply Patterns
+## Step 5: Explore Target Component
+
+Now that you have the canonical patterns loaded, explore the target component:
+
+```
+read_file <target-component-path>
+```
+
+Compare against the canonical patterns you just read.
+
+---
+
+## Step 6: Apply Patterns
 
 Using what you learned from the canonical files:
 
@@ -114,7 +130,7 @@ Using what you learned from the canonical files:
 
 ---
 
-## Step 6: Verify Zero Inline Styles
+## Step 7: Verify Zero Inline Styles
 
 ```
 grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
@@ -124,7 +140,7 @@ Must return no matches. All styling must use CSS classes from the canonical modu
 
 ---
 
-## Step 7: Protect Imports
+## Step 8: Protect Imports
 
 The formatter strips unused imports. After adding imports, protect them:
 

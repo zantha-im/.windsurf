@@ -81,6 +81,25 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 UI pattern skills read from a **canonical reference app** configured per-project. See `.windsurf/config/README.md` for setup.
 
+### MANDATORY: Invoke UI Pattern Skills for UI Work
+
+**When the user's request involves UI components, you MUST invoke the corresponding skill BEFORE exploring the codebase:**
+
+| User mentions                 | Invoke skill       |
+| ----------------------------- | ------------------ |
+| modal, dialog, popup, overlay | `@modal-patterns`  |
+| table, grid, columns, sorting | `@table-patterns`  |
+| page, layout, scaffold, tabs  | `@page-patterns`   |
+| form, input, filter, select   | `@form-patterns`   |
+| button, action, icon button   | `@button-patterns` |
+
+**DO NOT:**
+- Use Fast Context or code_search to explore UI components first
+- Ask the user what's broken before reading canonical patterns
+- Make UI changes without first loading the relevant skill
+
+**The skill will guide you to read canonical patterns FIRST, then explore the target component.**
+
 ## Communication Style
 
 - Technical but accessible explanations

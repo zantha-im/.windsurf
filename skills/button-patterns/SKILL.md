@@ -1,6 +1,6 @@
 ---
 name: button-patterns
-description: Enforces consistent button styling by reading from the canonical reference app. Use when creating, fixing, or reviewing buttons. Triggers on: button styles, fix button, button not working, review button, canonical button, button alignment, icon button, action button, primary button, delete button, add button, submit button, cancel button, refactor button, button spacing, button hover.
+description: Enforces consistent button styling by reading from the canonical reference app. Use when the user mentions button, icon button, action button, or needs to create, fix, or review button components.
 ---
 
 # Skill: Button Patterns
@@ -11,11 +11,15 @@ This skill ensures consistent button implementation by reading patterns from the
 
 ## MANDATORY FIRST ACTION
 
-**STOP. Before exploring the codebase or making any changes, you MUST:**
+**1. ANNOUNCE:** Output this line first:
+```
+📋 Skill Invoked: @button-patterns - Loading canonical button patterns...
+```
 
-1. Read the config file: `.windsurf/config/senior-developer.json`
-2. Read the canonical buttons CSS module from the config path
-3. Read a canonical component example that uses buttons
+**2. THEN immediately read these files (no exploration first):**
+- `.windsurf/config/senior-developer.json` - Get canonical app path
+- `[canonicalApp.path]/[patterns.buttons.css]` - Button CSS patterns
+- `[canonicalApp.path]/[patterns.table.example]` - Component with action buttons
 
 **DO NOT use Fast Context, code_search, or grep to explore the codebase first.**
 **DO NOT ask the user what needs fixing before reading canonical patterns.**
@@ -89,7 +93,19 @@ The canonical components demonstrate:
 
 ---
 
-## Step 4: Apply Patterns
+## Step 4: Explore Target Component
+
+Now that you have the canonical patterns loaded, explore the target component:
+
+```
+read_file <target-component-path>
+```
+
+Compare against the canonical patterns you just read.
+
+---
+
+## Step 5: Apply Patterns
 
 Using what you learned from the canonical files:
 
@@ -105,7 +121,7 @@ Using what you learned from the canonical files:
 
 ---
 
-## Step 5: Verify Zero Inline Styles
+## Step 6: Verify Zero Inline Styles
 
 ```
 grep_search with Query="style={{" and SearchPath="<component-path>" and FixedStrings=true
@@ -115,7 +131,7 @@ Must return no matches. All styling must use CSS classes from the canonical modu
 
 ---
 
-## Step 6: Protect Imports
+## Step 7: Protect Imports
 
 The formatter strips unused imports. After adding imports, protect them:
 
