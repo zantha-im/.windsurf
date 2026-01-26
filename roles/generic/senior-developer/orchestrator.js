@@ -174,12 +174,12 @@ function gitStatus() {
 /**
  * Read and summarize an Excel file
  */
-function readExcel(filePath, sheetName) {
+async function readExcel(filePath, sheetName) {
   const excelTool = getExcel();
   if (!excelTool) return { success: false, error: 'Excel tool not available' };
   
   try {
-    const workbook = excelTool.readWorkbook(filePath);
+    const workbook = await excelTool.readWorkbook(filePath);
     const summary = excelTool.getWorkbookSummary(workbook);
     
     console.log('=== Workbook Summary ===');

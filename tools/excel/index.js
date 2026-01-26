@@ -4,161 +4,187 @@
  * 
  * Usage:
  *   const excel = require('.windsurf/tools/excel');
- *   const workbook = excel.readWorkbook('./file.xlsx');
+ *   const workbook = await excel.readWorkbook('./file.xlsx');
  *   const sheets = excel.getSheetNames(workbook);
  *   const data = excel.getSheetData(workbook, 'Sheet1');
  * 
- * Required dependency: npm install xlsx
+ * Required dependency: npm install exceljs
  */
 
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 const path = require('path');
 
 /**
- * Read an Excel workbook from file
+ * Read an Excel workbook from file (async)
  * @param {string} filePath - Path to the Excel file
- * @returns {object} XLSX workbook object
+ * @returns {Promise<object>} ExcelJS workbook object
  */
-function readWorkbook(filePath) {
+async function readWorkbook(filePath) {
   const absolutePath = path.resolve(filePath);
-  return XLSX.readFile(absolutePath);
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(absolutePath);
+  return workbook;
 }
 
 /**
  * Get list of sheet names in a workbook
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @returns {string[]} Array of sheet names
  */
 function getSheetNames(workbook) {
-  return workbook.SheetNames;
+  return workbook.worksheets.map(ws => ws.name);
 }
 
 /**
  * Get sheet data as JSON array
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @param {string} sheetName - Name of the sheet
  * @param {object} options - Options for parsing
  * @param {boolean} options.header - Use first row as headers (default: true)
- * @param {boolean} options.raw - Return raw values without formatting (default: false)
  * @returns {object[]} Array of row objects
  */
 function getSheetData(workbook, sheetName, options = {}) {
-  const sheet = workbook.Sheets[sheetName];
+  const sheet = workbook.getWorksheet(sheetName);
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found. Available: ${workbook.SheetNames.join(', ')}`);
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  const { header = true, raw = false } = options;
+  const { header = true } = options;
+  const rows = [];
+  let headers = [];
   
-  return XLSX.utils.sheet_to_json(sheet, {
-    header: header ? undefined : 1, // undefined = use first row as headers, 1 = array of arrays
-    raw,
-    defval: null // Default value for empty cells
+  sheet.eachRow((row, rowNumber) => {
+    const values = row.values.slice(1); // ExcelJS row.values is 1-indexed, first element is undefined
+    
+    if (header && rowNumber === 1) {
+      headers = values.map((v, i) => v != null ? String(v) : `__EMPTY${i > 0 ? '_' + i : ''}`);
+      return;
+    }
+    
+    if (header) {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = values[i] != null ? values[i] : null;
+      });
+      rows.push(obj);
+    } else {
+      rows.push(values);
+    }
   });
+  
+  return rows;
 }
 
 /**
  * Get sheet data as 2D array (no headers)
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @param {string} sheetName - Name of the sheet
  * @returns {any[][]} 2D array of cell values
  */
 function getSheetAsArray(workbook, sheetName) {
-  const sheet = workbook.Sheets[sheetName];
+  const sheet = workbook.getWorksheet(sheetName);
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found. Available: ${workbook.SheetNames.join(', ')}`);
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  return XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+  const rows = [];
+  sheet.eachRow((row) => {
+    const values = row.values.slice(1); // Remove undefined first element
+    // Convert cell objects to raw values
+    const rawValues = values.map(v => {
+      if (v && typeof v === 'object' && 'result' in v) return v.result; // Formula result
+      if (v && typeof v === 'object' && 'text' in v) return v.text; // Rich text
+      return v != null ? v : null;
+    });
+    rows.push(rawValues);
+  });
+  
+  return rows;
 }
 
 /**
  * Get a specific cell value
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @param {string} sheetName - Name of the sheet
  * @param {string} cellRef - Cell reference (e.g., 'A1', 'B2')
  * @returns {any} Cell value
  */
 function getCell(workbook, sheetName, cellRef) {
-  const sheet = workbook.Sheets[sheetName];
+  const sheet = workbook.getWorksheet(sheetName);
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found. Available: ${workbook.SheetNames.join(', ')}`);
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  const cell = sheet[cellRef];
-  return cell ? cell.v : null; // .v is the raw value
+  const cell = sheet.getCell(cellRef);
+  return cell.value;
 }
 
 /**
  * Get cell with full metadata
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @param {string} sheetName - Name of the sheet
  * @param {string} cellRef - Cell reference (e.g., 'A1', 'B2')
  * @returns {object|null} Cell object with value, type, formula, etc.
  */
 function getCellFull(workbook, sheetName, cellRef) {
-  const sheet = workbook.Sheets[sheetName];
+  const sheet = workbook.getWorksheet(sheetName);
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found. Available: ${workbook.SheetNames.join(', ')}`);
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  const cell = sheet[cellRef];
-  if (!cell) return null;
+  const cell = sheet.getCell(cellRef);
+  if (!cell.value) return null;
   
   return {
-    value: cell.v,        // Raw value
-    formatted: cell.w,    // Formatted text
-    type: cell.t,         // Type: s=string, n=number, b=boolean, d=date
-    formula: cell.f,      // Formula (if any)
+    value: cell.value,
+    formatted: cell.text,
+    type: cell.type,
+    formula: cell.formula || null,
   };
 }
 
 /**
  * Get the used range of a sheet
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @param {string} sheetName - Name of the sheet
  * @returns {object} Range object with start/end row/col
  */
 function getSheetRange(workbook, sheetName) {
-  const sheet = workbook.Sheets[sheetName];
+  const sheet = workbook.getWorksheet(sheetName);
   if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found. Available: ${workbook.SheetNames.join(', ')}`);
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  const range = sheet['!ref'];
-  if (!range) return null;
-  
-  const decoded = XLSX.utils.decode_range(range);
   return {
-    startRow: decoded.s.r + 1, // 1-indexed
-    startCol: decoded.s.c + 1,
-    endRow: decoded.e.r + 1,
-    endCol: decoded.e.c + 1,
-    ref: range
+    startRow: 1,
+    startCol: 1,
+    endRow: sheet.rowCount,
+    endCol: sheet.columnCount,
+    ref: `A1:${String.fromCharCode(64 + sheet.columnCount)}${sheet.rowCount}`
   };
 }
 
 /**
  * Quick summary of a workbook
- * @param {object} workbook - XLSX workbook object
+ * @param {object} workbook - ExcelJS workbook object
  * @returns {object} Summary with sheet names and row counts
  */
 function getWorkbookSummary(workbook) {
-  const summary = {
-    sheetCount: workbook.SheetNames.length,
-    sheets: []
+  const sheets = workbook.worksheets.map(ws => ({
+    name: ws.name,
+    rows: ws.rowCount,
+    cols: ws.columnCount
+  }));
+  
+  return {
+    sheetCount: sheets.length,
+    sheets
   };
-  
-  for (const name of workbook.SheetNames) {
-    const range = getSheetRange(workbook, name);
-    summary.sheets.push({
-      name,
-      rows: range ? range.endRow : 0,
-      cols: range ? range.endCol : 0
-    });
-  }
-  
-  return summary;
 }
 
 module.exports = {

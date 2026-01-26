@@ -389,8 +389,8 @@ npm install @aws-sdk/client-route-53
 ```javascript
 const excel = require('.windsurf/tools/excel');
 
-// Read workbook
-const workbook = excel.readWorkbook('./file.xlsx');
+// Read workbook (async)
+const workbook = await excel.readWorkbook('./file.xlsx');
 
 // Get sheet names
 const sheets = excel.getSheetNames(workbook);
@@ -422,5 +422,5 @@ const range = excel.getSheetRange(workbook, 'Sheet1');
 
 **Required dependency:**
 ```bash
-npm install xlsx
+npm install exceljs
 ```
