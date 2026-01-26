@@ -46,18 +46,24 @@ All components must be compared against these canonical implementations, not jus
 
 ## Audit Workflow Overview
 
+**MANDATORY: Copy this checklist into your plan and track each stage explicitly.**
+
 ```
 CSS Audit Stages:
-- [ ] Stage 1: Discovery - Quantify inline styles AND list all components
+- [ ] Stage 1: Discovery - List ALL components and count inline styles
 - [ ] Stage 2: Triage - Prioritize by impact
 - [ ] Stage 3: Quick Wins - Delete empty/duplicate files
-- [ ] Stage 4: Layout Pattern Comparison - Compare EACH component against canonical reference
-- [ ] Stage 5: Component Audit - Fix inline styles per component
+- [ ] Stage 4: Layout Pattern Comparison - Compare EACH component against canonical (BEFORE fixing anything)
+- [ ] Stage 5: Inline Style Fixes - Fix inline styles per component
 - [ ] Stage 6: Module Cleanup - Remove duplicate CSS classes
-- [ ] Stage 7: Verification - Confirm zero inline styles + build passes
+- [ ] Stage 7: Pre-Verification Gate - Confirm ALL components pattern-compared
+- [ ] Stage 8: Verification - Confirm zero inline styles + build passes
 ```
 
-**CRITICAL:** Stage 4 (Layout Pattern Comparison) is MANDATORY for every component, regardless of inline style count.
+**CRITICAL ENFORCEMENT:**
+- Stage 4 MUST complete BEFORE Stage 5. Do not fix inline styles until all components are pattern-compared.
+- Stage 7 is a GATE. You cannot proceed to Stage 8 until every component from Stage 1 is confirmed pattern-compared.
+- If you skip Stage 4, the audit is INVALID regardless of inline style count.
 
 ---
 
@@ -112,13 +118,13 @@ Present the full list to user with counts.
 
 ### Priority Matrix
 
-| Priority | Criteria | Action |
-|----------|----------|--------|
-| **Critical** | >50 inline styles | Fix first |
-| **High** | 20-50 inline styles | Fix in phase 1 |
-| **Medium** | 10-20 inline styles | Fix in phase 2 |
-| **Low** | <10 inline styles | Fix in phase 3 |
-| **Exclude** | Auth pages, test files | Skip unless requested |
+| Priority     | Criteria               | Action                |
+| ------------ | ---------------------- | --------------------- |
+| **Critical** | >50 inline styles      | Fix first             |
+| **High**     | 20-50 inline styles    | Fix in phase 1        |
+| **Medium**   | 10-20 inline styles    | Fix in phase 2        |
+| **Low**      | <10 inline styles      | Fix in phase 3        |
+| **Exclude**  | Auth pages, test files | Skip unless requested |
 
 ### Categorize Components
 
@@ -182,13 +188,13 @@ For EACH component in the list from Stage 1.3:
 1. **Read the component**
 2. **Compare structure against canonical:**
 
-| Pattern | Canonical Structure | Check For |
-|---------|---------------------|-----------|
-| Page layout | `pageStyles.container > header > content` | Custom wrapper divs, non-standard containers |
-| Tabs | Directly inside `pageStyles.content`, no wrapper | Extra `tabsContainer` divs |
-| Filter sections | `section > filtersContainer > filterGroup` | Floating filters, non-standard placement |
-| Tables | `tableStyles` from `Table.module.css` | Custom table classes duplicating shared |
-| Info rows | `<strong>{count}</strong> Items` (no icons) | Icons in info rows |
+| Pattern         | Canonical Structure                              | Check For                                    |
+| --------------- | ------------------------------------------------ | -------------------------------------------- |
+| Page layout     | `pageStyles.container > header > content`        | Custom wrapper divs, non-standard containers |
+| Tabs            | Directly inside `pageStyles.content`, no wrapper | Extra `tabsContainer` divs                   |
+| Filter sections | `section > filtersContainer > filterGroup`       | Floating filters, non-standard placement     |
+| Tables          | `tableStyles` from `Table.module.css`            | Custom table classes duplicating shared      |
+| Info rows       | `<strong>{count}</strong> Items` (no icons)      | Icons in info rows                           |
 
 3. **Document deviations:**
    - List structural differences
@@ -199,13 +205,13 @@ For EACH component in the list from Stage 1.3:
 
 ### 4.3 Common Anti-Patterns to Fix
 
-| Anti-Pattern | Canonical Pattern |
-|--------------|-------------------|
-| `settingsContainer` / `settingsHeader` | `pageStyles.container` / `pageStyles.header` |
-| `tabsContainer` wrapper div | Tabs directly in `pageStyles.content` |
-| Custom `.section` in component CSS | Use `styles.section` from `components.module.css` |
-| Custom `.table*` classes | Use `tableStyles` from `Table.module.css` |
-| Icons in info rows | Plain text: `<strong>{n}</strong> Items` |
+| Anti-Pattern                           | Canonical Pattern                                 |
+| -------------------------------------- | ------------------------------------------------- |
+| `settingsContainer` / `settingsHeader` | `pageStyles.container` / `pageStyles.header`      |
+| `tabsContainer` wrapper div            | Tabs directly in `pageStyles.content`             |
+| Custom `.section` in component CSS     | Use `styles.section` from `components.module.css` |
+| Custom `.table*` classes               | Use `tableStyles` from `Table.module.css`         |
+| Icons in info rows                     | Plain text: `<strong>{n}</strong> Items`          |
 
 ---
 
@@ -270,16 +276,16 @@ For each component with inline styles:
 
 ### 5.2 Common Inline Style Replacements
 
-| Inline Style | Replacement Class |
-|--------------|-------------------|
-| `color: '#ef4444'` (red) | `styles.textError` |
-| `color: '#10b981'` (green) | `styles.textSuccess` |
-| `color: '#f59e0b'` (yellow) | `styles.textWarning` |
-| `color: '#6b7280'` (gray) | `styles.textMuted` |
-| `opacity: 0.6` | `styles.sectionLoading` |
-| `marginLeft: '4px'` | `styles.marginLeft` |
-| `textAlign: 'center'` | `tableStyles.centerCell` |
-| `fontFamily: 'monospace'` | `tableStyles.sku` |
+| Inline Style                | Replacement Class        |
+| --------------------------- | ------------------------ |
+| `color: '#ef4444'` (red)    | `styles.textError`       |
+| `color: '#10b981'` (green)  | `styles.textSuccess`     |
+| `color: '#f59e0b'` (yellow) | `styles.textWarning`     |
+| `color: '#6b7280'` (gray)   | `styles.textMuted`       |
+| `opacity: 0.6`              | `styles.sectionLoading`  |
+| `marginLeft: '4px'`         | `styles.marginLeft`      |
+| `textAlign: 'center'`       | `tableStyles.centerCell` |
+| `fontFamily: 'monospace'`   | `tableStyles.sku`        |
 
 ### 5.3 Dynamic Values Pattern
 
@@ -324,21 +330,58 @@ grep_search with Query=".section" and SearchPath="<custom>.module.css" and Match
 
 ### 6.3 Shared Module Reference
 
-| Pattern | Shared Module | Import As |
-|---------|---------------|-----------|
-| Sections, filters, forms | `@/styles/components.module.css` | `styles` |
-| Buttons | `@/styles/buttons.module.css` | `btnStyles` |
-| Page layout | `@/styles/pages.module.css` | `pageStyles` |
-| Modals | `@/styles/modal.module.css` | `modalStyles` |
-| Tables | `@/components/Table.module.css` | `tableStyles` |
+| Pattern                  | Shared Module                    | Import As     |
+| ------------------------ | -------------------------------- | ------------- |
+| Sections, filters, forms | `@/styles/components.module.css` | `styles`      |
+| Buttons                  | `@/styles/buttons.module.css`    | `btnStyles`   |
+| Page layout              | `@/styles/pages.module.css`      | `pageStyles`  |
+| Modals                   | `@/styles/modal.module.css`      | `modalStyles` |
+| Tables                   | `@/components/Table.module.css`  | `tableStyles` |
 
 ---
 
-## Stage 7: Verification
+## Stage 7: Pre-Verification Gate (MANDATORY)
+
+**Goal:** Confirm ALL components have been pattern-compared before declaring success.
+
+**STOP. You cannot proceed to Stage 8 until this gate passes.**
+
+### 7.1 Component Checklist Review
+
+List every component from Stage 1.3 and confirm each was pattern-compared:
+
+```
+Component Pattern Comparison Status:
+- [ ] app/products/page.tsx - Compared: YES/NO
+- [ ] app/settings/page.tsx - Compared: YES/NO
+- [ ] components/ProductWizard.tsx - Compared: YES/NO
+... (list ALL components)
+```
+
+### 7.2 Gate Criteria
+
+**ALL of the following must be true:**
+- [ ] Every component from Stage 1.3 is listed above
+- [ ] Every component shows "Compared: YES"
+- [ ] Deviations from canonical patterns have been documented and fixed
+
+**If ANY component shows "Compared: NO":**
+1. STOP
+2. Go back to Stage 4
+3. Complete pattern comparison for that component
+4. Return here and update the checklist
+
+### 7.3 Explicit Confirmation
+
+Before proceeding, state: "All [N] components have been compared against canonical patterns. Gate passed."
+
+---
+
+## Stage 8: Verification
 
 **Goal:** Confirm all inline styles are eliminated.
 
-### 7.1 Final Inline Style Check
+### 8.1 Final Inline Style Check
 
 ```
 grep_search with Query="style={{" and SearchPath="components/" and Includes=["*.tsx"] and FixedStrings=true
@@ -346,7 +389,7 @@ grep_search with Query="style={{" and SearchPath="app/" and Includes=["*.tsx"] a
 ```
 Both must return no matches.
 
-### 7.2 Build Verification
+### 8.2 Build Verification
 
 ```
 run_command: npm run build
@@ -354,7 +397,7 @@ run_command: npm run build
 
 Ensure no CSS-related build errors.
 
-### 7.3 Visual Verification
+### 8.3 Visual Verification
 
 Manually check key pages to ensure styling is correct:
 - [ ] Page layouts render correctly
@@ -384,6 +427,7 @@ If any found, fix immediately before they accumulate.
 
 Before marking audit complete:
 
+- [ ] **Stage 7 Gate PASSED** - All components confirmed pattern-compared
 - [ ] **ALL components compared** against canonical reference (Stage 4)
 - [ ] `grep_search` for `style={{` returns no matches in components/ and app/
 - [ ] No empty CSS modules remain
