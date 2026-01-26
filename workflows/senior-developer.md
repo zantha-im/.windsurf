@@ -11,8 +11,14 @@ Read the role definition file:
 This is a **generic role** - portable across any project.
 
 ## Step 2: Check Config for UI Pattern Skills
+
+**Workspace Disambiguation (if multiple `.windsurf/` folders exist):**
+- A **subtree consumer** has `.windsurf/` as a subfolder and is NOT the `.windsurf` source repository
+- The **source repo** is identified by `.windsurf/` being at the git root (has sibling `.git/` folder)
+- Read config from the **subtree consumer project**, not the source repo
+
 Read the configuration file (if it exists):
-- `.windsurf/config/senior-developer.json`
+- `[project]/.windsurf/config/senior-developer.json`
 
 **If config exists:** Report the canonical app path configured for UI patterns.
 
