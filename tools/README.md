@@ -19,30 +19,38 @@ const pdf = require('.windsurf/tools/pdf');
 
 Configurable wrappers for Google APIs with OAuth2 and Service Account authentication.
 
-| Module | Purpose |
-|--------|---------|
-| `auth.js` | OAuth2 and Service Account authentication |
-| `drive.js` | Google Drive file operations |
-| `docs.js` | Google Docs read/write operations |
-| `gmail.js` | Gmail send and search |
+| Module     | Purpose                                      |
+| ---------- | -------------------------------------------- |
+| `auth.js`  | OAuth2 and Service Account authentication    |
+| `drive.js` | Google Drive file operations                 |
+| `docs.js`  | Google Docs read/write operations            |
+| `gmail.js` | Gmail send and search                        |
 | `admin.js` | Admin SDK (users, groups) and Gmail Settings |
 
 ### PDF (`tools/pdf/`)
 
 PDF text extraction and OCR.
 
-| Module | Purpose |
-|--------|---------|
+| Module       | Purpose                             |
+| ------------ | ----------------------------------- |
 | `extract.js` | Extract text from PDFs (pdfjs-dist) |
-| `ocr.js` | OCR for scanned PDFs (tesseract.js) |
+| `ocr.js`     | OCR for scanned PDFs (tesseract.js) |
 
 ### AWS (`tools/aws/`)
 
 AWS service wrappers for infrastructure management.
 
-| Module | Purpose |
-|--------|---------|
+| Module       | Purpose                                  |
+| ------------ | ---------------------------------------- |
 | `route53.js` | DNS record management (CNAME, A records) |
+
+### Excel (`tools/excel/`)
+
+Excel file parsing and data extraction.
+
+| Module     | Purpose                                  |
+| ---------- | ---------------------------------------- |
+| `index.js` | Read and parse Excel files (.xlsx, .xls) |
 
 ---
 
@@ -375,3 +383,44 @@ npm install @aws-sdk/client-route-53
 - `AWS_ACCESS_KEY_ID` - IAM user access key
 - `AWS_SECRET_ACCESS_KEY` - IAM user secret key
 - `AWS_REGION` (optional, default: eu-west-2)
+
+### Excel (`tools/excel/`)
+
+```javascript
+const excel = require('.windsurf/tools/excel');
+
+// Read workbook
+const workbook = excel.readWorkbook('./file.xlsx');
+
+// Get sheet names
+const sheets = excel.getSheetNames(workbook);
+// Returns: ['Sheet1', 'Sheet2', ...]
+
+// Get workbook summary
+const summary = excel.getWorkbookSummary(workbook);
+// Returns: { sheetCount: 2, sheets: [{ name, rows, cols }, ...] }
+
+// Get sheet data as JSON (first row as headers)
+const data = excel.getSheetData(workbook, 'Sheet1');
+// Returns: [{ col1: 'val1', col2: 'val2' }, ...]
+
+// Get sheet as 2D array (no headers)
+const rows = excel.getSheetAsArray(workbook, 'Sheet1');
+// Returns: [['A1', 'B1'], ['A2', 'B2'], ...]
+
+// Get specific cell
+const value = excel.getCell(workbook, 'Sheet1', 'A1');
+
+// Get cell with metadata
+const cell = excel.getCellFull(workbook, 'Sheet1', 'A1');
+// Returns: { value, formatted, type, formula }
+
+// Get sheet range
+const range = excel.getSheetRange(workbook, 'Sheet1');
+// Returns: { startRow, startCol, endRow, endCol, ref }
+```
+
+**Required dependency:**
+```bash
+npm install xlsx
+```

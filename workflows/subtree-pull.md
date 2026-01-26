@@ -37,6 +37,12 @@ cmd /c git fetch windsurf_subtree
 // turbo
 cmd /c git subtree pull --prefix=.windsurf windsurf_subtree main --squash -m "Update .windsurf subtree"
 
+4) Check for package.json changes and install dependencies
+- Check if `.windsurf/package.json` exists
+- If it exists, run `npm install` in the `.windsurf/` directory to ensure dependencies are available
+// turbo
+cmd /c if exist .windsurf\package.json (cd .windsurf && npm install)
+
 Notes:
 - `--squash` keeps the main repo history clean while updating only `.windsurf/` files.
 - If merge conflicts occur, they will be confined to files under `.windsurf/`. Resolve and commit as usual. Do not attempt to stash around the pull.

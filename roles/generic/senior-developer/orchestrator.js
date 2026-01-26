@@ -8,6 +8,22 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Excel tool (lazy loaded)
+let excel = null;
+function getExcel() {
+  if (!excel) {
+    try {
+      // Path relative to this file: roles/generic/senior-developer/ -> tools/excel
+      excel = require('../../../tools/excel');
+    } catch (err) {
+      console.error('Excel tool not available. Install xlsx: npm install xlsx');
+      console.error('Error:', err.message);
+      return null;
+    }
+  }
+  return excel;
+}
+
 /**
  * Detect project type and available tools
  */
@@ -155,6 +171,43 @@ function gitStatus() {
   run('git log -n 5 --oneline');
 }
 
+/**
+ * Read and summarize an Excel file
+ */
+function readExcel(filePath, sheetName) {
+  const excelTool = getExcel();
+  if (!excelTool) return { success: false, error: 'Excel tool not available' };
+  
+  try {
+    const workbook = excelTool.readWorkbook(filePath);
+    const summary = excelTool.getWorkbookSummary(workbook);
+    
+    console.log('=== Workbook Summary ===');
+    console.log(`File: ${filePath}`);
+    console.log(`Sheets: ${summary.sheetCount}`);
+    summary.sheets.forEach(s => {
+      console.log(`  - ${s.name}: ${s.rows} rows x ${s.cols} cols`);
+    });
+    
+    if (sheetName) {
+      console.log(`\n=== Sheet: ${sheetName} ===`);
+      const data = excelTool.getSheetData(workbook, sheetName);
+      console.log(`Rows: ${data.length}`);
+      if (data.length > 0) {
+        console.log('Columns:', Object.keys(data[0]).join(', '));
+        console.log('\nFirst 5 rows:');
+        console.log(JSON.stringify(data.slice(0, 5), null, 2));
+      }
+      return { success: true, summary, data };
+    }
+    
+    return { success: true, summary };
+  } catch (err) {
+    console.error('Error reading Excel:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 // CLI
 if (require.main === module) {
   const [cmd, ...args] = process.argv.slice(2);
@@ -180,6 +233,7 @@ Commands:
   test --watch Run tests in watch mode
   check       Run all quality checks (lint + typecheck + test)
   git         Show git status and recent commits
+  excel <file> [sheet]  Read Excel file (summary or specific sheet)
 
 Usage:
   node orchestrator.js <command>
@@ -193,7 +247,8 @@ Usage:
     typecheck: () => typeCheck(),
     test: () => test(args.includes('--watch')),
     check: () => check(),
-    git: () => gitStatus()
+    git: () => gitStatus(),
+    excel: () => readExcel(args[0], args[1])
   };
   
   if (commands[cmd]) {
@@ -211,5 +266,6 @@ module.exports = {
   test,
   check,
   gitStatus,
+  readExcel,
   run
 };
