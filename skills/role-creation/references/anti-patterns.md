@@ -89,3 +89,27 @@ Read the canonical reference at `C:\Users\Jonny\Code\my-project\...`
 [500+ lines of procedures, templates, and reference data]
 ```
 → Keep SKILL.md under ~200 lines, extract to `references/` subdirectory
+
+---
+
+## ❌ DO NOT: Confuse subtree paths with role output paths
+
+When creating tools for **domain roles**, outputs go to the **consuming project** (e.g., `ai-advisor/roles/my-role/`), NOT the `.windsurf` subtree.
+
+```javascript
+// WRONG - references subtree location
+const REPORTS_DIR = '.windsurf/tools/my-tool/reports';
+```
+
+```javascript
+// CORRECT - uses __dirname to resolve relative to tool location
+const REPORTS_DIR = path.join(__dirname, 'reports');
+
+// OR - resolves from project root
+const PROJECT_ROOT = path.resolve(__dirname, '../..');
+const REPORTS_DIR = path.join(PROJECT_ROOT, 'roles', 'my-role', 'reports');
+```
+
+**Key distinction:**
+- **Roles, skills, workflows** → Created in `.windsurf` source repo (shared infrastructure)
+- **Domain role tools & outputs** → Created in consuming project's `roles/` folder (project-specific)
