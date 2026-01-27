@@ -77,6 +77,7 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 - `@form-patterns` - Form inputs, filter bars, search boxes
 - `@modal-patterns` - Modal dialogs, confirmations, overlays
 - `@button-patterns` - Button styles, icon buttons, actions
+- `@crud-patterns` - CRUD pages with table, add/edit modal, delete confirmation
 - `@css-audit` - Comprehensive CSS/design pattern review and consolidation
 
 UI pattern skills read from a **canonical reference app** configured per-project. See `.windsurf/config/README.md` for setup.
@@ -85,13 +86,14 @@ UI pattern skills read from a **canonical reference app** configured per-project
 
 **When the user's request involves UI components, you MUST invoke the corresponding skill BEFORE exploring the codebase:**
 
-| User mentions                 | Invoke skill       |
-| ----------------------------- | ------------------ |
-| modal, dialog, popup, overlay | `@modal-patterns`  |
-| table, grid, columns, sorting | `@table-patterns`  |
-| page, layout, scaffold, tabs  | `@page-patterns`   |
-| form, input, filter, select   | `@form-patterns`   |
-| button, action, icon button   | `@button-patterns` |
+| User mentions                       | Invoke skill       |
+| ----------------------------------- | ------------------ |
+| crud, admin page, entity management | `@crud-patterns`   |
+| modal, dialog, popup, overlay       | `@modal-patterns`  |
+| table, grid, columns, sorting       | `@table-patterns`  |
+| page, layout, scaffold, tabs        | `@page-patterns`   |
+| form, input, filter, select         | `@form-patterns`   |
+| button, action, icon button         | `@button-patterns` |
 
 **DO NOT:**
 - Use Fast Context or code_search to explore UI components first

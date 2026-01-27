@@ -122,6 +122,27 @@
                             "type": "string"
                         }
                     }
+                },
+                "crud": {
+                    "type": "object",
+                    "description": "CRUD page pattern configuration",
+                    "properties": {
+                        "example": {
+                            "type": "string",
+                            "description": "Relative path to canonical CRUD tab/page component"
+                        },
+                        "editModal": {
+                            "type": "string",
+                            "description": "Relative path to canonical edit modal component"
+                        },
+                        "deleteModal": {
+                            "type": "string",
+                            "description": "Relative path to canonical delete modal component"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         }
