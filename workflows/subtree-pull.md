@@ -37,7 +37,19 @@ cmd /c git fetch windsurf_subtree
 // turbo
 cmd /c git subtree pull --prefix=.windsurf windsurf_subtree main --squash -m "Update .windsurf subtree"
 
-4) Check for package.json changes and install dependencies
+4) Sync missing files from remote
+- Git subtree with --squash can miss files added after initial setup
+- Compare remote tree to local subtree and copy any missing files
+- Use `git show` to extract files that exist on remote but not locally
+
+```
+For each file in `git ls-tree -r --name-only windsurf_subtree/main`:
+  If file does not exist at `.windsurf/<path>`:
+    Extract with: git show windsurf_subtree/main:<path> > .windsurf/<path>
+    Report: "Added missing file: .windsurf/<path>"
+```
+
+5) Check for package.json changes and install dependencies
 - Check if `.windsurf/package.json` exists
 - If it exists, run `npm install` in the `.windsurf/` directory to ensure dependencies are available
 // turbo
