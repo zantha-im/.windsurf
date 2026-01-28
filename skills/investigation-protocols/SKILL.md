@@ -1,6 +1,6 @@
 ---
 name: investigation-protocols
-description: Conducts evidence-based investigations with neutral fact-finding, evidence gathering from emails/Slack, chronological analysis, and advocate package creation. Use when starting a new investigation, gathering evidence, analyzing communications, creating legal packages, or documenting findings. Triggers on: investigation, evidence gathering, fact-finding, legal package, advocate package, email analysis, Slack analysis, chronology.
+description: Guides evidence-based legal investigations. Use when gathering evidence, analyzing emails/Slack, creating chronologies, or compiling advocate packages.
 ---
 
 # CRITICAL: Output Location
@@ -182,15 +182,15 @@ Create an advocate package when:
 ## Structure
 Create `advocate-package/` folder at investigation root with numbered sections:
 
-| File | Purpose |
-|------|---------|
-| `0-cover-letter.md` | Personal letter to advocate summarizing key finding |
-| `1-executive-summary.md` | Overview for quick understanding |
-| `2-chronology.md` | Timeline of events with exhibit references |
-| `3-evidence-index.md` | Complete exhibit list with descriptions |
-| `4-legal-analysis.md` | Relevant legal framework (factual, not advice) |
-| `5-questions-for-advocate.md` | Specific questions requiring legal guidance |
-| `6-appendices.md` | References to source documents |
+| File                          | Purpose                                             |
+| ----------------------------- | --------------------------------------------------- |
+| `0-cover-letter.md`           | Personal letter to advocate summarizing key finding |
+| `1-executive-summary.md`      | Overview for quick understanding                    |
+| `2-chronology.md`             | Timeline of events with exhibit references          |
+| `3-evidence-index.md`         | Complete exhibit list with descriptions             |
+| `4-legal-analysis.md`         | Relevant legal framework (factual, not advice)      |
+| `5-questions-for-advocate.md` | Specific questions requiring legal guidance         |
+| `6-appendices.md`             | References to source documents                      |
 
 ## Compilation
 ```bash
