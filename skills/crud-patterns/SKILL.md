@@ -1,6 +1,6 @@
 ---
 name: crud-patterns
-description: Guides creation of CRUD (Create, Read, Update, Delete) pages following the canonical pattern. Use when building admin pages, data management interfaces, or any page that lists items with add/edit/delete functionality. Triggers on: crud page, admin page, data management, list with edit, table with actions, add edit delete, entity management.
+description: Guides CRUD page creation following canonical patterns. Use when building admin pages, data management interfaces, or list pages with add/edit/delete functionality.
 ---
 
 # Skill: CRUD Patterns
@@ -222,12 +222,12 @@ const handleDeleteClick = async (item: Item) => {
 
 ### Standard CRUD Endpoints
 
-| Operation | Method | Endpoint | Body |
-|-----------|--------|----------|------|
-| List | GET | `/api/items` | - |
-| Create | POST | `/api/items` | `{ ...data }` |
-| Update | PUT | `/api/items` | `{ id, ...data }` |
-| Delete | DELETE | `/api/items?id={id}` | - |
+| Operation | Method | Endpoint             | Body              |
+| --------- | ------ | -------------------- | ----------------- |
+| List      | GET    | `/api/items`         | -                 |
+| Create    | POST   | `/api/items`         | `{ ...data }`     |
+| Update    | PUT    | `/api/items`         | `{ id, ...data }` |
+| Delete    | DELETE | `/api/items?id={id}` | -                 |
 
 ### Save Handler Pattern
 
@@ -259,18 +259,18 @@ const handleSave = async (data: ItemData) => {
 
 ## CSS Classes Reference
 
-| Element | Class | Source |
-|---------|-------|--------|
-| Table section | `tableStyles.section` | `Table.module.css` |
-| Table container | `tableStyles.tableContainer` | `Table.module.css` |
-| Clickable row | `tableStyles.clickableRow` | `Table.module.css` |
-| Sortable header | `tableStyles.sortable` | `Table.module.css` |
-| Actions row | `styles.actionsRow` | `components.module.css` |
-| Edit button | `btnStyles.btnIconEdit` | `buttons.module.css` |
-| Delete button | `btnStyles.btnIconDelete` | `buttons.module.css` |
-| Add button | `btnStyles.btnSmall` | `buttons.module.css` |
-| Modal overlay | `modalStyles.modalOverlay` | `modal.module.css` |
-| Modal content | `modalStyles.modalContent` | `modal.module.css` |
+| Element         | Class                        | Source                  |
+| --------------- | ---------------------------- | ----------------------- |
+| Table section   | `tableStyles.section`        | `Table.module.css`      |
+| Table container | `tableStyles.tableContainer` | `Table.module.css`      |
+| Clickable row   | `tableStyles.clickableRow`   | `Table.module.css`      |
+| Sortable header | `tableStyles.sortable`       | `Table.module.css`      |
+| Actions row     | `styles.actionsRow`          | `components.module.css` |
+| Edit button     | `btnStyles.btnIconEdit`      | `buttons.module.css`    |
+| Delete button   | `btnStyles.btnIconDelete`    | `buttons.module.css`    |
+| Add button      | `btnStyles.btnSmall`         | `buttons.module.css`    |
+| Modal overlay   | `modalStyles.modalOverlay`   | `modal.module.css`      |
+| Modal content   | `modalStyles.modalContent`   | `modal.module.css`      |
 
 ---
 
@@ -286,11 +286,11 @@ This skill orchestrates patterns from:
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Correct Pattern |
-|--------------|-----------------|
-| Separate "Add" and "Edit" modals | Single modal with `item: Item | null` + `isNew: boolean` |
-| Inline delete confirmation | Use `ConfirmDeleteModal` component |
-| Delete without confirmation | Always show confirmation modal |
-| Non-clickable rows with only edit button | Rows should be clickable + have edit button |
+| Anti-Pattern                                | Correct Pattern                                |
+| ------------------------------------------- | ---------------------------------------------- |
+| Separate "Add" and "Edit" modals            | Single modal with `item: Item                  | null` + `isNew: boolean` |
+| Inline delete confirmation                  | Use `ConfirmDeleteModal` component             |
+| Delete without confirmation                 | Always show confirmation modal                 |
+| Non-clickable rows with only edit button    | Rows should be clickable + have edit button    |
 | Missing `stopPropagation` on action buttons | Always prevent row click when clicking actions |
-| Hardcoded delete messages | Pass `title`, `message`, `itemName` to modal |
+| Hardcoded delete messages                   | Pass `title`, `message`, `itemName` to modal   |

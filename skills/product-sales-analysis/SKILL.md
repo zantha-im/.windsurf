@@ -1,6 +1,6 @@
 ---
 name: product-sales-analysis
-description: Analyzes nicotine pouch market data, researches product sourcing from UK/EU distributors, and generates evidence-based purchasing insights. Use when researching new products to stock, comparing supplier pricing, analyzing sales trends, querying the distributor catalog, or preparing purchase recommendations. Triggers on: market research, product sourcing, supplier comparison, sales analysis, purchasing decisions, nicotine pouches, distributor pricing.
+description: Analyzes product market data and distributor pricing. Use when researching products to stock, comparing supplier prices, analyzing sales trends, or preparing purchase recommendations.
 ---
 
 # Skill: Product Sales Analysis
@@ -55,12 +55,12 @@ Research Progress:
 
 ## Quick Reference
 
-| Topic | Reference File |
-|-------|----------------|
-| Data source hierarchy | [references/data-sources.md](references/data-sources.md) |
-| Distributor catalog schema & queries | [references/distributor-catalog.md](references/distributor-catalog.md) |
-| Price list extraction workflows | [references/price-list-integration.md](references/price-list-integration.md) |
-| HTML report template | [assets/report-template.html](assets/report-template.html) |
+| Topic                                | Reference File                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------------- |
+| Data source hierarchy                | [references/data-sources.md](references/data-sources.md)                     |
+| Distributor catalog schema & queries | [references/distributor-catalog.md](references/distributor-catalog.md)       |
+| Price list extraction workflows      | [references/price-list-integration.md](references/price-list-integration.md) |
+| HTML report template                 | [assets/report-template.html](assets/report-template.html)                   |
 
 ## Product Research Procedure
 

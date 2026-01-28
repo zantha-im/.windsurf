@@ -1,6 +1,6 @@
 ---
 name: css-audit
-description: Performs a comprehensive staged audit of an application to identify and fix CSS drift from canonical patterns. Use when reviewing an app for design consistency, auditing CSS patterns, checking for inline styles, consolidating CSS modules, or bringing an app back in line with canonical patterns. Triggers on: css audit, design review, pattern review, css consistency, inline styles audit, css consolidation, design patterns review, canonical patterns check, css drift, style audit, refactor css, css cleanup, design consistency review.
+description: Audits CSS for drift from canonical patterns. Use when reviewing design consistency, checking inline styles, consolidating CSS modules, or fixing style inconsistencies.
 ---
 
 # Skill: CSS Audit

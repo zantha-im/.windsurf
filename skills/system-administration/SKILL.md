@@ -1,6 +1,6 @@
 ---
 name: system-administration
-description: Manages infrastructure including Google Workspace users/groups, Gmail aliases, service accounts, domain-wide delegation, and credentials. Use when creating users, managing groups, configuring email aliases, rotating credentials, or setting up API integrations. Triggers on: Google Workspace, user management, group management, email alias, service account, DWD, credentials, API integration, admin console.
+description: Manages Google Workspace users, groups, aliases, and service accounts. Use when creating users, managing groups, configuring email aliases, or setting up API integrations.
 ---
 
 # Orchestrator Discovery
@@ -70,11 +70,11 @@ Use Google Admin SDK for group management operations.
 
 ## Member Roles
 
-| Role | Permissions |
-|------|-------------|
-| `OWNER` | Full control, can delete group |
-| `MANAGER` | Can add/remove members |
-| `MEMBER` | Can post to group |
+| Role      | Permissions                    |
+| --------- | ------------------------------ |
+| `OWNER`   | Full control, can delete group |
+| `MANAGER` | Can add/remove members         |
+| `MEMBER`  | Can post to group              |
 
 ---
 
@@ -98,13 +98,13 @@ Use Gmail API for send-as alias management.
 
 ## Domain-Wide Delegation Scopes
 
-| Scope | Purpose | Tool |
-|-------|---------|------|
-| `admin.directory.user` | Manage users | Orchestrator |
-| `admin.directory.group` | Manage groups | Orchestrator |
-| `gmail.send` | Send emails | Orchestrator |
-| `gmail.settings.basic` | Gmail settings | Orchestrator |
-| `gmail.settings.sharing` | Send-as aliases | Orchestrator |
+| Scope                          | Purpose          | Tool         |
+| ------------------------------ | ---------------- | ------------ |
+| `admin.directory.user`         | Manage users     | Orchestrator |
+| `admin.directory.group`        | Manage groups    | Orchestrator |
+| `gmail.send`                   | Send emails      | Orchestrator |
+| `gmail.settings.basic`         | Gmail settings   | Orchestrator |
+| `gmail.settings.sharing`       | Send-as aliases  | Orchestrator |
 | `admin.directory.group.member` | Group membership | Orchestrator |
 
 ## Adding New DWD Scopes

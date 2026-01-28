@@ -1,6 +1,6 @@
 ---
 name: adversarial-testing
-description: Guides adversarial security testing of AI agents, LLM endpoints, and agentic applications. Use when testing guardrails, probing for data leakage, attempting prompt injection, validating AI safety controls, or assessing agentic system risks. Triggers on: test agent, probe guardrails, red team, jailbreak test, data exfiltration test, security audit AI, validate guardrails, agentic security, OWASP LLM.
+description: Tests AI agent security and guardrails. Use when red teaming, testing prompt injection, probing for data leakage, or validating AI safety controls.
 ---
 
 # Skill: Adversarial Testing
@@ -52,11 +52,11 @@ Adversarial Testing Progress:
 
 ## Target Classification
 
-| Type | Characteristics | Priority Categories |
-|------|-----------------|---------------------|
-| **Chatbot** | Single-turn Q&A, no tools | Prompt Injection, Data Exfil, Info Disclosure |
-| **RAG System** | Retrieves external docs | Indirect Injection, Data Exfil, Cross-Customer |
-| **Tool-Using Agent** | Can execute functions/APIs | Privilege Escalation, Excessive Agency, Tool Misuse |
+| Type                   | Characteristics             | Priority Categories                                   |
+| ---------------------- | --------------------------- | ----------------------------------------------------- |
+| **Chatbot**            | Single-turn Q&A, no tools   | Prompt Injection, Data Exfil, Info Disclosure         |
+| **RAG System**         | Retrieves external docs     | Indirect Injection, Data Exfil, Cross-Customer        |
+| **Tool-Using Agent**   | Can execute functions/APIs  | Privilege Escalation, Excessive Agency, Tool Misuse   |
 | **Multi-Agent System** | Multiple agents collaborate | Identity Spoofing, Cascading Failures, Goal Hijacking |
 
 ---
@@ -65,13 +65,13 @@ Adversarial Testing Progress:
 
 Organize testing around five risk categories (per DeepTeam):
 
-| Category | Description |
-|----------|-------------|
-| **Responsible AI** | Biased or toxic outputs |
-| **Illegal Activities** | Facilitating unlawful acts |
-| **Brand Image** | Reputation damage |
-| **Data Privacy** | Exposing confidential info |
-| **Unauthorized Access** | System exploitation |
+| Category                | Description                |
+| ----------------------- | -------------------------- |
+| **Responsible AI**      | Biased or toxic outputs    |
+| **Illegal Activities**  | Facilitating unlawful acts |
+| **Brand Image**         | Reputation damage          |
+| **Data Privacy**        | Exposing confidential info |
+| **Unauthorized Access** | System exploitation        |
 
 ---
 
@@ -79,15 +79,15 @@ Organize testing around five risk categories (per DeepTeam):
 
 For detailed procedures, read these reference files:
 
-| Topic | Reference File |
-|-------|----------------|
-| Test categories (1-10) | [references/test-categories.md](references/test-categories.md) |
-| Attack enhancement techniques | [references/attack-techniques.md](references/attack-techniques.md) |
-| Response validation patterns | [references/validation-patterns.md](references/validation-patterns.md) |
-| Reporting templates | [references/reporting.md](references/reporting.md) |
-| OWASP LLM Top 10 mapping | [references/owasp-llm-top10.md](references/owasp-llm-top10.md) |
-| OWASP Agentic Top 10 | [references/owasp-agentic-top10.md](references/owasp-agentic-top10.md) |
-| Attack pattern library | [references/attack-patterns.md](references/attack-patterns.md) |
+| Topic                         | Reference File                                                         |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| Test categories (1-10)        | [references/test-categories.md](references/test-categories.md)         |
+| Attack enhancement techniques | [references/attack-techniques.md](references/attack-techniques.md)     |
+| Response validation patterns  | [references/validation-patterns.md](references/validation-patterns.md) |
+| Reporting templates           | [references/reporting.md](references/reporting.md)                     |
+| OWASP LLM Top 10 mapping      | [references/owasp-llm-top10.md](references/owasp-llm-top10.md)         |
+| OWASP Agentic Top 10          | [references/owasp-agentic-top10.md](references/owasp-agentic-top10.md) |
+| Attack pattern library        | [references/attack-patterns.md](references/attack-patterns.md)         |
 
 ---
 

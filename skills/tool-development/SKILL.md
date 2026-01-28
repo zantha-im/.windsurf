@@ -1,6 +1,6 @@
 ---
 name: tool-development
-description: STOP before writing one-off scripts. Convert automation scripts into reusable tools. Use when writing scripts, automating tasks, creating utilities, or building new API integrations. Covers both project-specific orchestrator tools AND shared tools in the .windsurf subtree. Triggers on: writing scripts, automating tasks, generating reports, creating utilities, one-off automation, repeated operations, create tool, new tool, build tool, shared tool, reusable tool, API wrapper, new integration.
+description: Converts scripts into reusable tools. Use when writing automation scripts, creating utilities, building API integrations, or adding shared tools to .windsurf.
 ---
 
 # Skill: Tool Development
@@ -17,12 +17,12 @@ This skill covers two types of tool development:
 
 **Before writing any code, determine where it belongs:**
 
-| Question | If Yes → | If No → |
-|----------|----------|---------|
-| Is this an API wrapper (AWS, Google, etc.)? | Shared tool | Project tool |
-| Will multiple projects need this? | Shared tool | Project tool |
-| Does it contain business logic (folder IDs, workflows)? | Project tool | Could be shared |
-| Does it need project-specific credentials? | Project tool (or bridge) | Shared tool |
+| Question                                                | If Yes →                 | If No →         |
+| ------------------------------------------------------- | ------------------------ | --------------- |
+| Is this an API wrapper (AWS, Google, etc.)?             | Shared tool              | Project tool    |
+| Will multiple projects need this?                       | Shared tool              | Project tool    |
+| Does it contain business logic (folder IDs, workflows)? | Project tool             | Could be shared |
+| Does it need project-specific credentials?              | Project tool (or bridge) | Shared tool     |
 
 **Examples:**
 - Route53 DNS management → **Shared tool** (`.windsurf/tools/aws/`)
@@ -136,9 +136,9 @@ For project-specific business logic, create orchestrator tools.
 
 ## Architecture: Domain vs Generic Roles
 
-| Role Type | Orchestrator Location | Who Maintains |
-|-----------|----------------------|---------------|
-| **Domain** | `roles/[role-name]/orchestrator.js` in the consuming project | The project team |
+| Role Type   | Orchestrator Location                                                | Who Maintains          |
+| ----------- | -------------------------------------------------------------------- | ---------------------- |
+| **Domain**  | `roles/[role-name]/orchestrator.js` in the consuming project         | The project team       |
 | **Generic** | `.windsurf/roles/generic/[role-name]/orchestrator.js` in the subtree | This shared repository |
 
 **Domain roles** (e.g., Sales Analyst, Company Secretary) have project-specific orchestrators maintained by each project.

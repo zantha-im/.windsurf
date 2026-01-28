@@ -1,6 +1,6 @@
 ---
 name: dead-code-detection
-description: Detects and removes unused code, files, exports, and dependencies using knip. Use when cleaning up technical debt, removing unused components, finding dead exports, auditing dependencies, or preparing for a major refactor. Triggers on: dead code, unused code, unused files, unused exports, unused dependencies, technical debt cleanup, knip, code cleanup, remove unused, find dead code.
+description: Detects unused code, files, exports, and dependencies using knip. Use when cleaning up dead code, removing unused components, or auditing dependencies.
 ---
 
 # Skill: Dead Code Detection

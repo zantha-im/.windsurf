@@ -1,6 +1,6 @@
 ---
 name: role-creation
-description: Guides creation and iterative refinement of AI roles, skills, and workflows. Use when designing a new role, refining an existing role based on failure feedback, creating a skill, or setting up activation workflows. Triggers on: create role, new role, design role, refine role, fix role, role failed, role template, skill template, workflow template, role architecture, role feedback.
+description: Guides creation of AI roles, skills, and workflows. Use when designing a new role, refining roles based on feedback, creating skills, or setting up activation workflows.
 ---
 
 # Skill: Role Creation & Refinement
@@ -32,12 +32,12 @@ This skill guides the creation of new roles and the iterative refinement of exis
 
 ### Component Summary
 
-| Component | Purpose | Location | Invocation |
-|-----------|---------|----------|------------|
-| **Role** | Identity (WHO) | `.windsurf/roles/[domain\|generic]/` | Read by workflow |
-| **Skill** | Procedures (HOW) | `.windsurf/skills/[skill-name]/` | `@skill-name` or automatic |
-| **Workflow** | Activation (WHEN) | `.windsurf/workflows/` | `/workflow-name` |
-| **Rule** | Constraints (MUST/MUST NOT) | `.windsurf/rules/` | Trigger-based |
+| Component    | Purpose                     | Location                             | Invocation                 |
+| ------------ | --------------------------- | ------------------------------------ | -------------------------- |
+| **Role**     | Identity (WHO)              | `.windsurf/roles/[domain\|generic]/` | Read by workflow           |
+| **Skill**    | Procedures (HOW)            | `.windsurf/skills/[skill-name]/`     | `@skill-name` or automatic |
+| **Workflow** | Activation (WHEN)           | `.windsurf/workflows/`               | `/workflow-name`           |
+| **Rule**     | Constraints (MUST/MUST NOT) | `.windsurf/rules/`                   | Trigger-based              |
 
 ### How Components Work Together
 
@@ -75,19 +75,19 @@ This skill guides the creation of new roles and the iterative refinement of exis
 
 ### Skill Invocation Methods
 
-| Method | How | When |
-|--------|-----|------|
+| Method        | How                                          | When                   |
+| ------------- | -------------------------------------------- | ---------------------- |
 | **Automatic** | Cascade matches request to skill description | Progressive disclosure |
-| **Manual** | Type `@skill-name` in Cascade | Direct invocation |
-| **From Role** | Role references `Use @skill-name for...` | Role activation |
+| **Manual**    | Type `@skill-name` in Cascade                | Direct invocation      |
+| **From Role** | Role references `Use @skill-name for...`     | Role activation        |
 
 ### Workflow Types
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| **Role Activation** | Activates a role and its skills | `/senior-developer` |
-| **Standalone** | Orchestrates a task, may activate a role | `/css-audit` activates senior-developer then runs audit |
-| **Utility** | Simple task, no role needed | `/subtree-pull` |
+| Type                | Purpose                                  | Example                                                 |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| **Role Activation** | Activates a role and its skills          | `/senior-developer`                                     |
+| **Standalone**      | Orchestrates a task, may activate a role | `/css-audit` activates senior-developer then runs audit |
+| **Utility**         | Simple task, no role needed              | `/subtree-pull`                                         |
 
 ### Config-Driven Skills
 
@@ -103,12 +103,12 @@ Skills that need project-specific paths should use configuration files:
 
 ### Rule Activation Modes
 
-| Mode | When Applied | Example |
-|------|--------------|---------|
-| **always_on** | Every conversation | `file-edit-safety.md` |
+| Mode               | When Applied                       | Example               |
+| ------------------ | ---------------------------------- | --------------------- |
+| **always_on**      | Every conversation                 | `file-edit-safety.md` |
 | **model_decision** | Model decides based on description | `database-tooling.md` |
-| **glob** | Files matching pattern | `*.css` → css rules |
-| **manual** | Only via `@mention` | Rarely used |
+| **glob**           | Files matching pattern             | `*.css` → css rules   |
+| **manual**         | Only via `@mention`                | Rarely used           |
 
 ---
 
@@ -141,14 +141,14 @@ Ask the user:
 
 Common failure patterns:
 
-| Symptom | Likely Cause | Fix Location |
-|---------|--------------|--------------|
-| Role ignores instructions | Missing/weak principle | Role file |
-| Wrong procedure followed | Skill steps unclear | Skill file |
-| Skips important step | Missing workflow step | Workflow file |
-| Does something forbidden | Missing constraint | Role or rule file |
-| Uses wrong tool | Tool guidance missing | Role or skill file |
-| Wrong output location | Path not specified | Skill file |
+| Symptom                   | Likely Cause           | Fix Location       |
+| ------------------------- | ---------------------- | ------------------ |
+| Role ignores instructions | Missing/weak principle | Role file          |
+| Wrong procedure followed  | Skill steps unclear    | Skill file         |
+| Skips important step      | Missing workflow step  | Workflow file      |
+| Does something forbidden  | Missing constraint     | Role or rule file  |
+| Uses wrong tool           | Tool guidance missing  | Role or skill file |
+| Wrong output location     | Path not specified     | Skill file         |
 
 ### Applying Fixes
 
@@ -184,10 +184,10 @@ New Role Progress:
 
 ## Step 1: Determine Role Type
 
-| Type | Location | Orchestrator | When to Use |
-|------|----------|--------------|-------------|
-| **Domain** | `.windsurf/roles/domain/` | In consuming project | Project-specific context (folder IDs, business logic) |
-| **Generic** | `.windsurf/roles/generic/` | In this subtree | Portable across any project |
+| Type        | Location                   | Orchestrator         | When to Use                                           |
+| ----------- | -------------------------- | -------------------- | ----------------------------------------------------- |
+| **Domain**  | `.windsurf/roles/domain/`  | In consuming project | Project-specific context (folder IDs, business logic) |
+| **Generic** | `.windsurf/roles/generic/` | In this subtree      | Portable across any project                           |
 
 **Ask:** Does this role need project-specific configuration (folder IDs, API keys, business rules)?
 - **Yes** → Domain role
@@ -280,9 +280,9 @@ See [references/anti-patterns.md](references/anti-patterns.md) for common mistak
 
 ### Existing Roles to Reference
 
-| Role | Type | Skill | Good Example Of |
-|------|------|-------|-----------------|
-| `sales-analyst` | domain | `@product-sales-analysis` | Identity-focused role, data source hierarchy in skill |
-| `company-secretary` | domain | `@corporate-governance` | Google Drive integration, e-signature workflow |
-| `senior-developer` | generic | `@table-patterns`, `@css-audit`, etc. | Config-driven skills, multiple skills per role |
-| `system-administrator` | generic | `@system-administration` | Infrastructure management |
+| Role                   | Type    | Skill                                 | Good Example Of                                       |
+| ---------------------- | ------- | ------------------------------------- | ----------------------------------------------------- |
+| `sales-analyst`        | domain  | `@product-sales-analysis`             | Identity-focused role, data source hierarchy in skill |
+| `company-secretary`    | domain  | `@corporate-governance`               | Google Drive integration, e-signature workflow        |
+| `senior-developer`     | generic | `@table-patterns`, `@css-audit`, etc. | Config-driven skills, multiple skills per role        |
+| `system-administrator` | generic | `@system-administration`              | Infrastructure management                             |

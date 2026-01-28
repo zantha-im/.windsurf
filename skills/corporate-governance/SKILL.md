@@ -1,6 +1,6 @@
 ---
 name: corporate-governance
-description: Manages corporate governance documents including board meeting minutes, written resolutions, contracts, and statutory registers. Use when preparing board meetings, drafting minutes, creating resolutions, managing contracts, or updating shareholder/director registers. Triggers on: board meeting, minutes, resolution, contract management, statutory register, company secretary, corporate governance, AGM.
+description: Manages board minutes, resolutions, contracts, and statutory registers. Use when preparing board meetings, drafting minutes, creating resolutions, or updating company registers.
 ---
 
 # Orchestrator Discovery
