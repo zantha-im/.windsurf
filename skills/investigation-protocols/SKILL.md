@@ -64,7 +64,7 @@ Investigation Progress:
 4. **Create evidence folder**: `evidence/` with subfolders `emails/`, `slack/`, `external/`
 
 ### Directory Structure
-```
+```investigation-protocols
 {NNN}-{slug}/
 ├── README.md              # Investigation summary (required)
 ├── manifest.json          # Metadata (required)
@@ -178,36 +178,24 @@ Evidence is **corroborative** if it:
 
 # Phase 4: Advocate Package
 
-## When to Create
+**Use `@advocate-package` skill for detailed templates and procedures.**
+
 Create an advocate package when:
 - Investigation is complete
 - Findings need to be presented to legal counsel
 - A formal record is required
 
-## Structure
-Create `advocate-package/` folder at investigation root with numbered sections:
+Quick reference - create `advocate-package/` folder with:
+- `README.md` - Package index
+- `0-cover-letter.md` - Personal letter to advocate
+- `1-executive-summary.md` - Quick overview
+- `2-chronology.md` - Timeline with exhibits
+- `3-evidence-index.md` - Complete exhibit list
 
-| File                          | Purpose                                             |
-| ----------------------------- | --------------------------------------------------- |
-| `0-cover-letter.md`           | Personal letter to advocate summarizing key finding |
-| `1-executive-summary.md`      | Overview for quick understanding                    |
-| `2-chronology.md`             | Timeline of events with exhibit references          |
-| `3-evidence-index.md`         | Complete exhibit list with descriptions             |
-| `4-legal-analysis.md`         | Relevant legal framework (factual, not advice)      |
-| `5-questions-for-advocate.md` | Specific questions requiring legal guidance         |
-| `6-appendices.md`             | References to source documents                      |
-
-## Compilation
-```bash
-node scripts/compile-advocate-package.js {ID}
-```
-Output: `advocate-package-{ID}-{slug}-{YYYY-MM-DD}.pdf`
-
-## Key Finding Presentation
+Key principles:
 - Be forthright about unfavorable findings
-- Acknowledge when evidence contradicts original understanding
-- If you were wrong, say so clearly
 - Include verbatim quotations with exhibit references
+- Maintain neutral language - let the advocate draw conclusions
 
 ---
 
