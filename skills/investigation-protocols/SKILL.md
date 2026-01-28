@@ -56,8 +56,8 @@ Investigation Progress:
 ## Creating a New Investigation
 
 ### Checklist
-1. **Determine the next ID**: Check `investigations/` folder for highest existing number
-2. **Create folder**: `investigations/{NNN}-{slug}/`
+1. **Determine the next ID**: Check `roles/legal-researcher/investigations/` folder for highest existing number
+2. **Create folder**: `roles/legal-researcher/investigations/{NNN}-{slug}/`
 3. **Create required files**:
    - `README.md` - Human-readable summary
    - `manifest.json` - Machine-readable metadata
