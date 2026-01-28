@@ -227,11 +227,28 @@ Create folder: `.windsurf/skills/[skill-name]/`
 Use the skill template: [references/skill-template.md](references/skill-template.md)
 
 **Key rules:**
-- Strong description with trigger keywords
+- **CRITICAL: Description must be under 200 characters** - longer descriptions won't appear in Windsurf's Skills panel
+- Follow the description pattern: `[Brief purpose]. Use when [trigger words], or needs to [actions].`
 - Include copyable workflow checklist
 - **Keep SKILL.md under ~200 lines** - extract detailed content to reference files
 - Add supporting files in `references/` or `assets/` subdirectories
 - Reference files with relative paths: `[references/file.md](references/file.md)`
+
+### Skill Description Formula
+
+```
+[Brief purpose]. Use when [trigger words], or needs to [actions].
+```
+
+**Example (good - 163 chars):**
+```
+Guides evidence-based legal investigations. Use when gathering evidence, analyzing emails/Slack, creating chronologies, or compiling advocate packages.
+```
+
+**Example (bad - 450+ chars, won't appear):**
+```
+Conducts evidence-based investigations with neutral fact-finding, evidence gathering from emails/Slack, chronological analysis, and advocate package creation. Use when starting a new investigation, gathering evidence, analyzing communications, creating legal packages, or documenting findings. Triggers on: investigation, evidence gathering, fact-finding, legal package, advocate package, email analysis, Slack analysis, chronology.
+```
 
 ---
 

@@ -7,7 +7,7 @@ Create folder: `.windsurf/skills/[skill-name]/`
 ```markdown
 ---
 name: [skill-name]
-description: [Clear description of WHAT this skill does and WHEN to use it. Include trigger keywords. Max 1024 chars.]
+description: [Brief purpose]. Use when [trigger words], or needs to [actions]. (MAX 200 CHARS - longer descriptions won't appear in Windsurf!)
 ---
 
 # Skill: [Skill Name]
@@ -48,7 +48,8 @@ Before completing:
 
 ## Key Rules
 
-- Strong description with trigger keywords
+- **CRITICAL: Description must be under 200 characters** - longer descriptions won't appear in Windsurf's Skills panel
+- Follow the pattern: `[Brief purpose]. Use when [trigger words], or needs to [actions].`
 - Include copyable workflow checklist
 - **Keep SKILL.md under ~200 lines** - extract detailed content to reference files
 - Add supporting files in `references/` or `assets/` subdirectories
@@ -58,13 +59,13 @@ Before completing:
 
 **SKILL.md should be a concise orchestrator, not a comprehensive manual.**
 
-| Content Type | Location | Example |
-|--------------|----------|---------|
-| Workflow overview | SKILL.md | Checklist, stage summaries |
-| Detailed procedures | `references/` | Step-by-step guides |
-| Templates | `references/` | Role/skill/workflow templates |
-| Reference data | `references/` | Lookup tables, mappings |
-| Assets | `assets/` | HTML templates, images |
+| Content Type        | Location      | Example                       |
+| ------------------- | ------------- | ----------------------------- |
+| Workflow overview   | SKILL.md      | Checklist, stage summaries    |
+| Detailed procedures | `references/` | Step-by-step guides           |
+| Templates           | `references/` | Role/skill/workflow templates |
+| Reference data      | `references/` | Lookup tables, mappings       |
+| Assets              | `assets/`     | HTML templates, images        |
 
 **Why?**
 - Shorter skills load faster and are easier to follow
