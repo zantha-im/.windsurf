@@ -66,7 +66,6 @@ function getSheetNames(workbook) {
  * @param {string} sheetName - Name of the sheet
  * @param {object} options - Options for parsing
  * @param {boolean} options.header - Use first row as headers (default: true)
- * @param {number} options.headerRow - Row number to use as header (default: 1, 1-indexed)
  * @returns {object[]} Array of row objects
  */
 function getSheetData(workbook, sheetName, options = {}) {
@@ -76,13 +75,13 @@ function getSheetData(workbook, sheetName, options = {}) {
     throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
   }
   
-  const { header = true, headerRow = 1 } = options;
+  const { header = true } = options;
   
   if (header) {
-    // Use first row as headers
-    return XLSX.utils.sheet_to_json(sheet, { header: headerRow, defval: null });
+    // Omit header option to use first row as object keys
+    return XLSX.utils.sheet_to_json(sheet, { defval: null });
   } else {
-    // Return as array of arrays
+    // Pass header: 1 to get 2D array
     return XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
   }
 }
