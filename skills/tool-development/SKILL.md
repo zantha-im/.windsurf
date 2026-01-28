@@ -1,6 +1,6 @@
 ---
 name: tool-development
-description: Converts scripts into reusable tools. Use when writing automation scripts, creating utilities, building API integrations, or adding shared tools to .windsurf.
+description: Converts one-off scripts into reusable tools. Use when writing scripts, automating tasks, creating utilities, or building API integrations.
 ---
 
 # Skill: Tool Development

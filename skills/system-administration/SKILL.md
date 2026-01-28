@@ -1,6 +1,6 @@
 ---
 name: system-administration
-description: Manages Google Workspace users, groups, aliases, and service accounts. Use when creating users, managing groups, configuring email aliases, or setting up API integrations.
+description: Manages Google Workspace users, groups, and service accounts. Use when creating users, managing groups, configuring aliases, or setting up integrations.
 ---
 
 # Orchestrator Discovery

@@ -1,6 +1,6 @@
 ---
 name: investigation-protocols
-description: Guides evidence-based legal investigations. Use when gathering evidence, analyzing emails/Slack, creating chronologies, or compiling advocate packages.
+description: Guides evidence-based legal investigations. Use when starting an investigation, gathering evidence, analyzing emails/Slack, or compiling advocate packages.
 ---
 
 # CRITICAL: Output Location
