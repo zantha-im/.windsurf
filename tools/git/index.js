@@ -15,12 +15,12 @@
  *   const synced = await git.syncMissingFiles('windsurf_subtree', 'main', '.windsurf');
  */
 
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 /**
- * Execute a git command and return the output
+ * Execute a git command and return the output as text
  * @param {string} command - Git command to execute
  * @param {string} cwd - Working directory
  * @returns {string} Command output
@@ -32,6 +32,24 @@ function execGit(command, cwd = process.cwd()) {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe']
     }).trim();
+  } catch (error) {
+    throw new Error(`Git command failed: git ${command}\n${error.stderr || error.message}`);
+  }
+}
+
+/**
+ * Execute a git command and return the output as a Buffer (for binary data)
+ * @param {string} command - Git command to execute
+ * @param {string} cwd - Working directory
+ * @returns {Buffer} Command output as Buffer
+ */
+function execGitBinary(command, cwd = process.cwd()) {
+  try {
+    return execSync(`git ${command}`, { 
+      cwd,
+      stdio: ['pipe', 'pipe', 'pipe'],
+      maxBuffer: 50 * 1024 * 1024 // 50MB buffer for large files
+    });
   } catch (error) {
     throw new Error(`Git command failed: git ${command}\n${error.stderr || error.message}`);
   }
@@ -90,15 +108,27 @@ function listRemoteFiles(remoteName, branch, cwd = process.cwd()) {
 }
 
 /**
- * Get the content of a file from a remote branch
+ * Get the content of a file from a remote branch as text
  * @param {string} remoteName - Name of the remote
  * @param {string} branch - Branch name
  * @param {string} filePath - Path to the file in the remote
  * @param {string} cwd - Working directory
- * @returns {string} File content
+ * @returns {string} File content as text
  */
 function getRemoteFileContent(remoteName, branch, filePath, cwd = process.cwd()) {
   return execGit(`show ${remoteName}/${branch}:${filePath}`, cwd);
+}
+
+/**
+ * Get the content of a file from a remote branch as binary Buffer
+ * @param {string} remoteName - Name of the remote
+ * @param {string} branch - Branch name
+ * @param {string} filePath - Path to the file in the remote
+ * @param {string} cwd - Working directory
+ * @returns {Buffer} File content as Buffer
+ */
+function getRemoteFileContentBinary(remoteName, branch, filePath, cwd = process.cwd()) {
+  return execGitBinary(`show ${remoteName}/${branch}:${filePath}`, cwd);
 }
 
 /**
@@ -154,8 +184,9 @@ function syncMissingFiles(remoteName, branch, localPrefix, cwd = process.cwd()) 
         fs.mkdirSync(dir, { recursive: true });
       }
 
-      // Get content from remote and write locally
-      const content = getRemoteFileContent(remoteName, branch, file, cwd);
+      // Get content from remote as binary Buffer and write locally
+      // Using binary mode preserves all file types (text, images, fonts, etc.)
+      const content = getRemoteFileContentBinary(remoteName, branch, file, cwd);
       fs.writeFileSync(localPath, content);
       synced.push(file);
     } catch (error) {
@@ -329,11 +360,13 @@ Examples:
 
 module.exports = {
   execGit,
+  execGitBinary,
   remoteExists,
   ensureRemote,
   fetchRemote,
   listRemoteFiles,
   getRemoteFileContent,
+  getRemoteFileContentBinary,
   findMissingFiles,
   syncMissingFiles,
   compareWithRemote,
