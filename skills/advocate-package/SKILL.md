@@ -31,7 +31,7 @@ roles/legal-researcher/investigations/{NNN}-{slug}/
     ├── 4-legal-analysis.md     # Factual legal framework
     ├── 5-questions-for-advocate.md  # Questions for counsel
     ├── 6-appendices.md         # Source document references
-    └── advocate-package-{slug}-{date}.pdf  # COMPILED BRIEFING
+    └── advocate-briefing-{slug}-{date}.pdf  # COMPILED BRIEFING
 ```
 
 ---
@@ -280,7 +280,7 @@ const pdfPath = await compileAdvocatePackage('002');  // Returns path to generat
 node scripts/compile-advocate-package.js {NNN}
 ```
 
-**Output:** `advocate-package-{NNN}-{slug}-{YYYY-MM-DD}.pdf`
+**Output:** `advocate-briefing-{slug}-{YYYY-MM-DD}.pdf`
 
 The script:
 1. Finds all markdown files in the `advocate-package/` folder
