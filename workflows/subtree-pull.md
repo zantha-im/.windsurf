@@ -39,15 +39,9 @@ cmd /c git subtree pull --prefix=.windsurf windsurf_subtree main --squash -m "Up
 
 4) Sync missing files from remote
 - Git subtree with --squash can miss files added after initial setup
-- Compare remote tree to local subtree and copy any missing files
-- Use `git show` to extract files that exist on remote but not locally
-
-```
-For each file in `git ls-tree -r --name-only windsurf_subtree/main`:
-  If file does not exist at `.windsurf/<path>`:
-    Extract with: git show windsurf_subtree/main:<path> > .windsurf/<path>
-    Report: "Added missing file: .windsurf/<path>"
-```
+- Use the git tool to compare and sync missing files
+// turbo
+node .windsurf/tools/git/index.js sync windsurf_subtree main .windsurf
 
 5) Check for package.json changes and install dependencies
 - Check if `.windsurf/package.json` exists

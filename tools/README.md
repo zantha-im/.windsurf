@@ -52,6 +52,14 @@ Excel file parsing and data extraction.
 | ---------- | ---------------------------------------- |
 | `index.js` | Read and parse Excel files (.xlsx, .xls) |
 
+### Git (`tools/git/`)
+
+Git utilities for subtree management and file synchronization.
+
+| Module     | Purpose                                                   |
+| ---------- | --------------------------------------------------------- |
+| `index.js` | Subtree sync, remote file listing, missing file detection |
+
 ---
 
 ## Pattern: Creating Project-Specific Tools
@@ -424,3 +432,63 @@ const range = excel.getSheetRange(workbook, 'Sheet1');
 ```bash
 npm install exceljs
 ```
+
+### Git (`tools/git/`)
+
+```javascript
+const git = require('.windsurf/tools/git');
+
+// Check if remote exists
+const exists = git.remoteExists('windsurf_subtree');
+
+// Ensure remote exists (add if missing)
+const { added, url } = git.ensureRemote('windsurf_subtree', 'https://github.com/zantha-im/.windsurf.git');
+
+// Fetch from remote
+git.fetchRemote('windsurf_subtree');
+
+// List all files in a remote branch
+const files = git.listRemoteFiles('windsurf_subtree', 'main');
+// Returns: ['README.md', 'tools/index.js', ...]
+
+// Get content of a file from remote
+const content = git.getRemoteFileContent('windsurf_subtree', 'main', 'README.md');
+
+// Find files missing locally
+const { missing, existing, total } = git.findMissingFiles('windsurf_subtree', 'main', '.windsurf');
+// Returns: { missing: ['new-file.js'], existing: ['README.md', ...], total: 50 }
+
+// Sync missing files from remote to local
+const { synced, errors } = git.syncMissingFiles('windsurf_subtree', 'main', '.windsurf');
+// Returns: { synced: ['new-file.js'], skipped: [], errors: [] }
+
+// Compare remote with local (summary)
+const comparison = git.compareWithRemote('windsurf_subtree', 'main', '.windsurf');
+// Returns: { summary: 'All 50 files present locally', missing: [], existing: [...], total: 50 }
+
+// Full subtree sync operation (all-in-one)
+const result = await git.subtreeSync({
+  remoteName: 'windsurf_subtree',
+  remoteUrl: 'https://github.com/zantha-im/.windsurf.git',
+  branch: 'main',
+  localPrefix: '.windsurf'
+});
+// Returns: { remote, fetch, comparison, sync }
+```
+
+**CLI usage:**
+```bash
+# List files in remote
+node .windsurf/tools/git/index.js list-remote
+
+# Find missing files
+node .windsurf/tools/git/index.js find-missing
+
+# Sync missing files
+node .windsurf/tools/git/index.js sync
+
+# Full sync operation
+node .windsurf/tools/git/index.js full-sync
+```
+
+**No additional dependencies required** - uses Node.js built-ins and git CLI.

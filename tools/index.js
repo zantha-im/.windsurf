@@ -15,8 +15,10 @@
 
 const google = require('./google');
 const pdf = require('./pdf');
+const git = require('./git');
 
 module.exports = {
   google,
-  pdf
+  pdf,
+  git
 };
