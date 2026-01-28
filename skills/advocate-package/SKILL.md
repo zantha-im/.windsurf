@@ -42,21 +42,21 @@ Create an advocate package when:
 
 ### Required Files
 
-| File | Purpose | Key Content |
-|------|---------|-------------|
-| `README.md` | Package index | Contents list, status, cross-references |
-| `0-cover-letter.md` | Personal letter to advocate | Key findings summary, recommended actions |
-| `1-executive-summary.md` | Quick overview | 1-2 page summary for busy readers |
-| `2-chronology.md` | Timeline of events | Dated entries with exhibit references |
-| `3-evidence-index.md` | Complete exhibit list | All evidence with descriptions |
+| File                     | Purpose                     | Key Content                               |
+| ------------------------ | --------------------------- | ----------------------------------------- |
+| `README.md`              | Package index               | Contents list, status, cross-references   |
+| `0-cover-letter.md`      | Personal letter to advocate | Key findings summary, recommended actions |
+| `1-executive-summary.md` | Quick overview              | 1-2 page summary for busy readers         |
+| `2-chronology.md`        | Timeline of events          | Dated entries with exhibit references     |
+| `3-evidence-index.md`    | Complete exhibit list       | All evidence with descriptions            |
 
 ### Optional Files
 
-| File | Purpose | When to Include |
-|------|---------|-----------------|
-| `4-legal-analysis.md` | Relevant legal framework | When legal context aids understanding |
-| `5-questions-for-advocate.md` | Questions for counsel | When guidance is needed |
-| `6-appendices.md` | Source document references | For complex investigations |
+| File                          | Purpose                    | When to Include                       |
+| ----------------------------- | -------------------------- | ------------------------------------- |
+| `4-legal-analysis.md`         | Relevant legal framework   | When legal context aids understanding |
+| `5-questions-for-advocate.md` | Questions for counsel      | When guidance is needed               |
+| `6-appendices.md`             | Source document references | For complex investigations            |
 
 ---
 
@@ -156,11 +156,11 @@ Regards,
 
 ## Evidence Summary
 
-| Category | Count | Key Items |
-|----------|-------|-----------|
-| Emails | {N} | {Description} |
-| Documents | {N} | {Description} |
-| Financial Records | {N} | {Description} |
+| Category          | Count | Key Items     |
+| ----------------- | ----- | ------------- |
+| Emails            | {N}   | {Description} |
+| Documents         | {N}   | {Description} |
+| Financial Records | {N}   | {Description} |
 
 ## Conclusion
 
@@ -183,10 +183,10 @@ Regards,
 
 ## Timeline
 
-| Date | Event | Exhibit | Significance |
-|------|-------|---------|--------------|
-| YYYY-MM-DD | {Event description} | E-001 | {Why it matters} |
-| YYYY-MM-DD | {Event description} | E-002 | {Why it matters} |
+| Date       | Event               | Exhibit | Significance     |
+| ---------- | ------------------- | ------- | ---------------- |
+| YYYY-MM-DD | {Event description} | E-001   | {Why it matters} |
+| YYYY-MM-DD | {Event description} | E-002   | {Why it matters} |
 
 ---
 
@@ -211,10 +211,10 @@ Regards,
 
 ## Exhibit List
 
-| ID | Date | Type | Description | Location |
-|----|------|------|-------------|----------|
-| E-001 | YYYY-MM-DD | Email | {Description} | `evidence/emails/E-001_...` |
-| E-002 | YYYY-MM-DD | Document | {Description} | `evidence/external/...` |
+| ID    | Date       | Type     | Description   | Location                    |
+| ----- | ---------- | -------- | ------------- | --------------------------- |
+| E-001 | YYYY-MM-DD | Email    | {Description} | `evidence/emails/E-001_...` |
+| E-002 | YYYY-MM-DD | Document | {Description} | `evidence/external/...`     |
 
 ---
 
@@ -259,13 +259,27 @@ Regards,
 
 ## Compilation
 
-To compile the package into a PDF:
+**Use the Legal Researcher orchestrator to compile:**
+
+```javascript
+const { compileAdvocatePackage } = require('./roles/legal-researcher/orchestrator');
+const pdfPath = await compileAdvocatePackage('002');  // Returns path to generated PDF
+```
+
+**Or via CLI:**
 
 ```bash
 node scripts/compile-advocate-package.js {NNN}
 ```
 
-Output: `advocate-package-{NNN}-{slug}-{YYYY-MM-DD}.pdf`
+**Output:** `advocate-package-{NNN}-{slug}-{YYYY-MM-DD}.pdf`
+
+The script:
+1. Finds all markdown files in the `advocate-package/` folder
+2. Converts each to PDF with legal document styling
+3. Includes any PDFs from `evidence/external/` as appendices
+4. Merges into a single PDF with page numbers
+5. Cleans up intermediate files
 
 ---
 
