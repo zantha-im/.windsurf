@@ -394,19 +394,31 @@ npm install @aws-sdk/client-route-53
 
 ### Excel (`tools/excel/`)
 
+**⚠️ IMPORTANT: Formula Handling Limitation**
+
+ExcelJS does NOT calculate formulas - it only reads cached results stored in the file.
+Files exported from Xero, Google Sheets, or saved without recalculation may have missing or incorrect formula values.
+
+**Always check `getWorkbookSummary()` first** - it will warn you if formulas have issues.
+
 ```javascript
 const excel = require('.windsurf/tools/excel');
 
 // Read workbook (async)
 const workbook = await excel.readWorkbook('./file.xlsx');
 
+// FIRST: Check for formula issues
+const summary = excel.getWorkbookSummary(workbook);
+// Returns: { sheetCount, sheets: [{ name, rows, cols, formulas, unresolvedFormulas }], warning? }
+// If warning is present, formula values may be missing or incorrect
+
+// Get detailed formula warnings for a sheet
+const warnings = excel.getFormulaWarnings(workbook, 'Sheet1');
+// Returns: { hasIssues, totalFormulas, unresolvedFormulas, samples: [{cell, formula}] }
+
 // Get sheet names
 const sheets = excel.getSheetNames(workbook);
 // Returns: ['Sheet1', 'Sheet2', ...]
-
-// Get workbook summary
-const summary = excel.getWorkbookSummary(workbook);
-// Returns: { sheetCount: 2, sheets: [{ name, rows, cols }, ...] }
 
 // Get sheet data as JSON (first row as headers)
 const data = excel.getSheetData(workbook, 'Sheet1');
@@ -422,6 +434,10 @@ const value = excel.getCell(workbook, 'Sheet1', 'A1');
 // Get cell with metadata
 const cell = excel.getCellFull(workbook, 'Sheet1', 'A1');
 // Returns: { value, formatted, type, formula }
+
+// Get effective value with formula awareness
+const effective = excel.getEffectiveValue(cell);
+// Returns: { value, isFormula, hasResult, formula }
 
 // Get sheet range
 const range = excel.getSheetRange(workbook, 'Sheet1');

@@ -8,6 +8,16 @@
  *   const sheets = excel.getSheetNames(workbook);
  *   const data = excel.getSheetData(workbook, 'Sheet1');
  * 
+ * IMPORTANT: Formula Handling Limitation
+ * ExcelJS does NOT calculate formulas - it only reads cached results stored in the file.
+ * Files exported from Xero, Google Sheets, or saved without recalculation may have:
+ * - Missing cached results (returns the formula object instead of a value)
+ * - Stale cached results (old values that don't match current formula inputs)
+ * - Zero values (common for running balance columns)
+ * 
+ * Use `getWorkbookSummary()` to check for formula warnings before processing.
+ * If formulas are critical, ask the user to open in Excel and Save to refresh cached values.
+ * 
  * Required dependency: npm install exceljs
  */
 
@@ -170,21 +180,127 @@ function getSheetRange(workbook, sheetName) {
 }
 
 /**
- * Quick summary of a workbook
- * @param {object} workbook - ExcelJS workbook object
- * @returns {object} Summary with sheet names and row counts
+ * Check if a cell value is a formula without a usable cached result
+ * @param {any} cellValue - The cell.value from ExcelJS
+ * @returns {boolean} True if formula with missing/suspect cached result
  */
-function getWorkbookSummary(workbook) {
-  const sheets = workbook.worksheets.map(ws => ({
-    name: ws.name,
-    rows: ws.rowCount,
-    cols: ws.columnCount
-  }));
+function isUnresolvedFormula(cellValue) {
+  if (!cellValue || typeof cellValue !== 'object') return false;
+  if (!('formula' in cellValue)) return false;
+  
+  // Check if result is missing, null, undefined, or zero (common for uncalculated formulas)
+  const result = cellValue.result;
+  return result === undefined || result === null || result === 0;
+}
+
+/**
+ * Get the effective value of a cell, with formula awareness
+ * @param {object} cell - ExcelJS cell object
+ * @returns {{ value: any, isFormula: boolean, hasResult: boolean, formula: string|null }}
+ */
+function getEffectiveValue(cell) {
+  const value = cell.value;
+  
+  // Simple value
+  if (!value || typeof value !== 'object') {
+    return { value, isFormula: false, hasResult: true, formula: null };
+  }
+  
+  // Rich text
+  if ('richText' in value || 'text' in value) {
+    return { value: cell.text, isFormula: false, hasResult: true, formula: null };
+  }
+  
+  // Formula
+  if ('formula' in value) {
+    const result = value.result;
+    const hasResult = result !== undefined && result !== null;
+    return {
+      value: hasResult ? result : null,
+      isFormula: true,
+      hasResult,
+      formula: value.formula
+    };
+  }
+  
+  // Other object types
+  return { value, isFormula: false, hasResult: true, formula: null };
+}
+
+/**
+ * Scan a sheet for formula cells with missing or suspect cached results
+ * @param {object} workbook - ExcelJS workbook object
+ * @param {string} sheetName - Name of the sheet
+ * @returns {{ hasIssues: boolean, totalFormulas: number, unresolvedFormulas: number, samples: Array<{cell: string, formula: string}> }}
+ */
+function getFormulaWarnings(workbook, sheetName) {
+  const sheet = workbook.getWorksheet(sheetName);
+  if (!sheet) {
+    const available = getSheetNames(workbook);
+    throw new Error(`Sheet "${sheetName}" not found. Available: ${available.join(', ')}`);
+  }
+  
+  let totalFormulas = 0;
+  let unresolvedFormulas = 0;
+  const samples = [];
+  
+  sheet.eachRow((row, rowNumber) => {
+    row.eachCell((cell, colNumber) => {
+      const value = cell.value;
+      if (value && typeof value === 'object' && 'formula' in value) {
+        totalFormulas++;
+        if (isUnresolvedFormula(value)) {
+          unresolvedFormulas++;
+          if (samples.length < 5) {
+            const colLetter = String.fromCharCode(64 + colNumber);
+            samples.push({
+              cell: `${colLetter}${rowNumber}`,
+              formula: value.formula
+            });
+          }
+        }
+      }
+    });
+  });
   
   return {
+    hasIssues: unresolvedFormulas > 0,
+    totalFormulas,
+    unresolvedFormulas,
+    samples
+  };
+}
+
+/**
+ * Quick summary of a workbook (includes formula warnings)
+ * @param {object} workbook - ExcelJS workbook object
+ * @returns {object} Summary with sheet names, row counts, and formula warnings
+ */
+function getWorkbookSummary(workbook) {
+  const sheets = workbook.worksheets.map(ws => {
+    const formulaCheck = getFormulaWarnings(workbook, ws.name);
+    return {
+      name: ws.name,
+      rows: ws.rowCount,
+      cols: ws.columnCount,
+      formulas: formulaCheck.totalFormulas,
+      unresolvedFormulas: formulaCheck.unresolvedFormulas
+    };
+  });
+  
+  const hasFormulaIssues = sheets.some(s => s.unresolvedFormulas > 0);
+  
+  const summary = {
     sheetCount: sheets.length,
     sheets
   };
+  
+  if (hasFormulaIssues) {
+    summary.warning = 'FORMULA WARNING: Some cells contain formulas without cached results. ' +
+      'Values may be missing or incorrect. Consider opening in Excel and saving to refresh cached values.';
+  }
+  
+  return summary;
 }
 
 module.exports = {
@@ -194,6 +310,9 @@ module.exports = {
   getSheetAsArray,
   getCell,
   getCellFull,
+  getEffectiveValue,
   getSheetRange,
-  getWorkbookSummary
+  getWorkbookSummary,
+  getFormulaWarnings,
+  isUnresolvedFormula
 };
