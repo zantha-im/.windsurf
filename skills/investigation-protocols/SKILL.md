@@ -5,17 +5,22 @@ description: Guides evidence-based legal investigations. Use when starting an in
 
 # CRITICAL: Output Location
 
-**All investigation files MUST be saved to the consuming project's root, NOT the `.windsurf/` subtree.**
+**All investigation files MUST be saved to the legal-researcher role folder, NOT the project root or `.windsurf/` subtree.**
 
 ```
 [project-root]/
-├── investigations/           # Investigation folders here
-│   └── {NNN}-{slug}/
-│       ├── README.md
-│       ├── manifest.json
-│       └── evidence/
-└── .windsurf/                # Subtree - DO NOT write here
+├── roles/
+│   └── legal-researcher/
+│       └── investigations/   # ← CORRECT: Investigation folders here
+│           └── {NNN}-{slug}/
+│               ├── README.md
+│               ├── manifest.json
+│               └── evidence/
+├── investigations/           # ← WRONG: Do NOT use project root
+└── .windsurf/                # ← WRONG: Do NOT write to subtree
 ```
+
+**Path:** `roles/legal-researcher/investigations/{NNN}-{slug}/`
 
 ---
 
