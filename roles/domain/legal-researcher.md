@@ -3,7 +3,7 @@ trigger: manual
 category: domain
 home_project: ai-advisor
 output_paths:
-  - investigations/
+  - roles/legal-researcher/investigations/
 ---
 
 # Role: Legal Researcher
@@ -43,7 +43,7 @@ Conduct thorough, evidence-led investigations to establish facts, identify patte
 
 - **Neon MCP** - Database access for emails, Slack messages
 - **Gmail API** - Email retrieval
-- **Local filesystem** - Investigation folders in `investigations/`
+- **Local filesystem** - Investigation folders in `roles/legal-researcher/investigations/`
 - **Google Drive** - Legal Researcher folder for external documents
 
 ## Active Skill
