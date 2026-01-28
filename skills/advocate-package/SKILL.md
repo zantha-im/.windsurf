@@ -7,6 +7,13 @@ description: Compiles investigation findings into advocate packages. Use when cr
 
 Transforms investigation findings into a structured package for legal counsel.
 
+## Key Distinction
+
+- **Advocate Package** = Our working folder with markdown files (for us to manage)
+- **Advocate Briefing** = The compiled PDF output (for the advocate to read/print)
+
+The README.md is our internal index and is **excluded** from the final briefing PDF.
+
 ---
 
 ## CRITICAL: Output Location
@@ -16,14 +23,15 @@ Transforms investigation findings into a structured package for legal counsel.
 ```
 roles/legal-researcher/investigations/{NNN}-{slug}/
 └── advocate-package/           # ← Package files go here
-    ├── README.md               # Package index
+    ├── README.md               # OUR index (not in PDF)
     ├── 0-cover-letter.md       # Personal letter to advocate
     ├── 1-executive-summary.md  # Quick overview
     ├── 2-chronology.md         # Timeline with exhibits
     ├── 3-evidence-index.md     # Complete exhibit list
     ├── 4-legal-analysis.md     # Factual legal framework
     ├── 5-questions-for-advocate.md  # Questions for counsel
-    └── 6-appendices.md         # Source document references
+    ├── 6-appendices.md         # Source document references
+    └── advocate-package-{slug}-{date}.pdf  # COMPILED BRIEFING
 ```
 
 ---
