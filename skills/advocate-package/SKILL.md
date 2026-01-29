@@ -1,6 +1,6 @@
 ---
 name: advocate-package
-description: Compiles investigation findings into advocate packages. Use when creating legal briefs, preparing for counsel, finalizing investigations, or packaging evidence for lawyers.
+description: Compiles investigation findings into advocate packages or advocate briefings. Use when creating legal briefs, preparing for counsel, finalizing investigations, packaging evidence for lawyers, or compiling briefings for advocates.
 ---
 
 # Skill: Advocate Package Compilation
