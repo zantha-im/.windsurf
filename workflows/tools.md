@@ -29,3 +29,6 @@ node roles/{selected-role}/orchestrator.js --help
 - Always use `--help` flag, never grep or read files to discover tools
 - If `--help` is not implemented, note this as a gap and suggest adding it
 - The help output should be grouped by category for readability
+
+## Related Skills
+- **tool-development** - Use this skill when you need to create a new tool or convert a one-off script into a reusable orchestrator function
