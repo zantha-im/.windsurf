@@ -7,6 +7,33 @@ description: Converts one-off scripts into reusable tools. Use when writing scri
 
 **CRITICAL: Scripts become tools, tools become discoverable.**
 
+---
+
+## MANDATORY: Integration into Orchestrator
+
+**Every script you create MUST be integrated into the role's orchestrator.**
+
+| What You Create                   | What You MUST Also Do                                |
+| --------------------------------- | ---------------------------------------------------- |
+| `node tools/xero/export-bills.js` | Wrap as `exportBills()` in orchestrator              |
+| `node scripts/generate-report.js` | Wrap as `generateReport()` in orchestrator           |
+| Any CLI script                    | Add to orchestrator's `module.exports` AND help text |
+
+### Why This Matters
+
+If you create a script but don't integrate it:
+- The AI will forget it exists in future sessions
+- It won't appear in `--help` output
+- It becomes undiscoverable dead code
+
+### Integration Checklist (REQUIRED)
+
+After creating ANY script:
+- [ ] Create wrapper function in orchestrator
+- [ ] Add to `module.exports`
+- [ ] Add to CLI help text (`showHelp()`)
+- [ ] Test: `node orchestrator.js --help` shows the new command
+
 This skill covers two types of tool development:
 1. **Shared Tools** - API wrappers in `.windsurf/tools/` (benefits all projects)
 2. **Project Tools** - Orchestrators with business logic (project-specific)
