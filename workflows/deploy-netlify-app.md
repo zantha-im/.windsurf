@@ -148,6 +148,26 @@ The error message will provide instructions for adding the TXT record manually.
 
 Report: `[result.skipped ? 'Domain already configured' : 'Custom domain added']`
 
+## Step 5b: Clean Up TXT Verification Record
+
+After domain is successfully added, delete the TXT record to keep the hosted zone clean.
+The TXT record is only needed for initial verification.
+
+```javascript
+// Only delete if we just added the domain (not skipped)
+if (!result.skipped) {
+  try {
+    await route53.deleteRecord('zantha.im', `netlify-challenge.[subdomain]`, 'TXT');
+    console.log('TXT verification record deleted');
+  } catch (e) {
+    // Non-fatal - record may not exist or already deleted
+    console.log('TXT record cleanup skipped:', e.message);
+  }
+}
+```
+
+Report: "TXT verification record cleaned up"
+
 ## Step 6: Wait for DNS Propagation
 
 Wait 30-60 seconds for DNS to propagate. Netlify needs to verify the CNAME and TXT records.
