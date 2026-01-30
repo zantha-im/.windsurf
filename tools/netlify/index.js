@@ -240,14 +240,17 @@ function createNetlifyClient(config = {}) {
       }
       
       // Build update payload
+      // NOTE: Do NOT include force_ssl when using txt_record_value - causes 422 error
       const updatePayload = { 
-        custom_domain: domain,
-        force_ssl: true
+        custom_domain: domain
       };
       
       // Add TXT record value for verification if provided
       if (txtRecordValue) {
         updatePayload.txt_record_value = txtRecordValue;
+      } else {
+        // Only set force_ssl when not doing TXT verification
+        updatePayload.force_ssl = true;
       }
       
       try {
@@ -279,12 +282,14 @@ function createNetlifyClient(config = {}) {
           try {
             const currentAliases = site.domain_aliases || [];
             if (!currentAliases.includes(domain)) {
+              // NOTE: Do NOT include force_ssl when using txt_record_value - causes 422 error
               const aliasPayload = {
-                domain_aliases: [...currentAliases, domain],
-                force_ssl: true
+                domain_aliases: [...currentAliases, domain]
               };
               if (txtRecordValue) {
                 aliasPayload.txt_record_value = txtRecordValue;
+              } else {
+                aliasPayload.force_ssl = true;
               }
               const result = await this.updateSite(siteId, aliasPayload);
               return { 
