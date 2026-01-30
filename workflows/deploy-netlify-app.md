@@ -29,7 +29,8 @@ git-crypt status 2>&1 | Select-Object -First 1
 
 ## Prerequisites
 
-- git-crypt unlocked (credentials accessible)
+- git-crypt unlocked (Step 0 verifies this)
+- Netlify and AWS credentials in `.windsurf/config/credentials.json` (see `tools/README.md` Getting Started)
 - GitHub repo exists and is accessible to Netlify
 
 ## Step 1: Gather Deployment Details
