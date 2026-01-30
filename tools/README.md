@@ -2,20 +2,45 @@
 
 Reusable tool modules for common operations. These tools are designed to be **configurable** - they accept paths and credentials as parameters rather than hardcoding them.
 
-## Quick Start
+## Getting Started
+
+### 1. Unlock Credentials (First Time Setup)
+
+```bash
+# Get git-crypt key from 1Password (Zantha vault → "git-crypt key")
+# Save to .windsurf/.git-crypt-key
+
+# Unlock the repository
+git-crypt unlock .windsurf/.git-crypt-key
+```
+
+See `@git-crypt-setup` skill for detailed instructions.
+
+### 2. Authorize Google APIs (If Needed)
+
+```bash
+# Authorize default scopes
+node .windsurf/tools/google/oauth-server.js
+
+# Authorize specific scopes for a user
+node .windsurf/tools/google/oauth-server.js --user kay --scopes calendar,sheets
+```
+
+Tokens are saved to `./credentials/oauth-tokens/google-tokens.json`.
+
+### 3. Use Tools in Code
 
 ```javascript
-// Import the tools
-const tools = require('.windsurf/tools');
-
-// Or import specific modules
+// Import specific modules
 const google = require('.windsurf/tools/google');
-const pdf = require('.windsurf/tools/pdf');
-
-// Unified credentials access
 const credentials = require('.windsurf/tools/credentials');
+
+// Get credentials
 const aws = credentials.get('aws');
+const googleCreds = credentials.get('google');
 ```
+
+---
 
 ## Credentials Module (`tools/credentials.js`)
 
@@ -27,7 +52,7 @@ const credentials = require('.windsurf/tools/credentials');
 // Get credentials for a service
 const aws = credentials.get('aws');        // { region, accessKeyId, secretAccessKey }
 const netlify = credentials.get('netlify'); // { token, teamSlug }
-const google = credentials.get('google');   // { serviceAccountKeyPath, impersonateUser, ... }
+const google = credentials.get('google');   // { clientId, clientSecret, serviceAccountKeyPath, ... }
 
 // Check if credentials are available
 if (credentials.has('aws')) { ... }
@@ -35,7 +60,7 @@ if (credentials.has('aws')) { ... }
 
 **Priority:** Environment variables → `.windsurf/config/credentials.json`
 
-**Requires:** git-crypt unlocked (see `@git-crypt-setup` skill)
+**Requires:** git-crypt unlocked
 
 ---
 

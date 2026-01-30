@@ -160,6 +160,28 @@ This ensures:
 npm install --save <package-name>
 ```
 
+### Step 4b: Google API Tools - Authorize Scopes
+
+**If your tool uses Google APIs, you need to authorize the required scopes.**
+
+Use the shared OAuth server:
+```bash
+# Authorize new scopes (run from project root)
+node .windsurf/tools/google/oauth-server.js --scopes gmail.readonly,drive.file --user jonny
+```
+
+**Available scope shortcuts:**
+- Gmail: `gmail.readonly`, `gmail.send`, `gmail.modify`, `gmail.settings.basic`
+- Drive: `drive`, `drive.file`, `drive.readonly`
+- Docs: `docs`, `docs.readonly`
+- Sheets: `sheets`, `sheets.readonly`
+- Calendar: `calendar`, `calendar.readonly`
+- Admin: `admin.directory.user`, `admin.directory.group`
+
+**Token storage:** Tokens are saved to `./credentials/oauth-tokens/google-tokens.json` by default.
+
+See `node .windsurf/tools/google/oauth-server.js --help` for all options.
+
 ### Step 5: Update README.md
 
 Add to `.windsurf/tools/README.md`:
