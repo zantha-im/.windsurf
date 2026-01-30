@@ -49,4 +49,17 @@ Report to user:
 - Google Tools: [available / not available] (from `sharedToolsAvailable`)
 - Credentials: [found at path / not found] (from `keyFileFound`)
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
-- Ask: "What infrastructure or access management task can I help with?"
+
+### If dependencies are missing:
+
+**Google Tools not available:**
+> Google Workspace commands (user/group management, Gmail aliases) are unavailable. The shared tools module couldn't be loaded. Check that `.windsurf/tools/google/` exists and has the required modules.
+
+**Credentials not found:**
+> Service account key not found. Place the key file at: `credentials/service-accounts/ai-advisor-admin-key.json`
+
+**Both missing but Neon MCP connected:**
+> I can still help with database queries, audit logging, and planning infrastructure changes. Google Workspace operations will need the dependencies set up first.
+
+**All dependencies available:**
+> Ask: "What infrastructure or access management task can I help with?"
