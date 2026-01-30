@@ -16,17 +16,24 @@ Execution rules:
 
 Steps:
 
-0) Detect target project(s)
+0) Detect target project(s) from IDE workspace
 
-**IMPORTANT: Always use `list_dir` tool to get fresh workspace member list. Do NOT rely on cached/stale workspace context.**
+**CRITICAL: "Workspace" means the IDE workspace, NOT the filesystem parent directory.**
+
+Detection sources (in order of preference):
+1. **System context** - Check the `user_information` section for active workspace URIs/CorpusNames
+2. **Workspace file** - If a `.code-workspace` file exists, read its `folders` array to get workspace members
+
+**Do NOT scan the parent directory (e.g., `c:\Users\Jonny\Code\`) - only consider folders explicitly in the IDE workspace.**
 
 Detection logic:
-- Use `list_dir` on the workspace root to enumerate all projects
-- A project is a subtree consumer if it has `.windsurf/` as a subfolder AND is NOT the `.windsurf` source repository (i.e., the folder is not the git root)
-- Exclude the `.windsurf` source repository from options (identified by being the git root of the `.windsurf` folder)
+- From the workspace members, identify subtree consumers:
+  - Has `.windsurf/` as a subfolder
+  - Is NOT the `.windsurf` source repository (the source repo has `.windsurf` as its git root, not a subfolder)
+- Exclude the `.windsurf` source repository from options
 
 Decision tree:
-- If NO subtree consumer projects exist: stop and inform user that no projects with `.windsurf` subtree were found
+- If NO subtree consumer projects in workspace: stop and inform user that no projects with `.windsurf` subtree were found in the current workspace
 - If exactly ONE subtree consumer project exists: use it automatically, no prompt needed
 - If MULTIPLE subtree consumer projects exist: use `ask_user_question` tool with options:
   - **"Apply to all [N] projects"** - Run subtree pull on ALL detected consumers sequentially
