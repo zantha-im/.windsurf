@@ -98,17 +98,36 @@ function createNetlifyClient(config = {}) {
     },
     
     /**
-     * Create a new site linked to a GitHub repository
+     * Create a new site linked to a GitHub repository (idempotent)
+     * If a site with the same name already exists, returns the existing site.
      * @param {Object} options
      * @param {string} options.name - Site name (becomes name.netlify.app)
      * @param {string} options.repo - GitHub repo (e.g., 'zantha-im/my-app')
      * @param {string} options.branch - Branch to deploy (default: 'main')
      * @param {string} options.buildCommand - Build command (optional)
      * @param {string} options.publishDir - Publish directory (optional)
-     * @returns {Promise<Object>} Created site
+     * @returns {Promise<Object>} Created or existing site (includes `existed` flag)
      */
     async createSite(options) {
       const { name, repo, branch = 'main', buildCommand, publishDir } = options;
+      
+      // Check if site already exists
+      try {
+        const existing = await api.getSite({ site_id: name });
+        if (existing) {
+          return {
+            id: existing.id,
+            name: existing.name,
+            url: existing.url,
+            sslUrl: existing.ssl_url,
+            adminUrl: existing.admin_url,
+            defaultUrl: `${existing.name}.netlify.app`,
+            existed: true
+          };
+        }
+      } catch (e) {
+        // Site doesn't exist, continue to create
+      }
       
       const body = {
         name,
@@ -135,7 +154,8 @@ function createNetlifyClient(config = {}) {
         url: site.url,
         sslUrl: site.ssl_url,
         adminUrl: site.admin_url,
-        defaultUrl: `${site.name}.netlify.app`
+        defaultUrl: `${site.name}.netlify.app`,
+        existed: false
       };
     },
     
