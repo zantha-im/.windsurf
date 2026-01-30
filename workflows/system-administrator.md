@@ -20,15 +20,20 @@ Read the tool documentation:
 For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Run Orchestrator
-Run the base orchestrator to check infrastructure status:
+First, verify the orchestrator file exists:
 ```bash
-node .windsurf/roles/generic/system-administrator/orchestrator.js
+Test-Path .windsurf/roles/generic/system-administrator/orchestrator.js
 ```
 
-This provides:
-- Google Workspace user management
-- Group management
-- Gmail send-as alias configuration
+If the file exists, run it to check infrastructure status:
+```bash
+node .windsurf/roles/generic/system-administrator/orchestrator.js status
+```
+
+This returns a JSON status showing:
+- `sharedToolsAvailable`: Whether Google API tools are loaded
+- `keyFileFound`: Whether service account credentials exist
+- `keyFilePath`: Location of credentials (if found)
 
 Available commands: `status`, `listUsers`, `listGroups`, `listMembers`, `listAliases`, etc.
 
@@ -40,6 +45,8 @@ Report the connection status with the **project name** (not ID).
 ## Step 6: Confirm Activation
 Report to user:
 - Current role: System Administrator
-- Orchestrator: [found/not found]
+- Orchestrator: [file exists / file not found]
+- Google Tools: [available / not available] (from `sharedToolsAvailable`)
+- Credentials: [found at path / not found] (from `keyFileFound`)
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
 - Ask: "What infrastructure or access management task can I help with?"
