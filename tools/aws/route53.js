@@ -20,23 +20,70 @@
  *   await route53.createCnameRecord('zantha.im', 'cs-bot', 'discord-zantha-bot-production.up.railway.app');
  */
 
+const path = require('path');
+const fs = require('fs');
 const { Route53Client, ListHostedZonesCommand, ListResourceRecordSetsCommand, ChangeResourceRecordSetsCommand } = require('@aws-sdk/client-route-53');
+
+/**
+ * Load AWS credentials from shared config file
+ * Priority: env vars > config file
+ */
+function loadAwsCredentials() {
+  // Check environment variables first
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+    return {
+      region: process.env.AWS_REGION || 'us-east-1',
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    };
+  }
+  
+  // Fall back to shared config file
+  const configPaths = [
+    path.join(process.cwd(), '.windsurf/config/credentials.json'),
+    path.join(__dirname, '../../config/credentials.json')
+  ];
+  
+  for (const configPath of configPaths) {
+    if (fs.existsSync(configPath)) {
+      try {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        if (config.aws?.accessKeyId && config.aws?.secretAccessKey) {
+          return {
+            region: config.aws.region || 'us-east-1',
+            accessKeyId: config.aws.accessKeyId,
+            secretAccessKey: config.aws.secretAccessKey
+          };
+        }
+      } catch (e) {
+        // Continue to next path
+      }
+    }
+  }
+  
+  return null;
+}
 
 /**
  * Create Route53 client with configurable credentials
  * @param {Object} config
- * @param {string} config.region - AWS region (default: eu-west-2)
- * @param {string} config.accessKeyId - AWS access key (or use AWS_ACCESS_KEY_ID env var)
- * @param {string} config.secretAccessKey - AWS secret key (or use AWS_SECRET_ACCESS_KEY env var)
+ * @param {string} config.region - AWS region (default: from config or us-east-1)
+ * @param {string} config.accessKeyId - AWS access key (or use env var or shared config)
+ * @param {string} config.secretAccessKey - AWS secret key (or use env var or shared config)
  * @returns {Object} Route53 client wrapper
  */
 function createRoute53Client(config = {}) {
-  const region = config.region || process.env.AWS_REGION || 'eu-west-2';
-  const accessKeyId = config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  const sharedCreds = loadAwsCredentials();
+  
+  const region = config.region || sharedCreds?.region || 'us-east-1';
+  const accessKeyId = config.accessKeyId || sharedCreds?.accessKeyId;
+  const secretAccessKey = config.secretAccessKey || sharedCreds?.secretAccessKey;
   
   if (!accessKeyId || !secretAccessKey) {
-    throw new Error('AWS credentials required. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars, or pass accessKeyId/secretAccessKey in config.');
+    throw new Error(
+      'AWS credentials required. Set AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY env vars, ' +
+      'pass in config, or add to .windsurf/config/credentials.json'
+    );
   }
   
   const client = new Route53Client({

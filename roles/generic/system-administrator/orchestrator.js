@@ -45,17 +45,55 @@ try {
 }
 
 /**
+ * Load shared credentials from config file
+ */
+function loadSharedCredentials() {
+  const fs = require('fs');
+  const configPaths = [
+    path.join(process.cwd(), '.windsurf/config/credentials.json'),
+    path.join(__dirname, '../../../config/credentials.json')
+  ];
+  
+  for (const configPath of configPaths) {
+    if (fs.existsSync(configPath)) {
+      try {
+        return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      } catch (e) {
+        // Continue to next path
+      }
+    }
+  }
+  return null;
+}
+
+/**
  * Find the service account key file
- * Searches common locations across projects
+ * Priority: shared config > project credentials folder
  */
 function findKeyFile() {
+  const fs = require('fs');
+  
+  // First, check shared config for key file path
+  const sharedCreds = loadSharedCredentials();
+  if (sharedCreds?.google?.serviceAccountKeyFile) {
+    const configPaths = [
+      path.join(process.cwd(), '.windsurf/config', sharedCreds.google.serviceAccountKeyFile),
+      path.join(__dirname, '../../../config', sharedCreds.google.serviceAccountKeyFile)
+    ];
+    for (const p of configPaths) {
+      if (fs.existsSync(p)) {
+        return p;
+      }
+    }
+  }
+  
+  // Fall back to project-specific locations
   const possiblePaths = [
     path.join(process.cwd(), 'credentials/service-accounts/ai-advisor-admin-key.json'),
     path.join(process.cwd(), '../credentials/service-accounts/ai-advisor-admin-key.json'),
     path.join(__dirname, '../../../../credentials/service-accounts/ai-advisor-admin-key.json')
   ];
   
-  const fs = require('fs');
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {
       return p;

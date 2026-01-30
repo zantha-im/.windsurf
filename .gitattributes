@@ -1,0 +1,5 @@
+# git-crypt encrypted files
+# These files are encrypted in the repository and decrypted on checkout
+
+config/credentials.json filter=git-crypt diff=git-crypt
+config/service-accounts/** filter=git-crypt diff=git-crypt
