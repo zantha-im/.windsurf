@@ -116,6 +116,26 @@ function createNetlifyClient(config = {}) {
       try {
         const existing = await api.getSite({ site_id: name });
         if (existing) {
+          // Ensure repo settings are configured on existing site
+          // (previous createSite may have failed to set installation_id)
+          try {
+            await api.updateSite({
+              site_id: existing.id,
+              body: {
+                repo: {
+                  provider: 'github',
+                  repo,
+                  branch,
+                  cmd: buildCommand,
+                  dir: publishDir,
+                  installation_id: githubInstallationId
+                }
+              }
+            });
+          } catch (updateError) {
+            // Ignore update errors - repo may already be configured
+          }
+          
           return {
             id: existing.id,
             name: existing.name,
