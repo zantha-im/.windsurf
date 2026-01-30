@@ -20,49 +20,8 @@
  *   await route53.createCnameRecord('zantha.im', 'cs-bot', 'discord-zantha-bot-production.up.railway.app');
  */
 
-const path = require('path');
-const fs = require('fs');
 const { Route53Client, ListHostedZonesCommand, ListResourceRecordSetsCommand, ChangeResourceRecordSetsCommand } = require('@aws-sdk/client-route-53');
-
-/**
- * Load AWS credentials from shared config file
- * Priority: env vars > config file
- */
-function loadAwsCredentials() {
-  // Check environment variables first
-  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-    return {
-      region: process.env.AWS_REGION || 'us-east-1',
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-    };
-  }
-  
-  // Fall back to shared config file
-  const configPaths = [
-    path.join(process.cwd(), '.windsurf/config/credentials.json'),
-    path.join(__dirname, '../../config/credentials.json')
-  ];
-  
-  for (const configPath of configPaths) {
-    if (fs.existsSync(configPath)) {
-      try {
-        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        if (config.aws?.accessKeyId && config.aws?.secretAccessKey) {
-          return {
-            region: config.aws.region || 'us-east-1',
-            accessKeyId: config.aws.accessKeyId,
-            secretAccessKey: config.aws.secretAccessKey
-          };
-        }
-      } catch (e) {
-        // Continue to next path
-      }
-    }
-  }
-  
-  return null;
-}
+const credentials = require('../credentials');
 
 /**
  * Create Route53 client with configurable credentials
@@ -73,11 +32,11 @@ function loadAwsCredentials() {
  * @returns {Object} Route53 client wrapper
  */
 function createRoute53Client(config = {}) {
-  const sharedCreds = loadAwsCredentials();
+  const creds = credentials.get('aws') || {};
   
-  const region = config.region || sharedCreds?.region || 'us-east-1';
-  const accessKeyId = config.accessKeyId || sharedCreds?.accessKeyId;
-  const secretAccessKey = config.secretAccessKey || sharedCreds?.secretAccessKey;
+  const region = config.region || creds.region || 'us-east-1';
+  const accessKeyId = config.accessKeyId || creds.accessKeyId;
+  const secretAccessKey = config.secretAccessKey || creds.secretAccessKey;
   
   if (!accessKeyId || !secretAccessKey) {
     throw new Error(

@@ -11,7 +11,33 @@ const tools = require('.windsurf/tools');
 // Or import specific modules
 const google = require('.windsurf/tools/google');
 const pdf = require('.windsurf/tools/pdf');
+
+// Unified credentials access
+const credentials = require('.windsurf/tools/credentials');
+const aws = credentials.get('aws');
 ```
+
+## Credentials Module (`tools/credentials.js`)
+
+**Single source of truth** for loading credentials across all tools.
+
+```javascript
+const credentials = require('.windsurf/tools/credentials');
+
+// Get credentials for a service
+const aws = credentials.get('aws');        // { region, accessKeyId, secretAccessKey }
+const netlify = credentials.get('netlify'); // { token, teamSlug }
+const google = credentials.get('google');   // { serviceAccountKeyPath, impersonateUser, ... }
+
+// Check if credentials are available
+if (credentials.has('aws')) { ... }
+```
+
+**Priority:** Environment variables → `.windsurf/config/credentials.json`
+
+**Requires:** git-crypt unlocked (see `@git-crypt-setup` skill)
+
+---
 
 ## Available Modules
 
@@ -51,8 +77,6 @@ Netlify site management, custom domains, and SSL provisioning.
 | Module     | Purpose                                      |
 | ---------- | -------------------------------------------- |
 | `index.js` | Site creation, custom domains, SSL, env vars |
-
-**Credentials:** Loaded from `NETLIFY_TOKEN` env var or `.windsurf/config/credentials.json`
 
 ### Excel (`tools/excel/`)
 

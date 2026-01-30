@@ -21,46 +21,7 @@
  *   await netlify.provisionSSL(site.id);
  */
 
-const path = require('path');
-const fs = require('fs');
-
-/**
- * Load credentials from config file or environment
- * Priority: env var > config file
- */
-function loadCredentials() {
-  // Check environment variable first
-  if (process.env.NETLIFY_TOKEN) {
-    return {
-      token: process.env.NETLIFY_TOKEN,
-      teamSlug: process.env.NETLIFY_TEAM_SLUG || null
-    };
-  }
-  
-  // Fall back to shared config file
-  const configPaths = [
-    path.join(process.cwd(), '.windsurf/config/credentials.json'),
-    path.join(__dirname, '../../config/credentials.json')
-  ];
-  
-  for (const configPath of configPaths) {
-    if (fs.existsSync(configPath)) {
-      try {
-        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        if (config.netlify?.token) {
-          return {
-            token: config.netlify.token,
-            teamSlug: config.netlify.teamSlug || null
-          };
-        }
-      } catch (e) {
-        // Continue to next path
-      }
-    }
-  }
-  
-  return { token: null, teamSlug: null };
-}
+const credentials = require('../credentials');
 
 /**
  * Create Netlify API client
@@ -70,9 +31,9 @@ function loadCredentials() {
  * @returns {Object} Netlify client wrapper
  */
 function createNetlifyClient(config = {}) {
-  const credentials = loadCredentials();
-  const token = config.token || credentials.token;
-  const teamSlug = config.teamSlug || credentials.teamSlug;
+  const creds = credentials.get('netlify') || {};
+  const token = config.token || creds.token;
+  const teamSlug = config.teamSlug || creds.teamSlug;
   
   if (!token) {
     throw new Error(
@@ -300,6 +261,5 @@ function createNetlifyClient(config = {}) {
 }
 
 module.exports = {
-  createNetlifyClient,
-  loadCredentials
+  createNetlifyClient
 };
