@@ -8,14 +8,24 @@ Automates the full deployment flow: create Netlify site → set env vars → cre
 
 ## Step 0: Verify git-crypt (Encrypted Credentials)
 
-Check if git-crypt is installed and repo is unlocked:
+Run these checks in order:
+
 ```powershell
+# 1. Check git-crypt installed
+git-crypt --version
+
+# 2. Check key file exists
+Test-Path .windsurf/.git-crypt-key
+
+# 3. Check repo unlocked
 git-crypt status 2>&1 | Select-Object -First 1
 ```
 
-**If git-crypt not installed or repo locked:**
-- Invoke `@git-crypt-setup` skill for installation and unlock instructions
-- Do not proceed until credentials are accessible
+**Decision tree:**
+- git-crypt not installed → Invoke `@git-crypt-setup` skill (Installation section)
+- Key file missing → Invoke `@git-crypt-setup` skill (Obtaining the Key section)
+- Repo not unlocked → Run: `git-crypt unlock .windsurf/.git-crypt-key`
+- All checks pass → Continue to Step 1
 
 ## Prerequisites
 

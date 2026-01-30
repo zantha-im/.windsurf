@@ -7,19 +7,54 @@ description: Sets up git-crypt for encrypted credentials. Use when git-crypt is 
 
 This skill guides installation and configuration of git-crypt for accessing encrypted credentials in the `.windsurf` subtree.
 
+## Standard Key Location
+
+```
+.windsurf/.git-crypt-key
+```
+
+This file is gitignored and must be obtained from 1Password.
+
 ---
 
-## Quick Check
+## Automated Check (For Workflows)
 
-Run this to verify git-crypt status:
+Run these checks in order:
 
 ```powershell
+# 1. Check if git-crypt is installed
+git-crypt --version
+
+# 2. Check if key file exists at standard location
+Test-Path .windsurf/.git-crypt-key
+
+# 3. Check if repo is unlocked
 git-crypt status 2>&1 | Select-Object -First 1
 ```
 
-**Expected output if working:** `not encrypted: .gitattributes` (or similar file list)
-**If git-crypt not installed:** `git-crypt: The term 'git-crypt' is not recognized...`
-**If repo not unlocked:** `Error: this repository has not been unlocked...`
+**Decision tree:**
+- git-crypt not installed → Go to **Installation**
+- Key file missing → Go to **Obtaining the Key**
+- Repo not unlocked → Run `git-crypt unlock .windsurf/.git-crypt-key`
+- All good → Credentials are accessible
+
+---
+
+## Obtaining the Key
+
+The git-crypt key is stored in **1Password**:
+
+1. Open 1Password
+2. Search for `windsurf-git-crypt.key`
+3. Download the attached key file
+4. Save it to `.windsurf/.git-crypt-key`
+
+```powershell
+# After downloading, move to standard location
+Move-Item ~/Downloads/windsurf-git-crypt.key .windsurf/.git-crypt-key
+```
+
+**Note:** This file is gitignored - it will not be committed to the repo.
 
 ---
 
@@ -56,13 +91,13 @@ sudo apt-get install git-crypt
 
 ## Unlocking the Repository
 
-After git-crypt is installed, unlock the repo to decrypt credentials:
+After git-crypt is installed and key file is in place, unlock the repo:
 
-```bash
-git-crypt unlock /path/to/windsurf-git-crypt.key
+```powershell
+git-crypt unlock .windsurf/.git-crypt-key
 ```
 
-**Key file location:** `C:\Users\Jonny\windsurf-git-crypt.key` (or ask repo owner)
+This only needs to be done once per clone. The repo stays unlocked.
 
 ---
 
@@ -97,13 +132,14 @@ Get-Content .windsurf/config/credentials.json | Select-Object -First 3
 
 ---
 
-## For New Machines
+## For New Machines / New Users
 
 1. Clone the repo (or pull subtree)
-2. Install git-crypt (see Installation above)
-3. Obtain the key file from repo owner
-4. Run `git-crypt unlock /path/to/key`
-5. Verify with `git-crypt status`
+2. Install git-crypt (see **Installation** above)
+3. Download key from 1Password (see **Obtaining the Key** above)
+4. Save to `.windsurf/.git-crypt-key`
+5. Run `git-crypt unlock .windsurf/.git-crypt-key`
+6. Verify with `git-crypt status`
 
 ---
 
