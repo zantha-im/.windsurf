@@ -75,17 +75,30 @@ Report to user:
 
 ## Step 3: Set Environment Variables (if provided)
 
+**SECURITY: Never expose secrets in terminal commands or chat.**
+
+Use the file-based method to avoid secrets in terminal history:
+
 ```javascript
+// 1. Write env vars to a temp file (use write_to_file tool)
 const envVars = {
   DATABASE_URL: '...',
-  // ... other vars
+  API_KEY: '...'
 };
+// Save to: .env-deploy-temp.json
 
-const results = await netlify.setEnvVars(site.id, envVars);
-// Always overwrites - idempotent by design
+// 2. Set env vars from file (auto-deletes after reading)
+const results = await netlify.setEnvVarsFromFile(site.id, '.env-deploy-temp.json');
+// File is automatically deleted after reading
 ```
 
-Report: "Environment variables configured: [list keys]"
+**Workflow for collecting env vars:**
+1. Ask user to provide env vars (they can paste multi-line KEY=value format)
+2. Parse the input into a JSON object
+3. Write to `.env-deploy-temp.json` using `write_to_file` tool
+4. Call `setEnvVarsFromFile()` which reads, sets, and deletes the file
+
+Report: "Environment variables configured: [list keys only, not values]"
 
 ## Step 4: Create Route53 DNS Record
 

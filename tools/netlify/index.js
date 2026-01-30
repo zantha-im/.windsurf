@@ -111,7 +111,7 @@ function createNetlifyClient(config = {}) {
     async createSite(options) {
       const { name, repo, branch = 'main', buildCommand, publishDir } = options;
       
-      // Check if site already exists
+      // Check if site already exists by name
       try {
         const existing = await api.getSite({ site_id: name });
         if (existing) {
@@ -126,7 +126,7 @@ function createNetlifyClient(config = {}) {
           };
         }
       } catch (e) {
-        // Site doesn't exist, continue to create
+        // Site doesn't exist by that name, continue to create
       }
       
       const body = {
@@ -142,10 +142,32 @@ function createNetlifyClient(config = {}) {
       };
       
       let site;
-      if (teamSlug) {
-        site = await api.createSiteInTeam({ account_slug: teamSlug, body });
-      } else {
-        site = await api.createSite({ body });
+      try {
+        if (teamSlug) {
+          site = await api.createSiteInTeam({ account_slug: teamSlug, body });
+        } else {
+          site = await api.createSite({ body });
+        }
+      } catch (createError) {
+        // Handle 422 Unprocessable Entity - site name may already exist
+        if (createError.status === 422 || createError.message?.includes('422')) {
+          // Try to find existing site by listing all sites
+          const sites = await api.listSites();
+          const existing = sites.find(s => s.name === name);
+          if (existing) {
+            return {
+              id: existing.id,
+              name: existing.name,
+              url: existing.url,
+              sslUrl: existing.ssl_url,
+              adminUrl: existing.admin_url,
+              defaultUrl: `${existing.name}.netlify.app`,
+              existed: true
+            };
+          }
+        }
+        // Re-throw if we couldn't recover
+        throw createError;
       }
       
       return {
@@ -309,6 +331,32 @@ function createNetlifyClient(config = {}) {
         }
         return results;
       }
+    },
+    
+    /**
+     * Set environment variables from a JSON file (secure - no secrets in terminal)
+     * @param {string} siteId - Site ID
+     * @param {string} filePath - Path to JSON file with key-value pairs
+     * @param {boolean} deleteFile - Delete the file after reading (default: true)
+     * @returns {Promise<Array>} Created/updated environment variables
+     */
+    async setEnvVarsFromFile(siteId, filePath, deleteFile = true) {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const resolvedPath = path.resolve(filePath);
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`Env vars file not found: ${resolvedPath}`);
+      }
+      
+      const vars = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
+      const result = await this.setEnvVars(siteId, vars);
+      
+      if (deleteFile) {
+        fs.unlinkSync(resolvedPath);
+      }
+      
+      return result;
     },
     
     /**
