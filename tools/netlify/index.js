@@ -218,11 +218,54 @@ function createNetlifyClient(config = {}) {
         };
       }
       
-      const result = await this.updateSite(siteId, { 
-        custom_domain: domain,
-        force_ssl: true
-      });
-      return { ...result, skipped: false };
+      // Also check domain_aliases
+      if (site.domain_aliases && site.domain_aliases.includes(domain)) {
+        return {
+          id: site.id,
+          name: site.name,
+          customDomain: site.custom_domain,
+          domainAliases: site.domain_aliases,
+          forceSsl: site.force_ssl,
+          skipped: true,
+          reason: 'Domain already in aliases'
+        };
+      }
+      
+      try {
+        const result = await this.updateSite(siteId, { 
+          custom_domain: domain,
+          force_ssl: true
+        });
+        return { ...result, skipped: false };
+      } catch (error) {
+        // Handle 422 Unprocessable Entity
+        if (error.status === 422 || error.message?.includes('422') || error.message?.includes('Unprocessable')) {
+          // Try adding as domain alias instead
+          try {
+            const currentAliases = site.domain_aliases || [];
+            if (!currentAliases.includes(domain)) {
+              const result = await this.updateSite(siteId, {
+                domain_aliases: [...currentAliases, domain],
+                force_ssl: true
+              });
+              return { 
+                ...result, 
+                skipped: false,
+                method: 'domain_alias',
+                note: 'Added as domain alias (custom_domain failed with 422)'
+              };
+            }
+          } catch (aliasError) {
+            // Both methods failed
+            throw new Error(
+              `Failed to add domain ${domain}: ${error.message}. ` +
+              `Also tried domain_aliases: ${aliasError.message}. ` +
+              `You may need to add the domain manually in Netlify UI or verify DNS is configured.`
+            );
+          }
+        }
+        throw error;
+      }
     },
     
     /**
