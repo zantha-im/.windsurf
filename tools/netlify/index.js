@@ -34,6 +34,7 @@ function createNetlifyClient(config = {}) {
   const creds = credentials.get('netlify') || {};
   const token = config.token || creds.token;
   const teamSlug = config.teamSlug || creds.teamSlug;
+  const githubInstallationId = config.githubInstallationId || creds.githubInstallationId;
   
   if (!token) {
     throw new Error(
@@ -137,7 +138,10 @@ function createNetlifyClient(config = {}) {
           private: true,
           branch,
           cmd: buildCommand,
-          dir: publishDir
+          dir: publishDir,
+          // installation_id links Netlify to GitHub App for repo access
+          // Without this, Netlify creates the site but can't clone the repo
+          installation_id: githubInstallationId
         }
       };
       
@@ -166,7 +170,8 @@ function createNetlifyClient(config = {}) {
                     repo,
                     branch,
                     cmd: buildCommand,
-                    dir: publishDir
+                    dir: publishDir,
+                    installation_id: githubInstallationId
                   }
                 }
               });
