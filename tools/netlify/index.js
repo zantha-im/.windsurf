@@ -199,12 +199,20 @@ function createNetlifyClient(config = {}) {
     
     /**
      * Add a custom domain to a site (idempotent)
-     * If domain is already configured, returns current state without changes.
+     * 
+     * For external DNS (non-Netlify DNS), Netlify requires TXT record verification:
+     * 1. Add TXT record: host=netlify-challenge.subdomain, value=<any unique value>
+     * 2. Pass the same value as txtRecordValue parameter
+     * 
      * @param {string} siteId - Site ID
-     * @param {string} domain - Custom domain (e.g., 'app.zantha.im')
+     * @param {string} domain - Custom domain (e.g., 'products.zantha.im')
+     * @param {Object} options - Optional settings
+     * @param {string} options.txtRecordValue - TXT record value for domain verification (required for external DNS)
      * @returns {Promise<Object>} Updated site with `skipped` flag if already configured
      */
-    async addCustomDomain(siteId, domain) {
+    async addCustomDomain(siteId, domain, options = {}) {
+      const { txtRecordValue } = options;
+      
       // Check if domain is already configured
       const site = await api.getSite({ site_id: siteId });
       if (site.custom_domain === domain) {
@@ -231,23 +239,54 @@ function createNetlifyClient(config = {}) {
         };
       }
       
+      // Build update payload
+      const updatePayload = { 
+        custom_domain: domain,
+        force_ssl: true
+      };
+      
+      // Add TXT record value for verification if provided
+      if (txtRecordValue) {
+        updatePayload.txt_record_value = txtRecordValue;
+      }
+      
       try {
-        const result = await this.updateSite(siteId, { 
-          custom_domain: domain,
-          force_ssl: true
-        });
+        const result = await this.updateSite(siteId, updatePayload);
         return { ...result, skipped: false };
       } catch (error) {
         // Handle 422 Unprocessable Entity
-        if (error.status === 422 || error.message?.includes('422') || error.message?.includes('Unprocessable')) {
+        const is422 = error.status === 422 || error.message?.includes('422') || error.message?.includes('Unprocessable');
+        
+        if (is422 && !txtRecordValue) {
+          // 422 without TXT verification - provide helpful error
+          const subdomain = domain.split('.')[0];
+          const baseDomain = domain.split('.').slice(1).join('.');
+          throw new Error(
+            `Failed to add domain ${domain}: Netlify requires TXT record verification for external DNS.\n\n` +
+            `To fix this:\n` +
+            `1. Add a TXT record to your DNS:\n` +
+            `   Host: netlify-challenge.${subdomain}\n` +
+            `   Value: netlify-verify-${siteId}\n` +
+            `2. Wait for DNS propagation (check with: nslookup -type=TXT netlify-challenge.${domain})\n` +
+            `3. Call addCustomDomain again with txtRecordValue option:\n` +
+            `   netlify.addCustomDomain('${siteId}', '${domain}', { txtRecordValue: 'netlify-verify-${siteId}' })\n\n` +
+            `Or add the domain manually in Netlify UI: https://app.netlify.com/projects/${site.name}/domain-management`
+          );
+        }
+        
+        if (is422) {
           // Try adding as domain alias instead
           try {
             const currentAliases = site.domain_aliases || [];
             if (!currentAliases.includes(domain)) {
-              const result = await this.updateSite(siteId, {
+              const aliasPayload = {
                 domain_aliases: [...currentAliases, domain],
                 force_ssl: true
-              });
+              };
+              if (txtRecordValue) {
+                aliasPayload.txt_record_value = txtRecordValue;
+              }
+              const result = await this.updateSite(siteId, aliasPayload);
               return { 
                 ...result, 
                 skipped: false,
@@ -260,7 +299,7 @@ function createNetlifyClient(config = {}) {
             throw new Error(
               `Failed to add domain ${domain}: ${error.message}. ` +
               `Also tried domain_aliases: ${aliasError.message}. ` +
-              `You may need to add the domain manually in Netlify UI or verify DNS is configured.`
+              `You may need to add the domain manually in Netlify UI.`
             );
           }
         }

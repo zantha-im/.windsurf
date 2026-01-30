@@ -200,6 +200,54 @@ function createRoute53Client(config = {}) {
     },
     
     /**
+     * Create or update a TXT record
+     * @param {string} domainName - Base domain (e.g., 'zantha.im')
+     * @param {string} subdomain - Subdomain (e.g., 'netlify-challenge.products')
+     * @param {string|string[]} values - TXT record value(s)
+     * @param {number} ttl - TTL in seconds (default: 300)
+     * @returns {Promise<Object>} Change info
+     */
+    async createTxtRecord(domainName, subdomain, values, ttl = 300) {
+      const hostedZoneId = await this.getHostedZoneId(domainName);
+      if (!hostedZoneId) {
+        throw new Error(`Hosted zone not found for domain: ${domainName}`);
+      }
+      
+      const txtValues = Array.isArray(values) ? values : [values];
+      const recordName = subdomain ? `${subdomain}.${domainName}` : domainName;
+      
+      const command = new ChangeResourceRecordSetsCommand({
+        HostedZoneId: hostedZoneId,
+        ChangeBatch: {
+          Comment: `Created by Windsurf Deploy Workflow`,
+          Changes: [{
+            Action: 'UPSERT',
+            ResourceRecordSet: {
+              Name: recordName,
+              Type: 'TXT',
+              TTL: ttl,
+              // TXT records must be quoted
+              ResourceRecords: txtValues.map(v => ({ Value: `"${v}"` }))
+            }
+          }]
+        }
+      });
+      
+      const response = await client.send(command);
+      return {
+        changeId: response.ChangeInfo.Id,
+        status: response.ChangeInfo.Status,
+        submittedAt: response.ChangeInfo.SubmittedAt,
+        record: {
+          name: recordName,
+          type: 'TXT',
+          values: txtValues,
+          ttl
+        }
+      };
+    },
+    
+    /**
      * Delete a DNS record
      * @param {string} domainName - Base domain
      * @param {string} subdomain - Subdomain

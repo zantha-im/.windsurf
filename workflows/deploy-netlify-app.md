@@ -116,18 +116,41 @@ await route53.createCnameRecord(
 
 Report: "DNS record configured: `[subdomain].zantha.im` → `[site-name].netlify.app`"
 
+## Step 4b: Create TXT Record for Domain Verification
+
+**Netlify requires TXT record verification for external DNS (non-Netlify DNS).**
+
+```javascript
+// Create TXT record for Netlify domain verification
+const txtValue = `netlify-verify-${site.id}`;
+
+await route53.createTxtRecord(
+  'zantha.im',                           // Base domain
+  `netlify-challenge.[subdomain]`,       // e.g., 'netlify-challenge.products'
+  txtValue
+);
+```
+
+Report: "TXT verification record created: `netlify-challenge.[subdomain].zantha.im`"
+
 ## Step 5: Add Custom Domain to Netlify
 
 ```javascript
-const result = await netlify.addCustomDomain(site.id, '[subdomain].zantha.im');
+const txtValue = `netlify-verify-${site.id}`;
+const result = await netlify.addCustomDomain(site.id, '[subdomain].zantha.im', {
+  txtRecordValue: txtValue
+});
 // result.skipped = true if domain already configured
 ```
+
+**If 422 error occurs without TXT verification:**
+The error message will provide instructions for adding the TXT record manually.
 
 Report: `[result.skipped ? 'Domain already configured' : 'Custom domain added']`
 
 ## Step 6: Wait for DNS Propagation
 
-Wait 30-60 seconds for DNS to propagate. Netlify needs to verify the CNAME record.
+Wait 30-60 seconds for DNS to propagate. Netlify needs to verify the CNAME and TXT records.
 
 ```javascript
 // Simple wait
@@ -137,6 +160,7 @@ await new Promise(resolve => setTimeout(resolve, 45000));
 Or check DNS propagation manually:
 ```bash
 nslookup [subdomain].zantha.im
+nslookup -type=TXT netlify-challenge.[subdomain].zantha.im
 ```
 
 ## Step 7: Provision SSL Certificate
