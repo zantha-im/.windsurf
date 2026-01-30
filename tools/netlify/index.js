@@ -286,10 +286,17 @@ function createNetlifyClient(config = {}) {
       const site = await api.getSite({ site_id: siteId });
       const accountId = site.account_id;
       
-      // Build batch payload - Netlify API accepts array of env vars
+      // Build batch payload with proper scopes and contexts
+      // Based on Netlify API: https://answers.netlify.com/t/how-am-i-supposed-to-set-up-env-variables-over-api/88043
       const envVarPayload = Object.entries(vars).map(([key, value]) => ({
         key,
-        values: [{ value: String(value), context: 'all' }]
+        scopes: ['builds', 'functions', 'runtime', 'post_processing'],
+        values: [
+          { context: 'production', value: String(value) },
+          { context: 'deploy-preview', value: String(value) },
+          { context: 'branch-deploy', value: String(value) },
+          { context: 'dev', value: String(value) }
+        ]
       }));
       
       // First, delete existing vars to avoid conflicts (Netlify doesn't upsert well)
