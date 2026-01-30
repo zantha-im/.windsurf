@@ -15,11 +15,11 @@ description: Database tooling protocol. Use Neon MCP as the exclusive tool for s
 
 **Before ANY database operation, you MUST:**
 
-1. Run `mcp1_list_projects` to confirm MCP is connected and retrieve available projects
-2. Run `mcp1_describe_project` with the target `projectId` to get database/branch details
+1. Run `mcp2_list_projects` to confirm MCP is connected and retrieve available projects
+2. Run `mcp2_describe_project` with the target `projectId` to get database/branch details
 3. **Confirm to the user:** "Connected to Neon project: **[project name]**"
 
-If `mcp1_list_projects` fails, the Neon MCP server is not connected. Do NOT fall back to scripts - inform the user that MCP connection is required.
+If `mcp2_list_projects` fails, the Neon MCP server is not connected. Do NOT fall back to scripts - inform the user that MCP connection is required.
 
 ---
 
@@ -34,28 +34,28 @@ If `mcp1_list_projects` fails, the Neon MCP server is not connected. Do NOT fall
 ```
 Need database info?
 ├── Schema inspection (tables, columns, relationships)
-│   └── Use: mcp1_describe_table_schema or mcp1_describe_branch
+│   └── Use: mcp2_describe_table_schema or mcp2_describe_branch
 ├── List all tables
-│   └── Use: mcp1_get_database_tables
+│   └── Use: mcp2_get_database_tables
 ├── Execute SQL query
-│   └── Use: mcp1_run_sql
+│   └── Use: mcp2_run_sql
 ├── Execute multiple SQL statements
-│   └── Use: mcp1_run_sql_transaction
+│   └── Use: mcp2_run_sql_transaction
 ├── Database migration
 │   └── Use: prepare → test → complete workflow (see below)
 └── Query performance
-    ├── Explain plan → mcp1_explain_sql_statement
-    ├── Find slow queries → mcp1_list_slow_queries
-    └── Index optimization → mcp1_prepare_query_tuning workflow
+    ├── Explain plan → mcp2_explain_sql_statement
+    ├── Find slow queries → mcp2_list_slow_queries
+    └── Index optimization → mcp2_prepare_query_tuning workflow
 ```
 
 ---
 
 ## Migration Workflow (Safe Pattern)
 
-1. **Prepare:** `mcp1_prepare_database_migration` creates a temp branch
-2. **Test:** Run validation queries on temp branch using `mcp1_run_sql` with the temp `branchId`
-3. **Complete:** `mcp1_complete_database_migration` applies to production
+1. **Prepare:** `mcp2_prepare_database_migration` creates a temp branch
+2. **Test:** Run validation queries on temp branch using `mcp2_run_sql` with the temp `branchId`
+3. **Complete:** `mcp2_complete_database_migration` applies to production
 
 **Never run DDL directly on production branch without this workflow.**
 
@@ -63,5 +63,5 @@ Need database info?
 
 ## Performance Analysis Notes
 
-- Ensure `pg_stat_statements` extension is installed before using `mcp1_list_slow_queries`
+- Ensure `pg_stat_statements` extension is installed before using `mcp2_list_slow_queries`
 - Allow 24-48h of normal app usage after enabling for meaningful slow query results
