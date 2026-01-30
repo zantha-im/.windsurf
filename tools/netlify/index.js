@@ -332,9 +332,23 @@ function createNetlifyClient(config = {}) {
       }
       
       const result = await api.provisionSiteTLSCertificate({ site_id: siteId });
+      
+      // Handle null/undefined result
+      if (!result) {
+        // SSL provisioning initiated but no immediate result - check site status
+        const site = await api.getSite({ site_id: siteId });
+        return {
+          state: site.ssl?.state || 'pending',
+          domains: site.ssl?.domains || [site.custom_domain],
+          expiresAt: site.ssl?.expires_at,
+          skipped: false,
+          note: 'SSL provisioning initiated'
+        };
+      }
+      
       return {
-        state: result.state,
-        domains: result.domains,
+        state: result.state || 'pending',
+        domains: result.domains || [],
         expiresAt: result.expires_at,
         skipped: false
       };
