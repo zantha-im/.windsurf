@@ -225,9 +225,27 @@ if (status.state === 'no_deploys') {
 
 Report: `Build status: ${status.state} ${status.isBuilding ? '(in progress)' : ''}`
 
-## Step 9: Report Completion
+## Step 9: Verify TXT Record Cleanup
 
-Report to user with resume status:
+Confirm the TXT verification record was deleted to keep the hosted zone clean.
+
+```javascript
+// Verify TXT record no longer exists
+const { createRoute53Client } = require('./.windsurf/tools/aws/route53');
+const route53 = createRoute53Client();
+const hostedZoneId = await route53.getHostedZoneId('zantha.im');
+const records = await route53.listRecords(hostedZoneId);
+const txtRecord = records.find(r => 
+  r.type === 'TXT' && r.name.includes('netlify-challenge.[subdomain]')
+);
+const txtCleanedUp = !txtRecord;
+```
+
+Report: `TXT Record: ${txtCleanedUp ? '✅ Cleaned up' : '⚠️ Still exists (manual cleanup may be needed)'}`
+
+## Step 10: Report Completion
+
+Report to user with full status:
 
 ```
 ✅ Deployment Complete!
@@ -248,7 +266,8 @@ Build: [status.state]
 Steps Summary:
 - Site: [site.existed ? '⏭️ Existing' : '✅ Created']
 - Env Vars: ✅ Configured
-- DNS: ✅ Configured (UPSERT)
+- DNS CNAME: ✅ Configured (UPSERT)
+- TXT Verification: ✅ Created → [txtCleanedUp ? '✅ Deleted' : '⚠️ Cleanup failed']
 - Custom Domain: [domain.skipped ? '⏭️ Already set' : '✅ Added']
 - SSL: [ssl.skipped ? '⏭️ Already provisioned' : '✅ Provisioned']
 - Build: [status.isBuilding ? '🔄 In Progress' : status.isReady ? '✅ Ready' : '❌ Failed']
