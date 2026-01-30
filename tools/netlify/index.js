@@ -176,30 +176,63 @@ function createNetlifyClient(config = {}) {
     },
     
     /**
-     * Add a custom domain to a site
+     * Add a custom domain to a site (idempotent)
+     * If domain is already configured, returns current state without changes.
      * @param {string} siteId - Site ID
      * @param {string} domain - Custom domain (e.g., 'app.zantha.im')
-     * @returns {Promise<Object>} Updated site
+     * @returns {Promise<Object>} Updated site with `skipped` flag if already configured
      */
     async addCustomDomain(siteId, domain) {
-      return this.updateSite(siteId, { 
+      // Check if domain is already configured
+      const site = await api.getSite({ site_id: siteId });
+      if (site.custom_domain === domain) {
+        return {
+          id: site.id,
+          name: site.name,
+          customDomain: site.custom_domain,
+          forceSsl: site.force_ssl,
+          skipped: true,
+          reason: 'Domain already configured'
+        };
+      }
+      
+      const result = await this.updateSite(siteId, { 
         custom_domain: domain,
         force_ssl: true
       });
+      return { ...result, skipped: false };
     },
     
     /**
-     * Provision SSL certificate for a site
-     * Requires custom domain to be configured and DNS pointing to Netlify
+     * Provision SSL certificate for a site (idempotent)
+     * If SSL is already provisioned, returns current state without changes.
+     * Requires custom domain to be configured and DNS pointing to Netlify.
      * @param {string} siteId - Site ID
-     * @returns {Promise<Object>} SSL provisioning result
+     * @returns {Promise<Object>} SSL provisioning result with `skipped` flag if already valid
      */
     async provisionSSL(siteId) {
+      // Check current SSL state first
+      try {
+        const site = await api.getSite({ site_id: siteId });
+        if (site.ssl && site.ssl.state === 'provisioned') {
+          return {
+            state: 'provisioned',
+            domains: site.ssl.domains || [site.custom_domain],
+            expiresAt: site.ssl.expires_at,
+            skipped: true,
+            reason: 'SSL already provisioned'
+          };
+        }
+      } catch (e) {
+        // Continue to provision
+      }
+      
       const result = await api.provisionSiteTLSCertificate({ site_id: siteId });
       return {
         state: result.state,
         domains: result.domains,
-        expiresAt: result.expires_at
+        expiresAt: result.expires_at,
+        skipped: false
       };
     },
     

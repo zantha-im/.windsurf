@@ -49,6 +49,10 @@ Use `ask_user_question` to collect:
 
 If yes, ask for env vars in format: `KEY=value` (one per line)
 
+## Idempotent Workflow (Resume Support)
+
+**All steps are idempotent** - safe to re-run after partial failures. Each step returns a `skipped` or `existed` flag indicating whether work was done or skipped.
+
 ## Step 2: Create Netlify Site
 
 ```javascript
@@ -61,13 +65,13 @@ const site = await netlify.createSite({
   branch: '[branch]'             // e.g., 'main'
 });
 
-console.log('Site created:', site.defaultUrl);
+// site.existed = true if site already exists, false if newly created
 ```
 
 Report to user:
 - Site ID: `[site.id]`
+- Status: `[site.existed ? 'Using existing site' : 'Created new site']`
 - Default URL: `https://[site-name].netlify.app`
-- Admin URL: `[site.adminUrl]`
 
 ## Step 3: Set Environment Variables (if provided)
 
@@ -77,7 +81,8 @@ const envVars = {
   // ... other vars
 };
 
-await netlify.setEnvVars(site.id, envVars);
+const results = await netlify.setEnvVars(site.id, envVars);
+// Always overwrites - idempotent by design
 ```
 
 Report: "Environment variables configured: [list keys]"
@@ -93,17 +98,19 @@ await route53.createCnameRecord(
   '[subdomain]',                  // e.g., 'products'
   '[site-name].netlify.app'       // Target
 );
+// Uses UPSERT - creates or updates, always idempotent
 ```
 
-Report: "DNS record created: `[subdomain].zantha.im` → `[site-name].netlify.app`"
+Report: "DNS record configured: `[subdomain].zantha.im` → `[site-name].netlify.app`"
 
 ## Step 5: Add Custom Domain to Netlify
 
 ```javascript
-await netlify.addCustomDomain(site.id, '[subdomain].zantha.im');
+const result = await netlify.addCustomDomain(site.id, '[subdomain].zantha.im');
+// result.skipped = true if domain already configured
 ```
 
-Report: "Custom domain configured on Netlify"
+Report: `[result.skipped ? 'Domain already configured' : 'Custom domain added']`
 
 ## Step 6: Wait for DNS Propagation
 
@@ -123,14 +130,17 @@ nslookup [subdomain].zantha.im
 
 ```javascript
 const ssl = await netlify.provisionSSL(site.id);
+// ssl.skipped = true if SSL already provisioned
 console.log('SSL state:', ssl.state);
 ```
+
+Report: `[ssl.skipped ? 'SSL already provisioned' : 'SSL provisioning initiated']`
 
 **Note:** If SSL provisioning fails, it usually means DNS hasn't propagated yet. Wait and retry.
 
 ## Step 8: Report Completion
 
-Report to user:
+Report to user with resume status:
 
 ```
 ✅ Deployment Complete!
@@ -145,7 +155,14 @@ URLs:
 
 Admin: [admin-url]
 
-SSL: [provisioned/pending]
+SSL: [ssl.state]
+
+Steps Summary:
+- Site: [site.existed ? '⏭️ Existing' : '✅ Created']
+- Env Vars: ✅ Configured
+- DNS: ✅ Configured (UPSERT)
+- Custom Domain: [domain.skipped ? '⏭️ Already set' : '✅ Added']
+- SSL: [ssl.skipped ? '⏭️ Already provisioned' : '✅ Provisioned']
 ```
 
 ## Troubleshooting
