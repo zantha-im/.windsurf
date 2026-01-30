@@ -44,6 +44,16 @@ AWS service wrappers for infrastructure management.
 | ------------ | ---------------------------------------- |
 | `route53.js` | DNS record management (CNAME, A records) |
 
+### Netlify (`tools/netlify/`)
+
+Netlify site management, custom domains, and SSL provisioning.
+
+| Module     | Purpose                                      |
+| ---------- | -------------------------------------------- |
+| `index.js` | Site creation, custom domains, SSL, env vars |
+
+**Credentials:** Loaded from `NETLIFY_TOKEN` env var or `.windsurf/config/credentials.json`
+
 ### Excel (`tools/excel/`)
 
 Excel file parsing and data extraction.
