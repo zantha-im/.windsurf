@@ -211,35 +211,51 @@ function createNetlifyClient(config = {}) {
       const site = await api.getSite({ site_id: siteId });
       const accountId = site.account_id;
       
-      const results = [];
-      for (const [key, value] of Object.entries(vars)) {
-        try {
-          // Try to create first
-          const result = await api.createEnvVars({
-            account_id: accountId,
-            site_id: siteId,
-            body: [{
-              key,
-              values: [{ value, context: 'all' }]
-            }]
-          });
-          results.push({ key, status: 'created' });
-        } catch (e) {
-          // If exists, update it
+      // Build batch payload - Netlify API accepts array of env vars
+      const envVarPayload = Object.entries(vars).map(([key, value]) => ({
+        key,
+        values: [{ value: String(value), context: 'all' }]
+      }));
+      
+      // First, delete existing vars to avoid conflicts (Netlify doesn't upsert well)
+      const existingVars = await api.getEnvVars({ account_id: accountId, site_id: siteId });
+      const keysToSet = new Set(Object.keys(vars));
+      
+      for (const existing of existingVars) {
+        if (keysToSet.has(existing.key)) {
           try {
-            await api.setEnvVarValue({
-              account_id: accountId,
-              site_id: siteId,
-              key,
-              body: { value, context: 'all' }
-            });
-            results.push({ key, status: 'updated' });
-          } catch (e2) {
-            results.push({ key, status: 'error', error: e2.message });
+            await api.deleteEnvVar({ account_id: accountId, site_id: siteId, key: existing.key });
+          } catch (e) {
+            // Ignore delete errors
           }
         }
       }
-      return results;
+      
+      // Create all env vars in one batch call
+      try {
+        await api.createEnvVars({
+          account_id: accountId,
+          site_id: siteId,
+          body: envVarPayload
+        });
+        return Object.keys(vars).map(key => ({ key, status: 'created' }));
+      } catch (e) {
+        // If batch fails, fall back to individual creates
+        const results = [];
+        for (const envVar of envVarPayload) {
+          try {
+            await api.createEnvVars({
+              account_id: accountId,
+              site_id: siteId,
+              body: [envVar]
+            });
+            results.push({ key: envVar.key, status: 'created' });
+          } catch (e2) {
+            results.push({ key: envVar.key, status: 'error', error: e2.message });
+          }
+        }
+        return results;
+      }
     },
     
     /**
