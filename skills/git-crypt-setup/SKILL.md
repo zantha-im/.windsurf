@@ -42,11 +42,11 @@ git-crypt status 2>&1 | Select-Object -First 1
 
 ## Obtaining the Key
 
-The git-crypt key is stored in **1Password**:
+The git-crypt key is stored in **1Password** (Zantha vault):
 
 1. Open 1Password
-2. Search for `windsurf-git-crypt.key`
-3. Download the attached key file
+2. Search for **"git-crypt key"**
+3. Download the attached file `windsurf-git-crypt.key`
 4. Save it to `.windsurf/.git-crypt-key`
 
 ```powershell
