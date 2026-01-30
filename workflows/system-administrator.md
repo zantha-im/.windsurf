@@ -4,6 +4,19 @@ description: Activate System Administrator role for infrastructure and access ma
 
 # System Administrator Role Activation
 
+## Step 0: Verify git-crypt (Encrypted Credentials)
+
+Check if git-crypt is installed and repo is unlocked:
+```powershell
+git-crypt status 2>&1 | Select-Object -First 1
+```
+
+**If git-crypt not installed or repo locked:**
+- Invoke `@git-crypt-setup` skill for installation and unlock instructions
+- Do not proceed until credentials are accessible
+
+**If working:** Continue to Step 1.
+
 ## Step 1: Read Role Definition
 Read the role definition file:
 - `.windsurf/roles/generic/system-administrator.md`
@@ -58,8 +71,9 @@ cd .windsurf && npm install
 Then re-run the orchestrator status check.
 
 ### If credentials not found:
-Service account key is project-specific. Place the key file at:
-`credentials/service-accounts/ai-advisor-admin-key.json`
+Credentials are stored encrypted in `.windsurf/config/`. If not found:
+1. Verify git-crypt is unlocked: `git-crypt status`
+2. If locked, invoke `@git-crypt-setup` skill
 
 ### If all ready:
 Ask: "What infrastructure or access management task can I help with?"

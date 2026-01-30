@@ -136,36 +136,9 @@ Credentials are stored encrypted in `.windsurf/config/` and distributed via subt
     └── ai-advisor-admin-key.json     # Google service account key (git-crypt encrypted)
 ```
 
-### git-crypt Setup (Required for New Machines)
+### git-crypt Setup
 
-**Prerequisites:** Install git-crypt and unlock the repo to access encrypted credentials.
-
-**Windows (via Scoop):**
-```powershell
-# Install Scoop (if not installed)
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
-
-# Install git-crypt
-scoop install git-crypt
-
-# Unlock the repo (requires key file)
-git-crypt unlock /path/to/windsurf-git-crypt.key
-```
-
-**macOS/Linux:**
-```bash
-# macOS
-brew install git-crypt
-
-# Ubuntu/Debian
-sudo apt-get install git-crypt
-
-# Unlock the repo
-git-crypt unlock /path/to/windsurf-git-crypt.key
-```
-
-**Key file location:** Ask the repo owner for `windsurf-git-crypt.key`
+For git-crypt installation and unlock instructions, invoke `@git-crypt-setup` skill.
 
 ### Credential Priority
 

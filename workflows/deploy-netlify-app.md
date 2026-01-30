@@ -6,10 +6,20 @@ description: Deploy a new app to Netlify with custom domain and SSL. Use when se
 
 Automates the full deployment flow: create Netlify site → set env vars → create DNS record → add custom domain → provision SSL.
 
+## Step 0: Verify git-crypt (Encrypted Credentials)
+
+Check if git-crypt is installed and repo is unlocked:
+```powershell
+git-crypt status 2>&1 | Select-Object -First 1
+```
+
+**If git-crypt not installed or repo locked:**
+- Invoke `@git-crypt-setup` skill for installation and unlock instructions
+- Do not proceed until credentials are accessible
+
 ## Prerequisites
 
-- Netlify token configured (in `.windsurf/config/credentials.json` or `NETLIFY_TOKEN` env var)
-- AWS credentials configured for Route53 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
+- git-crypt unlocked (credentials accessible)
 - GitHub repo exists and is accessible to Netlify
 
 ## Step 1: Gather Deployment Details
