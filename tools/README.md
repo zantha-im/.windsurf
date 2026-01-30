@@ -45,13 +45,28 @@ if (credentials.has('aws')) { ... }
 
 Configurable wrappers for Google APIs with OAuth2 and Service Account authentication.
 
-| Module     | Purpose                                      |
-| ---------- | -------------------------------------------- |
-| `auth.js`  | OAuth2 and Service Account authentication    |
-| `drive.js` | Google Drive file operations                 |
-| `docs.js`  | Google Docs read/write operations            |
-| `gmail.js` | Gmail send and search                        |
-| `admin.js` | Admin SDK (users, groups) and Gmail Settings |
+| Module            | Purpose                                      |
+| ----------------- | -------------------------------------------- |
+| `auth.js`         | OAuth2 and Service Account authentication    |
+| `oauth-server.js` | Local OAuth server for authorizing scopes    |
+| `drive.js`        | Google Drive file operations                 |
+| `docs.js`         | Google Docs read/write operations            |
+| `gmail.js`        | Gmail send and search                        |
+| `admin.js`        | Admin SDK (users, groups) and Gmail Settings |
+
+**OAuth Server Usage:**
+```bash
+# Authorize default scopes for user 'jonny'
+node .windsurf/tools/google/oauth-server.js
+
+# Authorize specific scopes for user 'kay'
+node .windsurf/tools/google/oauth-server.js --user kay --scopes calendar,sheets
+
+# Custom token path
+node .windsurf/tools/google/oauth-server.js --token-path ./my-tokens.json
+```
+
+Available scope shortcuts: `gmail.readonly`, `gmail.send`, `drive`, `drive.file`, `docs`, `sheets`, `calendar`, `admin.directory.user`
 
 ### PDF (`tools/pdf/`)
 
