@@ -21,22 +21,28 @@
  */
 
 const { Route53Client, ListHostedZonesCommand, ListResourceRecordSetsCommand, ChangeResourceRecordSetsCommand } = require('@aws-sdk/client-route-53');
+const credentials = require('../credentials');
 
 /**
  * Create Route53 client with configurable credentials
  * @param {Object} config
- * @param {string} config.region - AWS region (default: eu-west-2)
- * @param {string} config.accessKeyId - AWS access key (or use AWS_ACCESS_KEY_ID env var)
- * @param {string} config.secretAccessKey - AWS secret key (or use AWS_SECRET_ACCESS_KEY env var)
+ * @param {string} config.region - AWS region (default: from config or us-east-1)
+ * @param {string} config.accessKeyId - AWS access key (or use env var or shared config)
+ * @param {string} config.secretAccessKey - AWS secret key (or use env var or shared config)
  * @returns {Object} Route53 client wrapper
  */
 function createRoute53Client(config = {}) {
-  const region = config.region || process.env.AWS_REGION || 'eu-west-2';
-  const accessKeyId = config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  const creds = credentials.get('aws') || {};
+  
+  const region = config.region || creds.region || 'us-east-1';
+  const accessKeyId = config.accessKeyId || creds.accessKeyId;
+  const secretAccessKey = config.secretAccessKey || creds.secretAccessKey;
   
   if (!accessKeyId || !secretAccessKey) {
-    throw new Error('AWS credentials required. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars, or pass accessKeyId/secretAccessKey in config.');
+    throw new Error(
+      'AWS credentials required. Set AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY env vars, ' +
+      'pass in config, or add to .windsurf/config/credentials.json'
+    );
   }
   
   const client = new Route53Client({

@@ -56,5 +56,5 @@ Report to user:
 - Orchestrator: [found/not found]
 - Canonical app: [configured path] or "Not configured - UI pattern skills unavailable"
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
-- Ask: "What development task can I help with?"
+- Ask: "What development task can I help with? For new features or major changes, I recommend we create a plan together first."
 

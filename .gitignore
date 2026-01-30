@@ -1,2 +1,5 @@
 node_modules/
 package-lock.json
+
+# git-crypt key file (stored locally, not in repo)
+.git-crypt-key

@@ -2,16 +2,67 @@
 
 Reusable tool modules for common operations. These tools are designed to be **configurable** - they accept paths and credentials as parameters rather than hardcoding them.
 
-## Quick Start
+## Getting Started
+
+### 1. Unlock Credentials (First Time Setup)
+
+```bash
+# Get git-crypt key from 1Password (Zantha vault → "git-crypt key")
+# Save to .windsurf/.git-crypt-key
+
+# Unlock the repository
+git-crypt unlock .windsurf/.git-crypt-key
+```
+
+See `@git-crypt-setup` skill for detailed instructions.
+
+### 2. Authorize Google APIs (If Needed)
+
+```bash
+# Authorize default scopes
+node .windsurf/tools/google/oauth-server.js
+
+# Authorize specific scopes for a user
+node .windsurf/tools/google/oauth-server.js --user kay --scopes calendar,sheets
+```
+
+Tokens are saved to `./credentials/oauth-tokens/google-tokens.json`.
+
+### 3. Use Tools in Code
 
 ```javascript
-// Import the tools
-const tools = require('.windsurf/tools');
-
-// Or import specific modules
+// Import specific modules
 const google = require('.windsurf/tools/google');
-const pdf = require('.windsurf/tools/pdf');
+const credentials = require('.windsurf/tools/credentials');
+
+// Get credentials
+const aws = credentials.get('aws');
+const googleCreds = credentials.get('google');
 ```
+
+---
+
+## Credentials Module (`tools/credentials.js`)
+
+**Single source of truth** for loading credentials across all tools.
+
+```javascript
+const credentials = require('.windsurf/tools/credentials');
+
+// Get credentials for a service
+const aws = credentials.get('aws');        // { region, accessKeyId, secretAccessKey }
+const netlify = credentials.get('netlify'); // { token, teamSlug }
+const google = credentials.get('google');   // { clientId, clientSecret, serviceAccountKeyPath, ... }
+
+// Check if credentials are available
+if (credentials.has('aws')) { ... }
+```
+
+**Priority:** Environment variables → `.windsurf/config/credentials.json`
+
+**Requires:** git-crypt unlocked
+
+---
 
 ## Available Modules
 
@@ -19,13 +70,28 @@ const pdf = require('.windsurf/tools/pdf');
 
 Configurable wrappers for Google APIs with OAuth2 and Service Account authentication.
 
-| Module     | Purpose                                      |
-| ---------- | -------------------------------------------- |
-| `auth.js`  | OAuth2 and Service Account authentication    |
-| `drive.js` | Google Drive file operations                 |
-| `docs.js`  | Google Docs read/write operations            |
-| `gmail.js` | Gmail send and search                        |
-| `admin.js` | Admin SDK (users, groups) and Gmail Settings |
+| Module            | Purpose                                      |
+| ----------------- | -------------------------------------------- |
+| `auth.js`         | OAuth2 and Service Account authentication    |
+| `oauth-server.js` | Local OAuth server for authorizing scopes    |
+| `drive.js`        | Google Drive file operations                 |
+| `docs.js`         | Google Docs read/write operations            |
+| `gmail.js`        | Gmail send and search                        |
+| `admin.js`        | Admin SDK (users, groups) and Gmail Settings |
+
+**OAuth Server Usage:**
+```bash
+# Authorize default scopes for user 'jonny'
+node .windsurf/tools/google/oauth-server.js
+
+# Authorize specific scopes for user 'kay'
+node .windsurf/tools/google/oauth-server.js --user kay --scopes calendar,sheets
+
+# Custom token path
+node .windsurf/tools/google/oauth-server.js --token-path ./my-tokens.json
+```
+
+Available scope shortcuts: `gmail.readonly`, `gmail.send`, `drive`, `drive.file`, `docs`, `sheets`, `calendar`, `admin.directory.user`
 
 ### PDF (`tools/pdf/`)
 
@@ -43,6 +109,14 @@ AWS service wrappers for infrastructure management.
 | Module       | Purpose                                  |
 | ------------ | ---------------------------------------- |
 | `route53.js` | DNS record management (CNAME, A records) |
+
+### Netlify (`tools/netlify/`)
+
+Netlify site management, custom domains, and SSL provisioning.
+
+| Module     | Purpose                                      |
+| ---------- | -------------------------------------------- |
+| `index.js` | Site creation, custom domains, SSL, env vars |
 
 ### Excel (`tools/excel/`)
 

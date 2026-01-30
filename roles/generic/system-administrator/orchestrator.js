@@ -44,18 +44,34 @@ try {
   google = null;
 }
 
+// Unified credentials module
+let credentials;
+try {
+  credentials = require('../../../tools/credentials');
+} catch (e) {
+  credentials = null;
+}
+
 /**
  * Find the service account key file
- * Searches common locations across projects
+ * Uses unified credentials module
  */
 function findKeyFile() {
+  if (credentials) {
+    const googleCreds = credentials.get('google');
+    if (googleCreds?.serviceAccountKeyPath) {
+      return googleCreds.serviceAccountKeyPath;
+    }
+  }
+  
+  // Fall back to project-specific locations
+  const fs = require('fs');
   const possiblePaths = [
     path.join(process.cwd(), 'credentials/service-accounts/ai-advisor-admin-key.json'),
     path.join(process.cwd(), '../credentials/service-accounts/ai-advisor-admin-key.json'),
     path.join(__dirname, '../../../../credentials/service-accounts/ai-advisor-admin-key.json')
   ];
   
-  const fs = require('fs');
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {
       return p;

@@ -70,14 +70,12 @@ Shared Tool Development Progress:
 - [ ] Step 1: Verify workspace has .windsurf SOURCE repo (not subtree)
 - [ ] Step 2: Check .windsurf/tools/README.md - does similar tool exist?
 - [ ] Step 3: Create tool in .windsurf/tools/[category]/
-- [ ] Step 4: Update .windsurf/tools/README.md with documentation
-- [ ] Step 5: Use relative paths only (./.windsurf/tools/...)
-- [ ] Step 6: Test tool works in source context
-- [ ] Step 7: Commit and push to .windsurf source repo
-- [ ] Step 8: Run /subtree-pull in consuming projects
-- [ ] Step 9: Install dependencies in consumer (npm install)
-- [ ] Step 10: Add credentials to consumer's .env file
-- [ ] Step 11: Test tool from consumer project
+- [ ] Step 4: Add dependencies to .windsurf/package.json (npm install --save)
+- [ ] Step 5: Update .windsurf/tools/README.md with documentation
+- [ ] Step 6: Commit and push to .windsurf source repo
+- [ ] Step 7: Run /subtree-pull in consuming projects (installs deps automatically)
+- [ ] Step 8: Add credentials to consumer's .env file
+- [ ] Step 9: Test tool from consumer project
 ```
 
 ### Step 1: Verify Source Repo Access
@@ -135,15 +133,63 @@ function createClient(config = {}) {
 module.exports = { createClient };
 ```
 
-### Step 4: Update README.md
+### Step 4: Add Dependencies to package.json
+
+**CRITICAL: Tools must declare their npm dependencies.**
+
+| Tool Type       | Where to Add Dependencies                 |
+| --------------- | ----------------------------------------- |
+| **Shared tool** | `.windsurf/package.json` (in source repo) |
+| **Domain tool** | Consuming project's `package.json`        |
+
+**For shared tools:**
+```bash
+# In .windsurf source repo
+cd c:\Users\Jonny\Code\.windsurf
+npm install --save <package-name>
+```
+
+This ensures:
+- Dependencies are tracked in version control
+- `/subtree-pull` runs `npm install` in `.windsurf/` automatically
+- Tools load correctly in all consuming projects
+
+**For domain tools:**
+```bash
+# In consuming project root
+npm install --save <package-name>
+```
+
+### Step 4b: Google API Tools - Authorize Scopes
+
+**If your tool uses Google APIs, you need to authorize the required scopes.**
+
+Use the shared OAuth server:
+```bash
+# Authorize new scopes (run from project root)
+node .windsurf/tools/google/oauth-server.js --scopes gmail.readonly,drive.file --user jonny
+```
+
+**Available scope shortcuts:**
+- Gmail: `gmail.readonly`, `gmail.send`, `gmail.modify`, `gmail.settings.basic`
+- Drive: `drive`, `drive.file`, `drive.readonly`
+- Docs: `docs`, `docs.readonly`
+- Sheets: `sheets`, `sheets.readonly`
+- Calendar: `calendar`, `calendar.readonly`
+- Admin: `admin.directory.user`, `admin.directory.group`
+
+**Token storage:** Tokens are saved to `./credentials/oauth-tokens/google-tokens.json` by default.
+
+See `node .windsurf/tools/google/oauth-server.js --help` for all options.
+
+### Step 5: Update README.md
 
 Add to `.windsurf/tools/README.md`:
 - Tool name and purpose in the module table
 - API reference section with usage examples
-- Required dependencies (`npm install ...`)
 - Required environment variables
 
-### Step 5: Commit, Push, Subtree Pull
+### Step 6: Commit, Push, Subtree Pull
 
 ```bash
 # In .windsurf source repo

@@ -4,6 +4,27 @@ description: Activate System Administrator role for infrastructure and access ma
 
 # System Administrator Role Activation
 
+## Step 0: Verify git-crypt (Encrypted Credentials)
+
+Run these checks in order:
+
+```powershell
+# 1. Check git-crypt installed
+git-crypt --version
+
+# 2. Check key file exists
+Test-Path .windsurf/.git-crypt-key
+
+# 3. Check repo unlocked
+git-crypt status 2>&1 | Select-Object -First 1
+```
+
+**Decision tree:**
+- git-crypt not installed → Invoke `@git-crypt-setup` skill (Installation section)
+- Key file missing → Invoke `@git-crypt-setup` skill (Obtaining the Key section)
+- Repo not unlocked → Run: `git-crypt unlock .windsurf/.git-crypt-key`
+- All checks pass → Continue to Step 1
+
 ## Step 1: Read Role Definition
 Read the role definition file:
 - `.windsurf/roles/generic/system-administrator.md`
@@ -20,15 +41,20 @@ Read the tool documentation:
 For creating new tools, use `@tool-development` skill.
 
 ## Step 4: Run Orchestrator
-Run the base orchestrator to check infrastructure status:
+First, verify the orchestrator file exists:
 ```bash
-node .windsurf/roles/generic/system-administrator/orchestrator.js
+Test-Path .windsurf/roles/generic/system-administrator/orchestrator.js
 ```
 
-This provides:
-- Google Workspace user management
-- Group management
-- Gmail send-as alias configuration
+If the file exists, run it to check infrastructure status:
+```bash
+node .windsurf/roles/generic/system-administrator/orchestrator.js status
+```
+
+This returns a JSON status showing:
+- `sharedToolsAvailable`: Whether Google API tools are loaded
+- `keyFileFound`: Whether service account credentials exist
+- `keyFilePath`: Location of credentials (if found)
 
 Available commands: `status`, `listUsers`, `listGroups`, `listMembers`, `listAliases`, etc.
 
@@ -40,6 +66,22 @@ Report the connection status with the **project name** (not ID).
 ## Step 6: Confirm Activation
 Report to user:
 - Current role: System Administrator
-- Orchestrator: [found/not found]
+- Orchestrator: [file exists / file not found]
+- Google Tools: [available / not available] (from `sharedToolsAvailable`)
+- Credentials: [found at path / not found] (from `keyFileFound`)
 - Database: Connected to Neon project: **[project name]** (or "MCP not connected" if failed)
-- Ask: "What infrastructure or access management task can I help with?"
+
+### If Google Tools not available:
+This indicates the subtree dependencies weren't installed. Run:
+```bash
+cd .windsurf && npm install
+```
+Then re-run the orchestrator status check.
+
+### If credentials not found:
+Credentials are stored encrypted in `.windsurf/config/`. If not found:
+1. Verify git-crypt is unlocked: `git-crypt status`
+2. If locked, invoke `@git-crypt-setup` skill
+
+### If all ready:
+Ask: "What infrastructure or access management task can I help with?"
