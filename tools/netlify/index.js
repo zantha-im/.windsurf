@@ -501,6 +501,81 @@ function createNetlifyClient(config = {}) {
     },
     
     /**
+     * Check deploy status for a site
+     * @param {string} siteId - Site ID
+     * @param {Object} options - Options
+     * @param {number} options.waitSeconds - Wait up to N seconds for deploy to complete (default: 0)
+     * @param {number} options.pollInterval - Poll interval in ms (default: 5000)
+     * @returns {Promise<Object>} Deploy status
+     */
+    async checkDeployStatus(siteId, options = {}) {
+      const { waitSeconds = 0, pollInterval = 5000 } = options;
+      const startTime = Date.now();
+      const maxWait = waitSeconds * 1000;
+      
+      const getLatestDeploy = async () => {
+        const deploys = await api.listSiteDeploys({ site_id: siteId, per_page: 1 });
+        if (!deploys || deploys.length === 0) {
+          return { state: 'no_deploys', message: 'No deploys found for this site' };
+        }
+        
+        const d = deploys[0];
+        return {
+          id: d.id,
+          state: d.state,
+          errorMessage: d.error_message || null,
+          createdAt: d.created_at,
+          publishedAt: d.published_at,
+          deployUrl: d.deploy_ssl_url || d.deploy_url,
+          commitRef: d.commit_ref,
+          commitMessage: d.title,
+          // Computed status
+          isBuilding: ['building', 'enqueued', 'uploading', 'processing'].includes(d.state),
+          isReady: d.state === 'ready',
+          isFailed: d.state === 'error' || !!d.error_message
+        };
+      };
+      
+      // If not waiting, just return current status
+      if (waitSeconds <= 0) {
+        return await getLatestDeploy();
+      }
+      
+      // Poll until complete or timeout
+      while (Date.now() - startTime < maxWait) {
+        const status = await getLatestDeploy();
+        
+        if (status.isReady || status.isFailed) {
+          return status;
+        }
+        
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      }
+      
+      // Timeout - return current status
+      const finalStatus = await getLatestDeploy();
+      return { ...finalStatus, timedOut: true };
+    },
+    
+    /**
+     * Trigger a new deploy for a site
+     * @param {string} siteId - Site ID
+     * @param {Object} options - Options
+     * @param {boolean} options.clearCache - Clear build cache (default: false)
+     * @returns {Promise<Object>} New deploy info
+     */
+    async triggerDeploy(siteId, options = {}) {
+      const { clearCache = false } = options;
+      const deploy = await api.createSiteBuild({ site_id: siteId, body: { clear_cache: clearCache } });
+      return {
+        id: deploy.id,
+        state: deploy.state,
+        createdAt: deploy.created_at
+      };
+    },
+    
+    /**
      * Get the underlying Netlify API client for advanced operations
      */
     getClient() {

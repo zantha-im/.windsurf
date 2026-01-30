@@ -175,7 +175,37 @@ Report: `[ssl.skipped ? 'SSL already provisioned' : 'SSL provisioning initiated'
 
 **Note:** If SSL provisioning fails, it usually means DNS hasn't propagated yet. Wait and retry.
 
-## Step 8: Report Completion
+## Step 8: Verify Build Started Successfully
+
+**IMPORTANT:** Check that Netlify can access the repo and build is underway.
+
+```javascript
+// Wait up to 30 seconds for build to start/complete
+const status = await netlify.checkDeployStatus(site.id, { waitSeconds: 30 });
+
+if (status.isFailed) {
+  throw new Error(`Build failed: ${status.errorMessage}`);
+}
+
+if (status.state === 'no_deploys') {
+  // Trigger initial deploy
+  await netlify.triggerDeploy(site.id);
+  // Check again
+  const retryStatus = await netlify.checkDeployStatus(site.id, { waitSeconds: 10 });
+  if (retryStatus.isFailed) {
+    throw new Error(`Build failed after trigger: ${retryStatus.errorMessage}`);
+  }
+}
+```
+
+**If build fails with "Unable to access repository":**
+- The `installation_id` may not have been set correctly
+- Check: `client.getSite({ site_id }).then(r => console.log(r.build_settings?.installation_id))`
+- Fix: Re-run createSite after pulling latest subtree, or manually re-link repo in Netlify UI
+
+Report: `Build status: ${status.state} ${status.isBuilding ? '(in progress)' : ''}`
+
+## Step 9: Report Completion
 
 Report to user with resume status:
 
@@ -193,6 +223,7 @@ URLs:
 Admin: [admin-url]
 
 SSL: [ssl.state]
+Build: [status.state]
 
 Steps Summary:
 - Site: [site.existed ? '⏭️ Existing' : '✅ Created']
@@ -200,6 +231,7 @@ Steps Summary:
 - DNS: ✅ Configured (UPSERT)
 - Custom Domain: [domain.skipped ? '⏭️ Already set' : '✅ Added']
 - SSL: [ssl.skipped ? '⏭️ Already provisioned' : '✅ Provisioned']
+- Build: [status.isBuilding ? '🔄 In Progress' : status.isReady ? '✅ Ready' : '❌ Failed']
 ```
 
 ## Troubleshooting
