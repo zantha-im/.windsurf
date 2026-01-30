@@ -139,9 +139,10 @@ function get(service) {
     }
     
     case 'google': {
-      // For Google, we support both OAuth (env vars) and Service Account (config file)
-      const clientId = getEnvValue(envMapping.clientId || []);
-      const clientSecret = getEnvValue(envMapping.clientSecret || []);
+      // For Google, we support both OAuth and Service Account
+      // Priority: env vars > config file
+      const clientId = getEnvValue(envMapping.clientId || []) || config.google?.clientId;
+      const clientSecret = getEnvValue(envMapping.clientSecret || []) || config.google?.clientSecret;
       
       // Service account from config
       const serviceAccountKeyFile = config.google?.serviceAccountKeyFile;
@@ -150,7 +151,7 @@ function get(service) {
       const domain = config.google?.domain;
       
       return {
-        // OAuth credentials (from env)
+        // OAuth credentials (env vars > config)
         clientId,
         clientSecret,
         // Service account credentials (from config)
