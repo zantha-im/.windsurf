@@ -1,11 +1,11 @@
 ---
-name: support-bot-analysis
-description: Analyzes Discord feedback for support bot improvement. Use when analyzing sentiment, mapping features, tracking bot performance, or generating improvement recommendations.
+name: bot-improvement-analysis
+description: Analyzes Discord feedback for bot improvement. Use when analyzing sentiment, mapping features, tracking bot performance, or generating improvement recommendations.
 ---
 
-# Skill: Support Bot Analysis
+# Skill: Bot Improvement Analysis
 
-Detailed procedures for the Support Advisor role. Domain: Discord customer support bot, sentiment analysis, performance optimization.
+Detailed procedures for the Bot Improver role. Domain: Discord customer support bot, sentiment analysis, performance optimization.
 
 ---
 
@@ -16,14 +16,14 @@ Detailed procedures for the Support Advisor role. Domain: Discord customer suppo
 ```
 [project-root]/
 ├── roles/
-│   └── support-advisor/        # ← OUTPUT GOES HERE
+│   └── bot-improver/           # ← OUTPUT GOES HERE
 │       ├── analysis/           # Sentiment & friction reports
 │       ├── recommendations/    # Feature proposals, prompt changes
 │       └── benchmarks/         # Performance tracking data
 ├── .windsurf/                  # Subtree - DO NOT write here
 ```
 
-**Before writing any file:** Verify the `roles/support-advisor/` directory exists. If not, create it.
+**Before writing any file:** Verify the `roles/bot-improver/` directory exists. If not, create it.
 
 ---
 
@@ -134,7 +134,7 @@ Benchmark Tracking Progress:
 
 ### Benchmark File Format
 
-Save to `roles/support-advisor/benchmarks/[YYYY-MM].json`:
+Save to `roles/bot-improver/benchmarks/[YYYY-MM].json`:
 
 ```json
 {

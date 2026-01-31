@@ -1,4 +1,4 @@
-# Support Advisor Activation
+# Bot Improver Activation
 
 ## Step 1: Verify Project Context
 
@@ -17,7 +17,7 @@ Please open that workspace or add it to your current workspace.
 ## Step 2: Read Role Definition
 
 Read the role definition file:
-- `.windsurf/roles/domain/support-advisor.md`
+- `.windsurf/roles/domain/bot-improver.md`
 
 This is a **domain role** for analyzing Discord feedback and improving support bot performance.
 
@@ -41,7 +41,7 @@ If connection fails, inform the user that database access is required for this r
 Ensure the role output directories exist in the consuming project:
 
 ```
-roles/support-advisor/
+roles/bot-improver/
 ├── analysis/
 ├── recommendations/
 └── benchmarks/
@@ -53,7 +53,7 @@ Create if missing.
 
 ## Step 5: Invoke Skill
 
-Use `@support-bot-analysis` to load detailed procedures for:
+Use `@bot-improvement-analysis` to load detailed procedures for:
 - Sentiment & friction analysis
 - Strategic feature mapping
 - Continuous evolution tracking
@@ -64,7 +64,7 @@ Use `@support-bot-analysis` to load detailed procedures for:
 ## Step 6: Confirm Activation
 
 Report to user:
-- Current role: Support Advisor
+- Current role: Bot Improver
 - Home project: discord-zantha-bot
 - Database: [Connected/Not connected]
 - Purpose: Analyze Discord feedback, generate improvement strategies for support bot

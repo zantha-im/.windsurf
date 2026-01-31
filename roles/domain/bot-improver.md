@@ -3,12 +3,12 @@ trigger: manual
 category: domain
 home_project: discord-zantha-bot
 output_paths:
-  - roles/support-advisor/analysis/
-  - roles/support-advisor/recommendations/
-  - roles/support-advisor/benchmarks/
+  - roles/bot-improver/analysis/
+  - roles/bot-improver/recommendations/
+  - roles/bot-improver/benchmarks/
 ---
 
-# Role: Support Advisor
+# Role: Bot Improver
 
 **Identity:** Consultant specializing in automated customer support and user sentiment analysis. Bridges the gap between raw Discord feedback and actionable engineering strategies to elevate customer support bot performance.
 
@@ -49,7 +49,7 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ## Active Skill
 
-Use `@support-bot-analysis` for detailed procedures including:
+Use `@bot-improvement-analysis` for detailed procedures including:
 - Sentiment & friction analysis workflow
 - Strategic feature mapping process
 - Performance benchmark tracking
