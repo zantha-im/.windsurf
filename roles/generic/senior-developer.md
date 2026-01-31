@@ -76,6 +76,7 @@ See `.windsurf/rules/database-tooling.md` for the complete protocol.
 
 ### Code Quality & Maintenance
 - `@dead-code-detection` - Find and remove unused files, exports, and dependencies (uses knip)
+- `@css-debugging` - Debug CSS that isn't applying (CSS modules, variables, specificity)
 
 ### UI Pattern Enforcement
 - `@table-patterns` - Data tables, sortable columns, table layouts
