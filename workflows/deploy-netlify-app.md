@@ -62,11 +62,21 @@ const netlify = createNetlifyClient();
 const site = await netlify.createSite({
   name: '[site-name]',           // e.g., 'zantha-products'
   repo: '[github-repo]',         // e.g., 'zantha-im/zantha-products'
-  branch: '[branch]'             // e.g., 'main'
+  branch: '[branch]',            // e.g., 'main'
+  buildCommand: 'npm run build', // Required for Next.js (Netlify won't auto-detect)
+  publishDir: '.next'            // Next.js output directory
 });
 
 // site.existed = true if site already exists, false if newly created
 ```
+
+**Build settings by framework:**
+| Framework   | buildCommand    | publishDir      |
+| ----------- | --------------- | --------------- |
+| Next.js     | `npm run build` | `.next`         |
+| React (CRA) | `npm run build` | `build`         |
+| Vite        | `npm run build` | `dist`          |
+| Static      | (none)          | `.` or `public` |
 
 Report to user:
 - Site ID: `[site.id]`
