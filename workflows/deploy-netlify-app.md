@@ -49,6 +49,53 @@ Use `ask_user_question` to collect:
 
 If yes, ask for env vars in format: `KEY=value` (one per line)
 
+## Step 1b: Ensure netlify.toml Exists
+
+**CRITICAL:** Next.js (and other frameworks) require a `netlify.toml` file with the appropriate plugin. The Netlify API settings alone are NOT sufficient.
+
+Check if `netlify.toml` exists in the project root:
+
+```javascript
+const fs = require('fs');
+const tomlPath = 'netlify.toml';
+const tomlExists = fs.existsSync(tomlPath);
+```
+
+**If missing, create it based on framework:**
+
+For **Next.js** projects:
+```toml
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+```
+
+For **React (CRA)** projects:
+```toml
+[build]
+  command = "npm run build"
+  publish = "build"
+```
+
+For **Vite** projects:
+```toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+```
+
+**After creating, commit and push:**
+```bash
+git add netlify.toml
+git commit -m "Add netlify.toml for Netlify deployment"
+git push
+```
+
+Report: `netlify.toml: ${tomlExists ? '✅ Already exists' : '✅ Created and pushed'}`
+
 ## Idempotent Workflow (Resume Support)
 
 **All steps are idempotent** - safe to re-run after partial failures. Each step returns a `skipped` or `existed` flag indicating whether work was done or skipped.
