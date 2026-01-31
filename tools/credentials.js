@@ -124,9 +124,10 @@ function get(service) {
     case 'netlify': {
       const token = getEnvValue(envMapping.token || []) || config.netlify?.token;
       const teamSlug = getEnvValue(envMapping.teamSlug || []) || config.netlify?.teamSlug;
+      const githubInstallationId = config.netlify?.githubInstallationId;
       
       if (!token) return null;
-      return { token, teamSlug };
+      return { token, teamSlug, githubInstallationId };
     }
     
     case 'aws': {

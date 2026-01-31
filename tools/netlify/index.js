@@ -34,6 +34,7 @@ function createNetlifyClient(config = {}) {
   const creds = credentials.get('netlify') || {};
   const token = config.token || creds.token;
   const teamSlug = config.teamSlug || creds.teamSlug;
+  const githubInstallationId = config.githubInstallationId || creds.githubInstallationId;
   
   if (!token) {
     throw new Error(
@@ -98,17 +99,56 @@ function createNetlifyClient(config = {}) {
     },
     
     /**
-     * Create a new site linked to a GitHub repository
+     * Create a new site linked to a GitHub repository (idempotent)
+     * If a site with the same name already exists, returns the existing site.
      * @param {Object} options
      * @param {string} options.name - Site name (becomes name.netlify.app)
      * @param {string} options.repo - GitHub repo (e.g., 'zantha-im/my-app')
      * @param {string} options.branch - Branch to deploy (default: 'main')
      * @param {string} options.buildCommand - Build command (optional)
      * @param {string} options.publishDir - Publish directory (optional)
-     * @returns {Promise<Object>} Created site
+     * @returns {Promise<Object>} Created or existing site (includes `existed` flag)
      */
     async createSite(options) {
       const { name, repo, branch = 'main', buildCommand, publishDir } = options;
+      
+      // Check if site already exists by name
+      try {
+        const existing = await api.getSite({ site_id: name });
+        if (existing) {
+          // Ensure repo settings are configured on existing site
+          // (previous createSite may have failed to set installation_id)
+          try {
+            await api.updateSite({
+              site_id: existing.id,
+              body: {
+                repo: {
+                  provider: 'github',
+                  repo,
+                  branch,
+                  cmd: buildCommand,
+                  dir: publishDir,
+                  installation_id: githubInstallationId
+                }
+              }
+            });
+          } catch (updateError) {
+            // Ignore update errors - repo may already be configured
+          }
+          
+          return {
+            id: existing.id,
+            name: existing.name,
+            url: existing.url,
+            sslUrl: existing.ssl_url,
+            adminUrl: existing.admin_url,
+            defaultUrl: `${existing.name}.netlify.app`,
+            existed: true
+          };
+        }
+      } catch (e) {
+        // Site doesn't exist by that name, continue to create
+      }
       
       const body = {
         name,
@@ -118,15 +158,60 @@ function createNetlifyClient(config = {}) {
           private: true,
           branch,
           cmd: buildCommand,
-          dir: publishDir
+          dir: publishDir,
+          // installation_id links Netlify to GitHub App for repo access
+          // Without this, Netlify creates the site but can't clone the repo
+          installation_id: githubInstallationId
         }
       };
       
       let site;
-      if (teamSlug) {
-        site = await api.createSiteInTeam({ account_slug: teamSlug, body });
-      } else {
-        site = await api.createSite({ body });
+      try {
+        if (teamSlug) {
+          site = await api.createSiteInTeam({ account_slug: teamSlug, body });
+        } else {
+          site = await api.createSite({ body });
+        }
+      } catch (createError) {
+        // Handle 422 Unprocessable Entity - site name may already exist
+        if (createError.status === 422 || createError.message?.includes('422')) {
+          // Try to find existing site by listing all sites
+          const sites = await api.listSites();
+          const existing = sites.find(s => s.name === name);
+          if (existing) {
+            // Ensure repo settings are configured on existing site
+            // (createSite may have partially failed, leaving repo unlinked)
+            try {
+              await api.updateSite({
+                site_id: existing.id,
+                body: {
+                  repo: {
+                    provider: 'github',
+                    repo,
+                    branch,
+                    cmd: buildCommand,
+                    dir: publishDir,
+                    installation_id: githubInstallationId
+                  }
+                }
+              });
+            } catch (updateError) {
+              // Ignore update errors - site exists, repo may already be configured
+            }
+            
+            return {
+              id: existing.id,
+              name: existing.name,
+              url: existing.url,
+              sslUrl: existing.ssl_url,
+              adminUrl: existing.admin_url,
+              defaultUrl: `${existing.name}.netlify.app`,
+              existed: true
+            };
+          }
+        }
+        // Re-throw if we couldn't recover
+        throw createError;
       }
       
       return {
@@ -135,7 +220,8 @@ function createNetlifyClient(config = {}) {
         url: site.url,
         sslUrl: site.ssl_url,
         adminUrl: site.admin_url,
-        defaultUrl: `${site.name}.netlify.app`
+        defaultUrl: `${site.name}.netlify.app`,
+        existed: false
       };
     },
     
@@ -156,30 +242,164 @@ function createNetlifyClient(config = {}) {
     },
     
     /**
-     * Add a custom domain to a site
+     * Add a custom domain to a site (idempotent)
+     * 
+     * For external DNS (non-Netlify DNS), Netlify requires TXT record verification:
+     * 1. Add TXT record: host=netlify-challenge.subdomain, value=<any unique value>
+     * 2. Pass the same value as txtRecordValue parameter
+     * 
      * @param {string} siteId - Site ID
-     * @param {string} domain - Custom domain (e.g., 'app.zantha.im')
-     * @returns {Promise<Object>} Updated site
+     * @param {string} domain - Custom domain (e.g., 'products.zantha.im')
+     * @param {Object} options - Optional settings
+     * @param {string} options.txtRecordValue - TXT record value for domain verification (required for external DNS)
+     * @returns {Promise<Object>} Updated site with `skipped` flag if already configured
      */
-    async addCustomDomain(siteId, domain) {
-      return this.updateSite(siteId, { 
-        custom_domain: domain,
-        force_ssl: true
-      });
+    async addCustomDomain(siteId, domain, options = {}) {
+      const { txtRecordValue } = options;
+      
+      // Check if domain is already configured
+      const site = await api.getSite({ site_id: siteId });
+      if (site.custom_domain === domain) {
+        return {
+          id: site.id,
+          name: site.name,
+          customDomain: site.custom_domain,
+          forceSsl: site.force_ssl,
+          skipped: true,
+          reason: 'Domain already configured'
+        };
+      }
+      
+      // Also check domain_aliases
+      if (site.domain_aliases && site.domain_aliases.includes(domain)) {
+        return {
+          id: site.id,
+          name: site.name,
+          customDomain: site.custom_domain,
+          domainAliases: site.domain_aliases,
+          forceSsl: site.force_ssl,
+          skipped: true,
+          reason: 'Domain already in aliases'
+        };
+      }
+      
+      // Build update payload
+      // NOTE: Do NOT include force_ssl when using txt_record_value - causes 422 error
+      const updatePayload = { 
+        custom_domain: domain
+      };
+      
+      // Add TXT record value for verification if provided
+      if (txtRecordValue) {
+        updatePayload.txt_record_value = txtRecordValue;
+      } else {
+        // Only set force_ssl when not doing TXT verification
+        updatePayload.force_ssl = true;
+      }
+      
+      try {
+        const result = await this.updateSite(siteId, updatePayload);
+        return { ...result, skipped: false };
+      } catch (error) {
+        // Handle 422 Unprocessable Entity
+        const is422 = error.status === 422 || error.message?.includes('422') || error.message?.includes('Unprocessable');
+        
+        if (is422 && !txtRecordValue) {
+          // 422 without TXT verification - provide helpful error
+          const subdomain = domain.split('.')[0];
+          const baseDomain = domain.split('.').slice(1).join('.');
+          throw new Error(
+            `Failed to add domain ${domain}: Netlify requires TXT record verification for external DNS.\n\n` +
+            `To fix this:\n` +
+            `1. Add a TXT record to your DNS:\n` +
+            `   Host: netlify-challenge.${subdomain}\n` +
+            `   Value: netlify-verify-${siteId}\n` +
+            `2. Wait for DNS propagation (check with: nslookup -type=TXT netlify-challenge.${domain})\n` +
+            `3. Call addCustomDomain again with txtRecordValue option:\n` +
+            `   netlify.addCustomDomain('${siteId}', '${domain}', { txtRecordValue: 'netlify-verify-${siteId}' })\n\n` +
+            `Or add the domain manually in Netlify UI: https://app.netlify.com/projects/${site.name}/domain-management`
+          );
+        }
+        
+        if (is422) {
+          // Try adding as domain alias instead
+          try {
+            const currentAliases = site.domain_aliases || [];
+            if (!currentAliases.includes(domain)) {
+              // NOTE: Do NOT include force_ssl when using txt_record_value - causes 422 error
+              const aliasPayload = {
+                domain_aliases: [...currentAliases, domain]
+              };
+              if (txtRecordValue) {
+                aliasPayload.txt_record_value = txtRecordValue;
+              } else {
+                aliasPayload.force_ssl = true;
+              }
+              const result = await this.updateSite(siteId, aliasPayload);
+              return { 
+                ...result, 
+                skipped: false,
+                method: 'domain_alias',
+                note: 'Added as domain alias (custom_domain failed with 422)'
+              };
+            }
+          } catch (aliasError) {
+            // Both methods failed
+            throw new Error(
+              `Failed to add domain ${domain}: ${error.message}. ` +
+              `Also tried domain_aliases: ${aliasError.message}. ` +
+              `You may need to add the domain manually in Netlify UI.`
+            );
+          }
+        }
+        throw error;
+      }
     },
     
     /**
-     * Provision SSL certificate for a site
-     * Requires custom domain to be configured and DNS pointing to Netlify
+     * Provision SSL certificate for a site (idempotent)
+     * If SSL is already provisioned, returns current state without changes.
+     * Requires custom domain to be configured and DNS pointing to Netlify.
      * @param {string} siteId - Site ID
-     * @returns {Promise<Object>} SSL provisioning result
+     * @returns {Promise<Object>} SSL provisioning result with `skipped` flag if already valid
      */
     async provisionSSL(siteId) {
+      // Check current SSL state first
+      try {
+        const site = await api.getSite({ site_id: siteId });
+        if (site.ssl && site.ssl.state === 'provisioned') {
+          return {
+            state: 'provisioned',
+            domains: site.ssl.domains || [site.custom_domain],
+            expiresAt: site.ssl.expires_at,
+            skipped: true,
+            reason: 'SSL already provisioned'
+          };
+        }
+      } catch (e) {
+        // Continue to provision
+      }
+      
       const result = await api.provisionSiteTLSCertificate({ site_id: siteId });
+      
+      // Handle null/undefined result
+      if (!result) {
+        // SSL provisioning initiated but no immediate result - check site status
+        const site = await api.getSite({ site_id: siteId });
+        return {
+          state: site.ssl?.state || 'pending',
+          domains: site.ssl?.domains || [site.custom_domain],
+          expiresAt: site.ssl?.expires_at,
+          skipped: false,
+          note: 'SSL provisioning initiated'
+        };
+      }
+      
       return {
-        state: result.state,
-        domains: result.domains,
-        expiresAt: result.expires_at
+        state: result.state || 'pending',
+        domains: result.domains || [],
+        expiresAt: result.expires_at,
+        skipped: false
       };
     },
     
@@ -211,35 +431,84 @@ function createNetlifyClient(config = {}) {
       const site = await api.getSite({ site_id: siteId });
       const accountId = site.account_id;
       
-      const results = [];
-      for (const [key, value] of Object.entries(vars)) {
-        try {
-          // Try to create first
-          const result = await api.createEnvVars({
-            account_id: accountId,
-            site_id: siteId,
-            body: [{
-              key,
-              values: [{ value, context: 'all' }]
-            }]
-          });
-          results.push({ key, status: 'created' });
-        } catch (e) {
-          // If exists, update it
+      // Build batch payload with proper scopes and contexts
+      // Based on Netlify API: https://answers.netlify.com/t/how-am-i-supposed-to-set-up-env-variables-over-api/88043
+      const envVarPayload = Object.entries(vars).map(([key, value]) => ({
+        key,
+        scopes: ['builds', 'functions', 'runtime', 'post_processing'],
+        values: [
+          { context: 'production', value: String(value) },
+          { context: 'deploy-preview', value: String(value) },
+          { context: 'branch-deploy', value: String(value) },
+          { context: 'dev', value: String(value) }
+        ]
+      }));
+      
+      // First, delete existing vars to avoid conflicts (Netlify doesn't upsert well)
+      const existingVars = await api.getEnvVars({ account_id: accountId, site_id: siteId });
+      const keysToSet = new Set(Object.keys(vars));
+      
+      for (const existing of existingVars) {
+        if (keysToSet.has(existing.key)) {
           try {
-            await api.setEnvVarValue({
-              account_id: accountId,
-              site_id: siteId,
-              key,
-              body: { value, context: 'all' }
-            });
-            results.push({ key, status: 'updated' });
-          } catch (e2) {
-            results.push({ key, status: 'error', error: e2.message });
+            await api.deleteEnvVar({ account_id: accountId, site_id: siteId, key: existing.key });
+          } catch (e) {
+            // Ignore delete errors
           }
         }
       }
-      return results;
+      
+      // Create all env vars in one batch call
+      try {
+        await api.createEnvVars({
+          account_id: accountId,
+          site_id: siteId,
+          body: envVarPayload
+        });
+        return Object.keys(vars).map(key => ({ key, status: 'created' }));
+      } catch (e) {
+        // If batch fails, fall back to individual creates
+        const results = [];
+        for (const envVar of envVarPayload) {
+          try {
+            await api.createEnvVars({
+              account_id: accountId,
+              site_id: siteId,
+              body: [envVar]
+            });
+            results.push({ key: envVar.key, status: 'created' });
+          } catch (e2) {
+            results.push({ key: envVar.key, status: 'error', error: e2.message });
+          }
+        }
+        return results;
+      }
+    },
+    
+    /**
+     * Set environment variables from a JSON file (secure - no secrets in terminal)
+     * @param {string} siteId - Site ID
+     * @param {string} filePath - Path to JSON file with key-value pairs
+     * @param {boolean} deleteFile - Delete the file after reading (default: true)
+     * @returns {Promise<Array>} Created/updated environment variables
+     */
+    async setEnvVarsFromFile(siteId, filePath, deleteFile = true) {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const resolvedPath = path.resolve(filePath);
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`Env vars file not found: ${resolvedPath}`);
+      }
+      
+      const vars = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
+      const result = await this.setEnvVars(siteId, vars);
+      
+      if (deleteFile) {
+        fs.unlinkSync(resolvedPath);
+      }
+      
+      return result;
     },
     
     /**
@@ -249,6 +518,81 @@ function createNetlifyClient(config = {}) {
      */
     async deleteSite(siteId) {
       await api.deleteSite({ site_id: siteId });
+    },
+    
+    /**
+     * Check deploy status for a site
+     * @param {string} siteId - Site ID
+     * @param {Object} options - Options
+     * @param {number} options.waitSeconds - Wait up to N seconds for deploy to complete (default: 0)
+     * @param {number} options.pollInterval - Poll interval in ms (default: 5000)
+     * @returns {Promise<Object>} Deploy status
+     */
+    async checkDeployStatus(siteId, options = {}) {
+      const { waitSeconds = 0, pollInterval = 5000 } = options;
+      const startTime = Date.now();
+      const maxWait = waitSeconds * 1000;
+      
+      const getLatestDeploy = async () => {
+        const deploys = await api.listSiteDeploys({ site_id: siteId, per_page: 1 });
+        if (!deploys || deploys.length === 0) {
+          return { state: 'no_deploys', message: 'No deploys found for this site' };
+        }
+        
+        const d = deploys[0];
+        return {
+          id: d.id,
+          state: d.state,
+          errorMessage: d.error_message || null,
+          createdAt: d.created_at,
+          publishedAt: d.published_at,
+          deployUrl: d.deploy_ssl_url || d.deploy_url,
+          commitRef: d.commit_ref,
+          commitMessage: d.title,
+          // Computed status
+          isBuilding: ['building', 'enqueued', 'uploading', 'processing'].includes(d.state),
+          isReady: d.state === 'ready',
+          isFailed: d.state === 'error' || !!d.error_message
+        };
+      };
+      
+      // If not waiting, just return current status
+      if (waitSeconds <= 0) {
+        return await getLatestDeploy();
+      }
+      
+      // Poll until complete or timeout
+      while (Date.now() - startTime < maxWait) {
+        const status = await getLatestDeploy();
+        
+        if (status.isReady || status.isFailed) {
+          return status;
+        }
+        
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      }
+      
+      // Timeout - return current status
+      const finalStatus = await getLatestDeploy();
+      return { ...finalStatus, timedOut: true };
+    },
+    
+    /**
+     * Trigger a new deploy for a site
+     * @param {string} siteId - Site ID
+     * @param {Object} options - Options
+     * @param {boolean} options.clearCache - Clear build cache (default: false)
+     * @returns {Promise<Object>} New deploy info
+     */
+    async triggerDeploy(siteId, options = {}) {
+      const { clearCache = false } = options;
+      const deploy = await api.createSiteBuild({ site_id: siteId, body: { clear_cache: clearCache } });
+      return {
+        id: deploy.id,
+        state: deploy.state,
+        createdAt: deploy.created_at
+      };
     },
     
     /**
